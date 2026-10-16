@@ -20,20 +20,19 @@ export default function CTA() {
       <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <AnimateOnScroll>
           <p className="text-xs font-semibold text-indigo-400 tracking-widest uppercase mb-4">
-            Let&apos;s work together
+            Mulai Sekarang
           </p>
           <h2
             id="cta-heading"
             className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight leading-tight"
           >
-            Have an idea?
+            Your Work Deserves
             <br />
-            <span className="gradient-text">Let&apos;s build it.</span>
+            <span className="gradient-text">to Be Seen.</span>
           </h2>
 
           <p className="mt-6 text-base sm:text-lg text-neutral-400 max-w-2xl mx-auto leading-relaxed">
-            Ceritakan kebutuhan bisnis Anda. Kami akan membantu mengubahnya
-            menjadi solusi digital yang dapat digunakan.
+            Mulai bangun kehadiran digital Anda hari ini. Tampilkan karya, bangun personal branding, atau kembangkan bisnis Anda bersama BeOne.
           </p>
 
           <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">

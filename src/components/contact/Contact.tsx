@@ -1,17 +1,25 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
-import { Send, MessageCircle, CheckCircle2, Loader2 } from "lucide-react";
+import { useState, useEffect, type FormEvent } from "react";
+import {
+  Send,
+  MessageCircle,
+  CheckCircle2,
+  Copy,
+  Check,
+  ShieldCheck,
+} from "lucide-react";
 import SectionHeader from "@/components/ui/SectionHeader";
 import AnimateOnScroll from "@/components/ui/AnimateOnScroll";
 import { whatsappUrl, siteConfig } from "@/lib/config";
 
 interface FormData {
   name: string;
+  contact: string;
   email: string;
-  whatsapp: string;
-  company: string;
+  profession: string;
   service: string;
+  packagePlan: string;
   budget: string;
   description: string;
 }
@@ -20,10 +28,13 @@ interface FormErrors {
   [key: string]: string;
 }
 
-const services = [
-  "Landing Page",
+const servicesList = [
+  "Website Portofolio Pribadi",
+  "Desain Konten Promosi",
+  "Katalog Digital UMKM",
+  "Landing Page Bisnis",
   "Company Profile",
-  "Business Website",
+  "Business Website Lengkap",
   "E-Commerce",
   "Custom Web App",
   "Mobile App",
@@ -31,47 +42,117 @@ const services = [
   "Lainnya",
 ];
 
+const packageOptions = [
+  "Desain Konten Promosi (Paket 5 Desain) — Rp75.000–100.000",
+  "Katalog Digital UMKM — mulai Rp150.000",
+  "Portofolio Pribadi Starter — mulai Rp150.000",
+  "Portofolio Pribadi Professional — Rp349.000",
+  "Portofolio Pribadi Premium — mulai Rp599.000",
+  "Landing Page Bisnis — Rp350.000–500.000",
+  "Company Profile — Rp2.500.000",
+  "Business Website Lengkap — Rp4.000.000",
+  "E-Commerce Toko Online — mulai Rp6.000.000",
+  "Custom Web App — mulai Rp7.500.000",
+  "Belum Memilih Paket / Ingin Konsultasi Dulu",
+];
+
+const professionOptions = [
+  "Web Developer / Programmer",
+  "UI/UX / Graphic Designer",
+  "Freelancer / Content Creator",
+  "Mahasiswa / Fresh Graduate",
+  "Profesional / Konsultan",
+  "Pemilik Bisnis / UMKM",
+  "Lainnya",
+];
+
 const budgetOptions = [
-  "< Rp2 juta",
-  "Rp2–5 juta",
-  "Rp5–10 juta",
-  "Rp10–20 juta",
-  "> Rp20 juta",
+  "< Rp150 ribu (Desain Promosi)",
+  "Rp150rb – Rp350 ribu (Portofolio / Katalog)",
+  "Rp350rb – Rp1 juta (Landing Page Bisnis / Portofolio Pro)",
+  "Rp1 – 3 juta",
+  "Rp3 – 6 juta",
+  "> Rp6 juta (Web App / E-Commerce)",
+  "Sesuai Rekomendasi Solusi",
 ];
 
 const initialForm: FormData = {
   name: "",
+  contact: "",
   email: "",
-  whatsapp: "",
-  company: "",
-  service: "",
+  profession: "",
+  service: "Website Portofolio Pribadi",
+  packagePlan: "",
   budget: "",
   description: "",
 };
 
 function validate(data: FormData): FormErrors {
   const errors: FormErrors = {};
-  if (!data.name.trim()) errors.name = "Nama wajib diisi.";
-  if (!data.email.trim()) {
-    errors.email = "Email wajib diisi.";
-  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
+  if (!data.name.trim()) errors.name = "Nama lengkap wajib diisi.";
+  if (!data.contact.trim()) {
+    errors.contact = "Nomor WhatsApp atau kontak wajib diisi.";
+  } else if (!/^[0-9+\-\s()]{8,20}$/.test(data.contact)) {
+    errors.contact = "Format nomor kontak tidak valid.";
+  }
+  if (data.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
     errors.email = "Format email tidak valid.";
   }
-  if (!data.whatsapp.trim()) {
-    errors.whatsapp = "Nomor WhatsApp wajib diisi.";
-  } else if (!/^[0-9+\-\s()]{8,16}$/.test(data.whatsapp)) {
-    errors.whatsapp = "Nomor WhatsApp tidak valid.";
-  }
   if (!data.service) errors.service = "Pilih layanan yang dibutuhkan.";
-  if (!data.description.trim())
-    errors.description = "Deskripsi project wajib diisi.";
+  if (!data.description.trim()) {
+    errors.description = "Ceritakan sedikit kebutuhan atau tujuan website Anda.";
+  }
   return errors;
 }
 
 export default function Contact() {
   const [form, setForm] = useState<FormData>(initialForm);
   const [errors, setErrors] = useState<FormErrors>({});
-  const [status, setStatus] = useState<"idle" | "loading" | "success">("idle");
+  const [status, setStatus] = useState<"idle" | "ready">("idle");
+  const [preparedUrl, setPreparedUrl] = useState<string>("");
+  const [preparedMessage, setPreparedMessage] = useState<string>("");
+  const [copied, setCopied] = useState<boolean>(false);
+
+  // Sync with plan selection events from Services, Pricing, or Hero
+  useEffect(() => {
+    const handlePlanSelect = (e: Event) => {
+      const detail = (
+        e as CustomEvent<{ service?: string; plan?: string }>
+      ).detail;
+      if (detail) {
+        setForm((prev) => {
+          let matchedService = prev.service;
+          if (detail.service) {
+            const foundSrv = servicesList.find(
+              (s) =>
+                s.toLowerCase().includes(detail.service!.toLowerCase()) ||
+                detail.service!.toLowerCase().includes(s.toLowerCase())
+            );
+            if (foundSrv) matchedService = foundSrv;
+          }
+
+          let matchedPlan = prev.packagePlan;
+          if (detail.plan) {
+            const foundPlan = packageOptions.find(
+              (opt) =>
+                opt.toLowerCase().includes(detail.plan!.toLowerCase()) ||
+                detail.plan!.toLowerCase().includes(opt.toLowerCase())
+            );
+            if (foundPlan) matchedPlan = foundPlan;
+          }
+
+          return {
+            ...prev,
+            service: matchedService,
+            packagePlan: matchedPlan,
+          };
+        });
+      }
+    };
+
+    window.addEventListener("beone-select-plan", handlePlanSelect);
+    return () => window.removeEventListener("beone-select-plan", handlePlanSelect);
+  }, []);
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -94,40 +175,56 @@ export default function Contact() {
     const validationErrors = validate(form);
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
-      // Focus first error
       const firstKey = Object.keys(validationErrors)[0];
       document.getElementById(firstKey)?.focus();
       return;
     }
 
-    setStatus("loading");
-
-    // Build WhatsApp message from form data
-    const message = [
-      `*Project Inquiry — BeOne*`,
+    // Format clean professional WhatsApp inquiry message
+    const messageLines = [
+      `*Halo BeOne, saya ingin konsultasi pembuatan website:*`,
       ``,
-      `Nama: ${form.name}`,
-      `Email: ${form.email}`,
-      `WhatsApp: ${form.whatsapp}`,
-      `Bisnis/Perusahaan: ${form.company || "-"}`,
-      `Layanan: ${form.service}`,
-      `Budget: ${form.budget || "-"}`,
+      `👤 *Nama:* ${form.name}`,
+      `📱 *Kontak:* ${form.contact}`,
+      form.email ? `✉️ *Email:* ${form.email}` : null,
+      form.profession ? `💼 *Profesi / Bisnis:* ${form.profession}` : null,
+      `🛠️ *Layanan:* ${form.service}`,
+      form.packagePlan ? `📦 *Paket Diminati:* ${form.packagePlan}` : null,
+      form.budget ? `💰 *Estimasi Budget:* ${form.budget}` : null,
       ``,
-      `Deskripsi:`,
+      `📝 *Deskripsi & Kebutuhan:*`,
       form.description,
-    ].join("\n");
+    ]
+      .filter((line) => line !== null)
+      .join("\n");
 
-    // Simulate brief loading then redirect to WhatsApp
-    setTimeout(() => {
-      setStatus("success");
-      window.open(whatsappUrl(message), "_blank", "noopener,noreferrer");
-    }, 800);
+    const targetUrl = whatsappUrl(messageLines);
+    setPreparedMessage(messageLines);
+    setPreparedUrl(targetUrl);
+    setStatus("ready");
+
+    // Open directly within user action context to prevent popup blockers
+    try {
+      window.open(targetUrl, "_blank", "noopener,noreferrer");
+    } catch {
+      // Fallback handled smoothly by the ready screen
+    }
+  };
+
+  const handleCopyMessage = async () => {
+    try {
+      await navigator.clipboard.writeText(preparedMessage);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+    } catch {
+      // Clipboard fallback
+    }
   };
 
   const fieldClass = (name: string) =>
     `w-full px-4 py-3 rounded-xl border text-sm text-neutral-900 dark:text-neutral-100 bg-white dark:bg-neutral-800 placeholder:text-neutral-400 dark:placeholder:text-neutral-500 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent ${
       errors[name]
-        ? "border-red-300 dark:border-red-700 bg-red-50 dark:bg-red-950/20"
+        ? "border-red-300 dark:border-red-700 bg-red-50/50 dark:bg-red-950/20"
         : "border-neutral-200 dark:border-neutral-700 hover:border-neutral-300 dark:hover:border-neutral-600"
     }`;
 
@@ -135,115 +232,145 @@ export default function Contact() {
     <section
       id="contact"
       aria-labelledby="contact-heading"
-      className="section-padding bg-white dark:bg-neutral-950"
+      className="section-padding bg-white dark:bg-neutral-950 relative overflow-hidden"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <AnimateOnScroll>
           <SectionHeader
-            label="Contact"
-            title="Let's Work Together"
-            subtitle="Ceritakan kebutuhan project Anda dan kami akan segera menghubungi Anda."
+            label="Contact & Consultation"
+            title="Mulai Konsultasi Kebutuhan Anda"
+            subtitle="Ceritakan profil, karya, atau proyek yang ingin Anda bangun. Kami akan membantu merancang solusi website terbaik untuk Anda."
           />
         </AnimateOnScroll>
 
-        <div className="grid lg:grid-cols-5 gap-10 lg:gap-16 items-start">
-          {/* Left — info */}
-          <AnimateOnScroll className="lg:col-span-2" direction="left">
-            <div className="space-y-6">
-              <div className="p-5 bg-neutral-50 dark:bg-neutral-900 rounded-2xl border border-neutral-100 dark:border-neutral-800">
-                <h3 className="text-sm font-bold text-neutral-950 dark:text-white mb-1.5">
-                  Chat via WhatsApp
+        <div className="grid lg:grid-cols-12 gap-10 lg:gap-14 items-start">
+          {/* Left Column: Direct WhatsApp & Info */}
+          <AnimateOnScroll className="lg:col-span-5" direction="left">
+            <div className="space-y-5">
+              <div className="p-6 bg-gradient-to-br from-indigo-50/60 to-white dark:from-neutral-900 dark:to-neutral-900 rounded-2xl border border-indigo-100 dark:border-neutral-800 shadow-sm">
+                <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-green-500 text-white mb-3">
+                  <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping" />
+                  Respons Cepat via WhatsApp
+                </div>
+                <h3 className="text-base font-bold text-neutral-950 dark:text-white mb-2">
+                  Diskusi Langsung dengan Tim BeOne
                 </h3>
-                <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-3 leading-relaxed">
-                  Lebih suka diskusi langsung? Chat kami di WhatsApp untuk
-                  respons lebih cepat.
+                <p className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 mb-5 leading-relaxed">
+                  Ingin bertanya langsung seputar website portofolio, pilihan paket Rp199.000, atau penyesuaian fitur? Hubungi kami via WhatsApp sekarang.
                 </p>
                 <a
                   href={whatsappUrl()}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-4 py-2.5 bg-green-500 hover:bg-green-600 text-white text-sm font-semibold rounded-xl transition-colors"
-                  aria-label="Open WhatsApp chat with BeOne"
+                  className="inline-flex items-center justify-center gap-2 w-full px-4 py-3 bg-green-500 hover:bg-green-600 text-white text-sm font-semibold rounded-xl shadow-xs transition-colors"
+                  aria-label="Buka obrolan WhatsApp BeOne"
                 >
-                  <MessageCircle size={16} aria-hidden="true" />
-                  Chat on WhatsApp
+                  <MessageCircle size={17} aria-hidden="true" />
+                  Chat WhatsApp: +{siteConfig.whatsappNumber}
                 </a>
               </div>
 
-              <div className="p-5 bg-neutral-50 dark:bg-neutral-900 rounded-2xl border border-neutral-100 dark:border-neutral-800">
-                <h3 className="text-sm font-bold text-neutral-950 dark:text-white mb-3">
-                  Informasi Kontak
-                </h3>
-                <dl className="space-y-2">
+              <div className="p-6 bg-neutral-50 dark:bg-neutral-900 rounded-2xl border border-neutral-200/80 dark:border-neutral-800 space-y-4">
+                <div className="flex items-start gap-3">
+                  <ShieldCheck size={20} className="text-indigo-500 flex-shrink-0 mt-0.5" />
                   <div>
-                    <dt className="text-xs text-neutral-400 dark:text-neutral-500 mb-0.5">Email</dt>
-                    <dd>
-                      <a
-                        href={`mailto:${siteConfig.email}`}
-                        className="text-sm font-medium text-neutral-700 dark:text-neutral-300 hover:text-indigo-500 dark:hover:text-indigo-400 transition-colors"
-                      >
-                        {siteConfig.email}
-                      </a>
-                    </dd>
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-neutral-400">
+                      Privasi & Keamanan Data
+                    </h4>
+                    <p className="text-xs text-neutral-600 dark:text-neutral-400 mt-0.5 leading-relaxed">
+                      Informasi kontak Anda hanya digunakan untuk keperluan konsultasi project dan tidak akan dibagikan ke pihak manapun.
+                    </p>
                   </div>
-                </dl>
-              </div>
+                </div>
 
-              <div className="p-5 bg-indigo-50 dark:bg-indigo-950/30 border border-indigo-100 dark:border-indigo-900 rounded-2xl">
-                <p className="text-sm text-indigo-700 dark:text-indigo-300 leading-relaxed">
-                  <strong>Konsultasi gratis.</strong> Kami akan membalas dalam
-                  1×24 jam di hari kerja.
-                </p>
+                <div className="pt-3 border-t border-neutral-200/60 dark:border-neutral-800 flex items-center justify-between text-xs">
+                  <span className="text-neutral-500">Email Resmi:</span>
+                  <a
+                    href={`mailto:${siteConfig.email}`}
+                    className="font-medium text-indigo-500 hover:underline"
+                  >
+                    {siteConfig.email}
+                  </a>
+                </div>
               </div>
             </div>
           </AnimateOnScroll>
 
-          {/* Right — form */}
-          <AnimateOnScroll className="lg:col-span-3" direction="right" delay={0.1}>
-            {status === "success" ? (
+          {/* Right Column: Interactive Inquiry Form / WhatsApp Action Screen */}
+          <AnimateOnScroll className="lg:col-span-7" direction="right" delay={0.1}>
+            {status === "ready" ? (
               <div
-                className="flex flex-col items-center justify-center gap-4 p-12 bg-neutral-50 dark:bg-neutral-900 rounded-2xl border border-neutral-100 dark:border-neutral-800 text-center"
-                role="alert"
-                aria-live="polite"
+                className="p-8 sm:p-10 bg-neutral-50 dark:bg-neutral-900 rounded-2xl border border-indigo-100 dark:border-neutral-800 text-center shadow-md animate-in fade-in"
+                role="region"
+                aria-label="Status penyiapan pesan WhatsApp"
               >
-                <CheckCircle2
-                  size={48}
-                  className="text-green-500"
-                  aria-hidden="true"
-                />
-                <h3 className="text-xl font-bold text-neutral-950 dark:text-white">
-                  Pesan Terkirim!
+                <div className="w-14 h-14 rounded-full bg-green-100 dark:bg-green-950/60 text-green-600 dark:text-green-400 mx-auto flex items-center justify-center mb-4">
+                  <CheckCircle2 size={32} />
+                </div>
+                <h3 className="text-xl font-black text-neutral-950 dark:text-white mb-2">
+                  Detail Inquiry Siap Dikirim
                 </h3>
-                <p className="text-sm text-neutral-500 dark:text-neutral-400 max-w-sm">
-                  Anda akan diarahkan ke WhatsApp. Kami akan segera merespons
-                  pesan Anda.
+                <p className="text-sm text-neutral-600 dark:text-neutral-400 max-w-md mx-auto leading-relaxed mb-6">
+                  Tautan WhatsApp telah disiapkan dengan detail proyek Anda. Silakan klik tombol di bawah untuk membuka chat atau salin format pesan.
                 </p>
+
+                {/* Prepared message preview */}
+                <div className="mb-6 p-4 bg-white dark:bg-neutral-800/80 rounded-xl border border-neutral-200 dark:border-neutral-700 text-left text-xs font-mono text-neutral-700 dark:text-neutral-300 whitespace-pre-line max-h-48 overflow-y-auto">
+                  {preparedMessage}
+                </div>
+
+                <div className="flex flex-col sm:flex-row gap-3 justify-center mb-4">
+                  <a
+                    href={preparedUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-green-500 hover:bg-green-600 text-white text-sm font-semibold rounded-xl shadow-xs transition-colors"
+                  >
+                    <MessageCircle size={16} />
+                    Buka Chat WhatsApp Sekarang
+                  </a>
+                  <button
+                    type="button"
+                    onClick={handleCopyMessage}
+                    className="inline-flex items-center justify-center gap-2 px-5 py-3 bg-white dark:bg-neutral-800 hover:bg-neutral-100 dark:hover:bg-neutral-700 text-neutral-800 dark:text-neutral-200 border border-neutral-200 dark:border-neutral-700 text-sm font-semibold rounded-xl transition-colors"
+                  >
+                    {copied ? (
+                      <>
+                        <Check size={16} className="text-green-500" />
+                        Pesan Tersalin!
+                      </>
+                    ) : (
+                      <>
+                        <Copy size={16} />
+                        Salin Format Pesan
+                      </>
+                    )}
+                  </button>
+                </div>
+
                 <button
                   type="button"
-                  onClick={() => {
-                    setForm(initialForm);
-                    setStatus("idle");
-                  }}
-                  className="px-5 py-2.5 text-sm font-semibold text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800 rounded-xl hover:bg-indigo-50 dark:hover:bg-indigo-950/40 transition-colors"
+                  onClick={() => setStatus("idle")}
+                  className="text-xs text-neutral-500 dark:text-neutral-400 hover:text-indigo-500 underline transition-colors"
                 >
-                  Kirim Inquiry Lain
+                  ← Kembali edit formulir
                 </button>
               </div>
             ) : (
               <form
                 onSubmit={handleSubmit}
                 noValidate
-                aria-label="Project inquiry form"
-                className="space-y-5"
+                aria-label="Formulir inquiry proyek BeOne"
+                className="space-y-4 bg-white dark:bg-neutral-900 p-6 sm:p-8 rounded-2xl border border-neutral-200 dark:border-neutral-800 shadow-sm"
               >
-                {/* Name + Email */}
+                {/* Name & Contact */}
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
                     <label
                       htmlFor="name"
                       className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5"
                     >
-                      Nama <span aria-hidden="true" className="text-red-400">*</span>
+                      Nama Lengkap <span className="text-red-500">*</span>
                     </label>
                     <input
                       id="name"
@@ -252,24 +379,53 @@ export default function Contact() {
                       autoComplete="name"
                       value={form.name}
                       onChange={handleChange}
-                      placeholder="Nama lengkap Anda"
+                      placeholder="Nama Anda"
                       className={fieldClass("name")}
                       aria-required="true"
                       aria-invalid={!!errors.name}
-                      aria-describedby={errors.name ? "name-error" : undefined}
                     />
                     {errors.name && (
-                      <p id="name-error" role="alert" className="mt-1 text-xs text-red-500">
+                      <p role="alert" className="mt-1 text-xs text-red-500">
                         {errors.name}
                       </p>
                     )}
                   </div>
+
+                  <div>
+                    <label
+                      htmlFor="contact"
+                      className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5"
+                    >
+                      Nomor WhatsApp / HP <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      id="contact"
+                      name="contact"
+                      type="tel"
+                      autoComplete="tel"
+                      value={form.contact}
+                      onChange={handleChange}
+                      placeholder="Contoh: 081234567890"
+                      className={fieldClass("contact")}
+                      aria-required="true"
+                      aria-invalid={!!errors.contact}
+                    />
+                    {errors.contact && (
+                      <p role="alert" className="mt-1 text-xs text-red-500">
+                        {errors.contact}
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                {/* Email & Profession */}
+                <div className="grid sm:grid-cols-2 gap-4">
                   <div>
                     <label
                       htmlFor="email"
                       className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5"
                     >
-                      Email <span aria-hidden="true" className="text-red-400">*</span>
+                      Email <span className="text-neutral-400 font-normal">(Opsional)</span>
                     </label>
                     <input
                       id="email"
@@ -278,124 +434,116 @@ export default function Contact() {
                       autoComplete="email"
                       value={form.email}
                       onChange={handleChange}
-                      placeholder="email@bisnis.com"
+                      placeholder="nama@email.com"
                       className={fieldClass("email")}
-                      aria-required="true"
-                      aria-invalid={!!errors.email}
-                      aria-describedby={errors.email ? "email-error" : undefined}
                     />
                     {errors.email && (
-                      <p id="email-error" role="alert" className="mt-1 text-xs text-red-500">
+                      <p role="alert" className="mt-1 text-xs text-red-500">
                         {errors.email}
                       </p>
                     )}
                   </div>
-                </div>
 
-                {/* WhatsApp + Company */}
-                <div className="grid sm:grid-cols-2 gap-4">
                   <div>
                     <label
-                      htmlFor="whatsapp"
+                      htmlFor="profession"
                       className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5"
                     >
-                      WhatsApp <span aria-hidden="true" className="text-red-400">*</span>
+                      Profesi / Bidang Usaha
                     </label>
-                    <input
-                      id="whatsapp"
-                      name="whatsapp"
-                      type="tel"
-                      autoComplete="tel"
-                      value={form.whatsapp}
+                    <select
+                      id="profession"
+                      name="profession"
+                      value={form.profession}
                       onChange={handleChange}
-                      placeholder="08xxxxxxxxxx"
-                      className={fieldClass("whatsapp")}
-                      aria-required="true"
-                      aria-invalid={!!errors.whatsapp}
-                      aria-describedby={errors.whatsapp ? "whatsapp-error" : undefined}
-                    />
-                    {errors.whatsapp && (
-                      <p id="whatsapp-error" role="alert" className="mt-1 text-xs text-red-500">
-                        {errors.whatsapp}
-                      </p>
-                    )}
-                  </div>
-                  <div>
-                    <label
-                      htmlFor="company"
-                      className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5"
+                      className={`${fieldClass("profession")} cursor-pointer`}
                     >
-                      Bisnis / Perusahaan
-                    </label>
-                    <input
-                      id="company"
-                      name="company"
-                      type="text"
-                      autoComplete="organization"
-                      value={form.company}
-                      onChange={handleChange}
-                      placeholder="Nama bisnis atau perusahaan"
-                      className={fieldClass("company")}
-                    />
+                      <option value="">Pilih profesi / bidang...</option>
+                      {professionOptions.map((prof) => (
+                        <option key={prof} value={prof}>
+                          {prof}
+                        </option>
+                      ))}
+                    </select>
                   </div>
                 </div>
 
-                {/* Service + Budget */}
+                {/* Service & Package */}
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
                     <label
                       htmlFor="service"
                       className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5"
                     >
-                      Layanan yang Dibutuhkan <span aria-hidden="true" className="text-red-400">*</span>
+                      Layanan yang Dibutuhkan <span className="text-red-500">*</span>
                     </label>
                     <select
                       id="service"
                       name="service"
                       value={form.service}
                       onChange={handleChange}
-                      className={`${fieldClass("service")} cursor-pointer`}
+                      className={`${fieldClass("service")} cursor-pointer font-medium`}
                       aria-required="true"
-                      aria-invalid={!!errors.service}
-                      aria-describedby={errors.service ? "service-error" : undefined}
                     >
-                      <option value="" disabled>
-                        Pilih layanan...
-                      </option>
-                      {services.map((s) => (
-                        <option key={s} value={s}>
-                          {s}
+                      {servicesList.map((srv) => (
+                        <option key={srv} value={srv}>
+                          {srv === "Personal Portfolio Website" ? "⭐ " + srv : srv}
                         </option>
                       ))}
                     </select>
                     {errors.service && (
-                      <p id="service-error" role="alert" className="mt-1 text-xs text-red-500">
+                      <p role="alert" className="mt-1 text-xs text-red-500">
                         {errors.service}
                       </p>
                     )}
                   </div>
+
                   <div>
                     <label
-                      htmlFor="budget"
+                      htmlFor="packagePlan"
                       className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5"
                     >
-                      Budget Range
+                      Paket yang Diminati
                     </label>
                     <select
-                      id="budget"
-                      name="budget"
-                      value={form.budget}
+                      id="packagePlan"
+                      name="packagePlan"
+                      value={form.packagePlan}
                       onChange={handleChange}
-                      className={`${fieldClass("budget")} cursor-pointer`}
+                      className={`${fieldClass("packagePlan")} cursor-pointer`}
                     >
-                      <option value="">Pilih budget...</option>
-                      {budgetOptions.map((b) => (
-                        <option key={b} value={b}>
-                          {b}
+                      <option value="">Pilih paket atau konsultasi bebas...</option>
+                      {packageOptions.map((pkg) => (
+                        <option key={pkg} value={pkg}>
+                          {pkg}
                         </option>
                       ))}
                     </select>
                   </div>
+                </div>
+
+                {/* Budget */}
+                <div>
+                  <label
+                    htmlFor="budget"
+                    className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5"
+                  >
+                    Estimasi Anggaran <span className="text-neutral-400 font-normal">(Opsional)</span>
+                  </label>
+                  <select
+                    id="budget"
+                    name="budget"
+                    value={form.budget}
+                    onChange={handleChange}
+                    className={`${fieldClass("budget")} cursor-pointer`}
+                  >
+                    <option value="">Pilih rentang estimasi budget...</option>
+                    {budgetOptions.map((b) => (
+                      <option key={b} value={b}>
+                        {b}
+                      </option>
+                    ))}
+                  </select>
                 </div>
 
                 {/* Description */}
@@ -404,54 +552,38 @@ export default function Contact() {
                     htmlFor="description"
                     className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5"
                   >
-                    Deskripsi Project <span aria-hidden="true" className="text-red-400">*</span>
+                    Deskripsi Kebutuhan & Ekspektasi <span className="text-red-500">*</span>
                   </label>
                   <textarea
                     id="description"
                     name="description"
-                    rows={5}
+                    rows={4}
                     value={form.description}
                     onChange={handleChange}
-                    placeholder="Ceritakan kebutuhan project Anda: tujuan, fitur yang diinginkan, referensi, dll."
+                    placeholder="Contoh: Saya seorang web developer, ingin membuat portofolio single page untuk menampilkan 3 proyek terbaik dan resume pendidikan/keahlian..."
                     className={`${fieldClass("description")} resize-none`}
                     aria-required="true"
                     aria-invalid={!!errors.description}
-                    aria-describedby={errors.description ? "description-error" : undefined}
                   />
                   {errors.description && (
-                    <p id="description-error" role="alert" className="mt-1 text-xs text-red-500">
+                    <p role="alert" className="mt-1 text-xs text-red-500">
                       {errors.description}
                     </p>
                   )}
                 </div>
 
-                {/* Submit */}
+                {/* Submit Button */}
                 <button
                   type="submit"
-                  disabled={status === "loading"}
-                  className="w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 text-sm font-semibold text-white bg-indigo-500 hover:bg-indigo-600 disabled:opacity-70 disabled:cursor-not-allowed rounded-xl transition-colors shadow-md shadow-indigo-200 group"
-                  aria-label="Send project inquiry"
+                  className="w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 text-sm font-semibold text-white bg-indigo-500 hover:bg-indigo-600 rounded-xl transition-colors shadow-md shadow-indigo-200 dark:shadow-indigo-950/40 group"
+                  aria-label="Kirim formulir konsultasi via WhatsApp"
                 >
-                  {status === "loading" ? (
-                    <>
-                      <Loader2
-                        size={16}
-                        aria-hidden="true"
-                        className="animate-spin"
-                      />
-                      Mengirim...
-                    </>
-                  ) : (
-                    <>
-                      <Send size={16} aria-hidden="true" />
-                      Send Project Inquiry
-                    </>
-                  )}
+                  <Send size={16} aria-hidden="true" />
+                  Kirim & Mulai Konsultasi WhatsApp
                 </button>
 
-                <p className="text-xs text-neutral-400 dark:text-neutral-500 text-center">
-                  Form ini akan mengarahkan Anda ke WhatsApp dengan detail
-                  project yang sudah diisi.
+                <p className="text-[11px] text-neutral-400 dark:text-neutral-500 text-center">
+                  Mengisi formulir ini akan menyiapkan pesan chat WhatsApp yang rapi ke kontak resmi BeOne.
                 </p>
               </form>
             )}

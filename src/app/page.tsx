@@ -1,8 +1,9 @@
 import Navbar from "@/components/navbar/Navbar";
 import Hero from "@/components/hero/Hero";
+import PortfolioShowcase from "@/components/portfolio/PortfolioShowcase";
 import Services from "@/components/services/Services";
-import Why from "@/components/why/Why";
 import Pricing from "@/components/pricing/Pricing";
+import Why from "@/components/why/Why";
 import WhatWeCanBuild from "@/components/solutions/WhatWeCanBuild";
 import Process from "@/components/process/Process";
 import FAQ from "@/components/faq/FAQ";
@@ -17,9 +18,10 @@ export default function Home() {
       <Navbar />
       <main id="main-content">
         <Hero />
+        <PortfolioShowcase />
         <Services />
-        <Why />
         <Pricing />
+        <Why />
         <WhatWeCanBuild />
         <Process />
         <FAQ />

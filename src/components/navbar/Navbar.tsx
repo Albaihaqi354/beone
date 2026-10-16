@@ -7,6 +7,7 @@ import { whatsappUrl } from "@/lib/config";
 import ThemeToggle from "@/components/ui/ThemeToggle";
 
 const navLinks = [
+  { href: "#portfolio", label: "Portfolio" },
   { href: "#services", label: "Services" },
   { href: "#pricing", label: "Pricing" },
   { href: "#solutions", label: "Solutions" },
@@ -14,6 +15,7 @@ const navLinks = [
   { href: "#faq", label: "FAQ" },
   { href: "#contact", label: "Contact" },
 ];
+
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -86,7 +88,7 @@ export default function Navbar() {
           <div className="hidden md:flex items-center gap-2">
             <ThemeToggle />
             <a
-              href={whatsappUrl("Halo BeOne, saya ingin konsultasi project.")}
+              href={whatsappUrl("Halo BeOne, saya ingin konsultasi mengenai pembuatan website.")}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-indigo-500 hover:bg-indigo-600 rounded-xl transition-colors duration-150 shadow-sm"
@@ -140,7 +142,7 @@ export default function Navbar() {
             </a>
           ))}
           <a
-            href={whatsappUrl("Halo BeOne, saya ingin konsultasi project.")}
+            href={whatsappUrl("Halo BeOne, saya ingin konsultasi mengenai pembuatan website.")}
             target="_blank"
             rel="noopener noreferrer"
             onClick={handleNavClick}

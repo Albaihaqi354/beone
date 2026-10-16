@@ -4,15 +4,15 @@
  */
 export const siteConfig = {
   name: "BeOne",
-  tagline: "Build Digital. Be One Step Ahead.",
-  supportingText: "Website & Digital Solutions for Growing Businesses.",
+  tagline: "Your Work Deserves to Be Seen.",
+  supportingText: "Personal Portfolio & Web Solutions",
   description:
-    "BeOne membantu bisnis membangun website, web application, e-commerce, dan solusi digital custom yang modern dan profesional.",
-  url: "https://beone.dev", // update with real domain
+    "BeOne membantu individu, kreator, dan bisnis membangun kehadiran digital profesional melalui website portofolio custom dan solusi web modern.",
+  url: "https://beone-here.vercel.app",
 
   /** WhatsApp number in international format without '+' */
   whatsappNumber: "6287727726316",
-  whatsappMessage: "Halo BeOne, saya ingin konsultasi mengenai project saya.",
+  whatsappMessage: "Halo BeOne, saya ingin konsultasi mengenai pembuatan website portofolio.",
 
   email: "bianalbaihaqi190@gmail.com",
 
@@ -21,6 +21,7 @@ export const siteConfig = {
     github: "https://github.com/Albaihaqi354",
   },
 } as const;
+
 
 /** Generates a WhatsApp deep-link URL */
 export function whatsappUrl(message?: string): string {

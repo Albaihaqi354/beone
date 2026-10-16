@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { MessageCircle } from "lucide-react";
 import { siteConfig, whatsappUrl } from "@/lib/config";
 
@@ -61,13 +62,13 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-6">
           {/* Brand */}
           <div className="md:col-span-1">
-            <a
+            <Link
               href="/"
               className="inline-block text-xl font-black tracking-tight mb-3"
               aria-label="BeOne — go to homepage"
             >
               Be<span className="text-indigo-400">One</span>
-            </a>
+            </Link>
             <p className="text-sm text-neutral-400 leading-relaxed max-w-xs">
               {siteConfig.tagline}
             </p>

@@ -1,65 +1,84 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowRight, Play, Sparkles, Code2, Globe, Zap } from "lucide-react";
-import { whatsappUrl } from "@/lib/config";
+import {
+  ArrowRight,
+  Sparkles,
+  Check,
+  ExternalLink,
+  ShieldCheck,
+} from "lucide-react";
 
-const trustBadges = [
-  { icon: Code2, label: "Modern Technology" },
-  { icon: Globe, label: "Responsive Design" },
-  { icon: Zap, label: "SEO Friendly" },
-  { icon: Sparkles, label: "Custom Development" },
+const valueHighlights = [
+  "Developer, Designer, Freelancer & Mahasiswa",
+  "Pengerjaan Cepat 1–3 Hari",
+  "Hosting Gratis & Panduan Domain",
+  "Layanan Mulai Rp75rb (Desain) / Rp150rb (Website)",
 ];
 
 const floatingCards = [
   {
-    id: "tech",
+    id: "portfolio-preview",
+    delay: 0,
     content: (
       <div className="p-3">
-        <div className="flex items-center gap-2 mb-2">
-          <div className="w-2 h-2 rounded-full bg-green-400" />
-          <span className="text-xs font-medium text-neutral-600 dark:text-neutral-300">Live</span>
+        <div className="flex items-center gap-2 mb-1.5">
+          <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+          <span className="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
+            Portfolio Live
+          </span>
         </div>
-        <div className="text-sm font-semibold text-neutral-800 dark:text-neutral-100">
-          Next.js + TypeScript
+        <div className="text-xs font-bold text-neutral-900 dark:text-white">
+          yourname.vercel.app
         </div>
-        <div className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">Modern stack</div>
+        <div className="text-[10px] text-neutral-500 dark:text-neutral-400 mt-0.5">
+          Hosting Gratis Aktif
+        </div>
       </div>
     ),
-    className: "top-12 right-4 md:top-20 md:right-8",
+    className: "top-8 right-2 md:top-14 md:right-6",
   },
   {
-    id: "speed",
+    id: "pricing-card",
+    delay: 0.6,
     content: (
       <div className="p-3">
-        <div className="text-2xl font-black text-indigo-500">98</div>
-        <div className="text-xs text-neutral-500 dark:text-neutral-400">Lighthouse Score</div>
-        <div className="mt-1.5 h-1 w-full bg-neutral-100 dark:bg-neutral-700 rounded-full overflow-hidden">
-          <div className="h-full w-[98%] bg-indigo-400 rounded-full" />
+        <div className="text-xs text-neutral-500 dark:text-neutral-400 font-medium">
+          Mulai dari
+        </div>
+        <div className="text-xl font-black text-indigo-500">
+          Rp150.000
+        </div>
+        <div className="text-[10px] text-neutral-500 dark:text-neutral-400 mt-0.5 flex items-center gap-1">
+          <ShieldCheck size={11} className="text-indigo-400" />
+          Harga Transparan
         </div>
       </div>
     ),
-    className: "bottom-24 left-0 md:bottom-32 md:left-4",
+    className: "bottom-16 left-0 md:bottom-24 md:left-2",
   },
   {
     id: "responsive",
+    delay: 1.2,
     content: (
       <div className="p-3 flex items-center gap-2.5">
         <div className="flex flex-col gap-0.5">
-          <div className="w-8 h-5 border-2 border-neutral-300 dark:border-neutral-600 rounded-sm" />
+          <div className="w-8 h-5 border-2 border-neutral-300 dark:border-neutral-600 rounded-xs" />
         </div>
         <div className="flex flex-col gap-0.5">
-          <div className="w-5 h-6 border-2 border-neutral-300 dark:border-neutral-600 rounded-sm" />
+          <div className="w-4 h-7 border-2 border-indigo-400 rounded-xs" />
         </div>
-        <div className="flex flex-col gap-0.5">
-          <div className="w-4 h-7 border-2 border-indigo-400 rounded-sm" />
+        <div>
+          <span className="text-xs font-semibold text-neutral-800 dark:text-neutral-200 block">
+            Responsive
+          </span>
+          <span className="text-[10px] text-neutral-400 block">
+            Mobile & Desktop
+          </span>
         </div>
-        <span className="text-xs font-medium text-neutral-600 dark:text-neutral-300">
-          Responsive
-        </span>
       </div>
     ),
-    className: "top-1/2 -right-2 md:right-0 -translate-y-1/2",
+    className: "top-1/2 -right-3 md:right-0 -translate-y-1/2",
   },
 ];
 
@@ -69,13 +88,13 @@ const containerVariants = {
 };
 
 const fadeUp = {
-  hidden: { opacity: 0, y: 24 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" as const } },
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" as const } },
 };
 
 const fadeIn = {
   hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { duration: 0.5 } },
+  visible: { opacity: 1, transition: { duration: 0.4 } },
 };
 
 export default function Hero() {
@@ -83,198 +102,228 @@ export default function Hero() {
     <section
       id="home"
       aria-label="Hero"
-      className="relative min-h-screen flex flex-col justify-center overflow-hidden pt-16"
+      className="relative min-h-[92vh] flex flex-col justify-center overflow-hidden pt-20 pb-16 md:pt-28 md:pb-20"
     >
-      {/* Gradient background */}
+      {/* Ambient background glow */}
       <div
         aria-hidden="true"
         className="absolute inset-0 pointer-events-none"
       >
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-indigo-500/8 rounded-full blur-[120px]" />
-        <div className="absolute top-1/3 right-0 w-[400px] h-[400px] bg-purple-500/5 rounded-full blur-[80px]" />
-        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-blue-500/5 rounded-full blur-[80px]" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[750px] h-[550px] bg-indigo-500/10 rounded-full blur-[130px]" />
+        <div className="absolute top-1/3 right-0 w-[350px] h-[350px] bg-purple-500/8 rounded-full blur-[90px]" />
+        <div className="absolute bottom-0 left-0 w-[350px] h-[350px] bg-blue-500/8 rounded-full blur-[90px]" />
       </div>
 
-      {/* Subtle grid */}
+      {/* Subtle modern grid */}
       <div
         aria-hidden="true"
-        className="absolute inset-0 bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#27272a_1px,transparent_1px),linear-gradient(to_bottom,#27272a_1px,transparent_1px)] bg-[size:4rem_4rem] opacity-40 pointer-events-none"
+        className="absolute inset-0 bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#27272a_1px,transparent_1px),linear-gradient(to_bottom,#27272a_1px,transparent_1px)] bg-[size:4rem_4rem] opacity-30 pointer-events-none"
       />
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28 lg:py-32">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-          {/* Left — text */}
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid lg:grid-cols-12 gap-10 lg:gap-12 items-center">
+          {/* Left Column — Text & CTAs */}
           <motion.div
             variants={containerVariants}
             initial="hidden"
             animate="visible"
-            className="text-center lg:text-left"
+            className="lg:col-span-7 text-center lg:text-left"
           >
-            {/* Label pill */}
-            <motion.div variants={fadeIn} className="inline-flex mb-6">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-900">
-                <Sparkles size={11} aria-hidden="true" />
-                Digital Development Partner
+            {/* Eyebrow pill */}
+            <motion.div variants={fadeIn} className="inline-flex mb-5">
+              <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold tracking-wide uppercase bg-indigo-50 dark:bg-indigo-950/70 text-indigo-600 dark:text-indigo-400 border border-indigo-200/80 dark:border-indigo-800 shadow-xs">
+                <Sparkles size={13} aria-hidden="true" />
+                PERSONAL PORTFOLIO & WEB SOLUTIONS
               </span>
             </motion.div>
 
             {/* Headline */}
             <motion.h1
               variants={fadeUp}
-              className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-black tracking-tight text-neutral-950 dark:text-white leading-[1.05]"
+              className="text-3xl sm:text-5xl lg:text-5xl xl:text-6xl font-black tracking-tight text-neutral-950 dark:text-white leading-[1.12]"
             >
-              Build Digital.
+              Turn Your Work Into
               <br />
-              <span className="gradient-text">Be One Step</span>
-              <br />
-              Ahead.
+              <span className="gradient-text">Your Digital Identity.</span>
             </motion.h1>
 
-            {/* Sub */}
+            {/* Subheadline */}
             <motion.p
               variants={fadeUp}
-              className="mt-6 text-base sm:text-lg text-neutral-500 dark:text-neutral-400 max-w-xl mx-auto lg:mx-0 leading-relaxed"
+              className="mt-5 text-base sm:text-lg text-neutral-600 dark:text-neutral-300 max-w-2xl mx-auto lg:mx-0 leading-relaxed"
             >
-              Kami membantu bisnis membangun website dan aplikasi digital yang
-              modern, cepat, dan sesuai kebutuhan.
+              Buat website portofolio yang dirancang sesuai karakter dan profesimu.
+              Tampilkan karya, pengalaman, dan keahlianmu dalam satu tempat yang
+              profesional dan mudah diakses siapa saja.
             </motion.p>
 
-            {/* CTAs */}
+            {/* Quick Micro-copy value statement */}
             <motion.div
               variants={fadeUp}
-              className="mt-8 flex flex-col sm:flex-row gap-3 justify-center lg:justify-start"
+              className="mt-3 text-xs sm:text-sm font-semibold text-neutral-500 dark:text-neutral-400"
+            >
+              Custom design · Responsive · Harga transparan
+            </motion.div>
+
+            {/* Main Action CTAs */}
+            <motion.div
+              variants={fadeUp}
+              className="mt-8 flex flex-col sm:flex-row gap-3.5 justify-center lg:justify-start"
             >
               <a
                 href="#contact"
-                className="inline-flex items-center justify-center gap-2 px-6 py-3.5 text-sm font-semibold text-white bg-indigo-500 hover:bg-indigo-600 rounded-xl transition-colors duration-150 shadow-md shadow-indigo-200 group"
-                aria-label="Start your project — go to contact section"
+                className="inline-flex items-center justify-center gap-2 px-7 py-3.5 text-sm font-semibold text-white bg-indigo-500 hover:bg-indigo-600 rounded-xl transition-all duration-150 shadow-md shadow-indigo-200 dark:shadow-indigo-950/50 group"
+                aria-label="Buat Website Portofolio — langsung ke formulir konsultasi"
               >
-                Start Your Project
+                Buat Website Portofolio
                 <ArrowRight
                   size={16}
                   aria-hidden="true"
-                  className="group-hover:translate-x-0.5 transition-transform"
+                  className="group-hover:translate-x-1 transition-transform"
                 />
               </a>
               <a
-                href="#solutions"
+                href="#portfolio"
                 className="inline-flex items-center justify-center gap-2 px-6 py-3.5 text-sm font-semibold text-neutral-700 dark:text-neutral-200 bg-white dark:bg-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-700 border border-neutral-200 dark:border-neutral-700 rounded-xl transition-colors duration-150 group"
-                aria-label="Explore solutions — go to solutions section"
+                aria-label="Lihat Demo Portofolio — lihat proyek nyata dan konsep"
               >
-                <Play size={14} aria-hidden="true" className="fill-current" />
-                Explore Solutions
+                Lihat Demo Portofolio
               </a>
             </motion.div>
 
-            {/* Trust badges */}
+            {/* Value Highlights List */}
             <motion.div
               variants={fadeUp}
-              className="mt-10 flex flex-wrap gap-3 justify-center lg:justify-start"
+              className="mt-10 pt-8 border-t border-neutral-200/60 dark:border-neutral-800 grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-w-xl mx-auto lg:mx-0 text-left"
             >
-              {trustBadges.map(({ icon: Icon, label }) => (
+              {valueHighlights.map((highlight) => (
                 <div
-                  key={label}
-                  className="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400"
+                  key={highlight}
+                  className="flex items-center gap-2 text-xs text-neutral-600 dark:text-neutral-400"
                 >
-                  <Icon size={12} className="text-indigo-400" aria-hidden="true" />
-                  <span>{label}</span>
+                  <span className="w-4 h-4 rounded-full bg-indigo-50 dark:bg-indigo-950/60 text-indigo-500 flex items-center justify-center flex-shrink-0">
+                    <Check size={11} strokeWidth={3} />
+                  </span>
+                  <span>{highlight}</span>
                 </div>
               ))}
             </motion.div>
           </motion.div>
 
-          {/* Right — visual mockup */}
+          {/* Right Column — Aesthetic Portfolio Browser Window Mockup */}
           <motion.div
-            initial={{ opacity: 0, x: 40 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.7, delay: 0.2, ease: "easeOut" }}
-            className="relative hidden lg:flex items-center justify-center"
+            initial={{ opacity: 0, scale: 0.96 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6, delay: 0.15, ease: "easeOut" }}
+            className="lg:col-span-5 relative hidden lg:flex items-center justify-center"
           >
-            {/* Browser window mockup */}
-            <div className="relative w-full max-w-lg mx-auto">
-              {/* Glow */}
+            <div className="relative w-full max-w-md mx-auto">
+              {/* Outer soft ambient glow */}
               <div
                 aria-hidden="true"
-                className="absolute inset-4 bg-indigo-500/10 blur-3xl rounded-2xl"
+                className="absolute -inset-2 bg-gradient-to-r from-indigo-500/15 to-purple-500/15 blur-2xl rounded-3xl"
               />
 
-              {/* Window */}
+              {/* Browser Mockup Window */}
               <div className="relative bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-200 dark:border-neutral-700 shadow-2xl overflow-hidden">
-                {/* Window chrome */}
-                <div className="flex items-center gap-2 px-4 py-3 bg-neutral-50 dark:bg-neutral-800 border-b border-neutral-100 dark:border-neutral-700">
+                {/* Browser Window Chrome */}
+                <div className="flex items-center gap-2 px-4 py-3 bg-neutral-100 dark:bg-neutral-800/90 border-b border-neutral-200 dark:border-neutral-700">
                   <div className="flex gap-1.5">
                     <div className="w-3 h-3 rounded-full bg-red-400" />
                     <div className="w-3 h-3 rounded-full bg-yellow-400" />
                     <div className="w-3 h-3 rounded-full bg-green-400" />
                   </div>
-                  <div className="flex-1 mx-4">
-                    <div className="bg-white dark:bg-neutral-700 border border-neutral-200 dark:border-neutral-600 rounded-md px-3 py-1 flex items-center gap-2">
-                      <div className="w-2 h-2 rounded-full bg-green-400" />
-                      <span className="text-xs text-neutral-400 dark:text-neutral-300 font-mono">
-                        beone.dev
-                      </span>
+                  <div className="flex-1 mx-3">
+                    <div className="bg-white dark:bg-neutral-700/80 border border-neutral-200 dark:border-neutral-600 rounded-md px-3 py-1 flex items-center justify-between">
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                        <span className="text-[11px] text-neutral-600 dark:text-neutral-300 font-mono">
+                          beone-here.vercel.app
+                        </span>
+                      </div>
+                      <ExternalLink size={10} className="text-neutral-400" />
                     </div>
                   </div>
                 </div>
 
-                {/* Mock content */}
-                <div className="p-6 bg-gradient-to-br from-neutral-50 dark:from-neutral-800 to-white dark:to-neutral-900 min-h-[280px]">
-                  {/* Mock navbar */}
-                  <div className="flex items-center justify-between mb-8">
-                    <div className="w-16 h-4 bg-neutral-200 dark:bg-neutral-700 rounded" />
-                    <div className="flex gap-3">
-                      {[1, 2, 3].map((i) => (
-                        <div
-                          key={i}
-                          className="w-10 h-3 bg-neutral-100 dark:bg-neutral-700 rounded"
-                        />
-                      ))}
+                {/* Mockup Inside: Interactive Portfolio Snapshot */}
+                <div className="p-5 bg-gradient-to-b from-neutral-50/50 to-white dark:from-neutral-900 dark:to-neutral-950 space-y-4">
+                  {/* Mock Profile Header */}
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-tr from-indigo-500 to-violet-500 flex items-center justify-center text-white font-bold text-sm shadow-md">
+                      B1
                     </div>
-                    <div className="w-16 h-6 bg-indigo-100 dark:bg-indigo-900/60 rounded-lg" />
-                  </div>
-
-                  {/* Mock hero text */}
-                  <div className="space-y-3 mb-6">
-                    <div className="w-3/4 h-5 bg-neutral-800 dark:bg-neutral-300 rounded" />
-                    <div className="w-1/2 h-5 bg-indigo-300 dark:bg-indigo-500 rounded" />
-                    <div className="w-full h-3 bg-neutral-100 dark:bg-neutral-700 rounded mt-4" />
-                    <div className="w-5/6 h-3 bg-neutral-100 dark:bg-neutral-700 rounded" />
-                  </div>
-
-                  {/* Mock CTAs */}
-                  <div className="flex gap-3 mb-6">
-                    <div className="w-28 h-8 bg-indigo-500 rounded-lg" />
-                    <div className="w-24 h-8 border border-neutral-200 dark:border-neutral-600 rounded-lg" />
-                  </div>
-
-                  {/* Mock cards row */}
-                  <div className="grid grid-cols-3 gap-2">
-                    {[1, 2, 3].map((i) => (
-                      <div
-                        key={i}
-                        className="h-16 bg-white dark:bg-neutral-800 border border-neutral-100 dark:border-neutral-700 rounded-xl p-2"
-                      >
-                        <div className="w-6 h-6 bg-indigo-100 dark:bg-indigo-900/60 rounded-lg mb-1.5" />
-                        <div className="w-full h-2 bg-neutral-100 dark:bg-neutral-700 rounded" />
-                        <div className="w-2/3 h-2 bg-neutral-100 dark:bg-neutral-700 rounded mt-1" />
+                    <div>
+                      <div className="text-xs font-bold text-neutral-900 dark:text-white">
+                        Your Personal Portfolio
                       </div>
-                    ))}
+                      <div className="text-[11px] text-indigo-500 font-medium">
+                        Software Engineer & Creator
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Mock Hero statement inside mockup */}
+                  <div className="p-3 bg-white dark:bg-neutral-800/80 rounded-xl border border-neutral-100 dark:border-neutral-700/60 shadow-xs">
+                    <p className="text-[11px] text-neutral-600 dark:text-neutral-300 leading-relaxed font-medium">
+                      &ldquo;Membangun produk digital yang cepat, responsif, dan memberikan dampak nyata.&rdquo;
+                    </p>
+                    <div className="mt-2.5 flex items-center gap-2">
+                      <span className="w-14 h-5 bg-indigo-500 rounded-md flex items-center justify-center text-[9px] font-bold text-white">
+                        Lihat Proyek
+                      </span>
+                      <span className="w-14 h-5 border border-neutral-200 dark:border-neutral-600 rounded-md flex items-center justify-center text-[9px] font-semibold text-neutral-600 dark:text-neutral-300">
+                        Kontak
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Mock Projects Grid */}
+                  <div>
+                    <div className="text-[10px] font-bold uppercase tracking-wider text-neutral-400 mb-2">
+                      Showcase Proyek
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="p-2.5 bg-neutral-50 dark:bg-neutral-800 rounded-lg border border-neutral-100 dark:border-neutral-700">
+                        <div className="w-full h-10 bg-indigo-100 dark:bg-indigo-950/60 rounded mb-1.5 flex items-center justify-center text-[10px] text-indigo-500 font-mono">
+                          Finvera App
+                        </div>
+                        <div className="text-[10px] font-bold text-neutral-800 dark:text-neutral-200 truncate">
+                          Expense Tracker
+                        </div>
+                        <div className="text-[9px] text-neutral-400">
+                          Next.js · TypeScript
+                        </div>
+                      </div>
+
+                      <div className="p-2.5 bg-neutral-50 dark:bg-neutral-800 rounded-lg border border-neutral-100 dark:border-neutral-700">
+                        <div className="w-full h-10 bg-purple-100 dark:bg-purple-950/60 rounded mb-1.5 flex items-center justify-center text-[10px] text-purple-500 font-mono">
+                          Tickitz Cinema
+                        </div>
+                        <div className="text-[10px] font-bold text-neutral-800 dark:text-neutral-200 truncate">
+                          Ticket Booking
+                        </div>
+                        <div className="text-[9px] text-neutral-400">
+                          Interactive UI
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
 
-              {/* Floating cards */}
+              {/* Floating Cards with deterministic delays */}
               {floatingCards.map((card) => (
                 <motion.div
                   key={card.id}
-                  animate={{ y: [0, -6, 0] }}
+                  animate={{ y: [0, -5, 0] }}
                   transition={{
-                    duration: 3,
+                    duration: 3.5,
                     repeat: Infinity,
                     ease: "easeInOut",
-                    delay: Math.random() * 1.5,
+                    delay: card.delay,
                   }}
-                  className={`absolute ${card.className} bg-white dark:bg-neutral-800 rounded-xl border border-neutral-200 dark:border-neutral-700 shadow-lg min-w-[120px]`}
+                  className={`absolute ${card.className} bg-white/95 dark:bg-neutral-900/95 backdrop-blur-md rounded-xl border border-neutral-200/90 dark:border-neutral-700 shadow-xl min-w-[130px] z-10`}
                 >
                   {card.content}
                 </motion.div>
@@ -282,22 +331,6 @@ export default function Hero() {
             </div>
           </motion.div>
         </div>
-
-        {/* Scroll indicator */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.2, duration: 0.6 }}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5"
-          aria-hidden="true"
-        >
-          <span className="text-xs text-neutral-400 dark:text-neutral-500">Scroll</span>
-          <motion.div
-            animate={{ y: [0, 6, 0] }}
-            transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-            className="w-0.5 h-6 bg-gradient-to-b from-neutral-300 to-transparent rounded"
-          />
-        </motion.div>
       </div>
     </section>
   );

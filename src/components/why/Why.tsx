@@ -32,7 +32,7 @@ export default function Why() {
           <SectionHeader
             label="Why Us"
             title="Why BeOne?"
-            subtitle="Kami percaya bahwa setiap bisnis berhak mendapatkan solusi digital yang tepat, bukan sekadar template."
+            subtitle="Kami percaya bahwa setiap individu dan bisnis berhak memiliki kehadiran digital profesional yang dirancang sesuai identitas unik mereka."
           />
         </AnimateOnScroll>
 
