@@ -1,15 +1,9 @@
+"use client";
+
 import Link from "next/link";
 import { MessageCircle } from "lucide-react";
 import { siteConfig, whatsappUrl } from "@/lib/config";
-
-const navLinks = [
-  { href: "#services", label: "Services" },
-  { href: "#pricing", label: "Pricing" },
-  { href: "#portfolio", label: "Portfolio" },
-  { href: "#process", label: "Process" },
-  { href: "#faq", label: "FAQ" },
-  { href: "#contact", label: "Contact" },
-];
+import { useLanguage } from "@/lib/language";
 
 /* Inline SVG brand icons — lucide-react v1 does not ship brand icons */
 function IconInstagram({ size = 16 }: { size?: number }) {
@@ -31,26 +25,36 @@ function IconGithub({ size = 16 }: { size?: number }) {
   );
 }
 
-const socialLinks = [
-  {
-    href: siteConfig.social.instagram,
-    label: "Instagram",
-    Icon: IconInstagram,
-  },
-  {
-    href: siteConfig.social.github,
-    label: "GitHub",
-    Icon: IconGithub,
-  },
-  {
-    href: whatsappUrl(),
-    label: "WhatsApp",
-    Icon: ({ size }: { size?: number }) => <MessageCircle size={size} aria-hidden="true" />,
-  },
-];
-
 export default function Footer() {
+  const { t } = useLanguage();
   const year = new Date().getFullYear();
+
+  const navLinks = [
+    { href: "#portfolio", label: t.footer.links.portfolio },
+    { href: "#services", label: t.footer.links.services },
+    { href: "#pricing", label: t.footer.links.pricing },
+    { href: "#process", label: t.footer.links.process },
+    { href: "#faq", label: t.footer.links.faq },
+    { href: "#contact", label: t.footer.links.contact },
+  ];
+
+  const socialLinks = [
+    {
+      href: siteConfig.social.instagram,
+      label: "Instagram",
+      Icon: IconInstagram,
+    },
+    {
+      href: siteConfig.social.github,
+      label: "GitHub",
+      Icon: IconGithub,
+    },
+    {
+      href: whatsappUrl(t.shared.whatsappDefaultMsg),
+      label: "WhatsApp",
+      Icon: ({ size }: { size?: number }) => <MessageCircle size={size} aria-hidden="true" />,
+    },
+  ];
 
   return (
     <footer
@@ -65,15 +69,15 @@ export default function Footer() {
             <Link
               href="/"
               className="inline-block text-xl font-black tracking-tight mb-3"
-              aria-label="BeOne — go to homepage"
+              aria-label="BeOne — homepage"
             >
               Be<span className="text-indigo-400">One</span>
             </Link>
             <p className="text-sm text-neutral-400 leading-relaxed max-w-xs">
-              {siteConfig.tagline}
+              {t.footer.tagline}
             </p>
             <p className="text-xs text-neutral-500 mt-2">
-              {siteConfig.supportingText}
+              {t.footer.supportingText}
             </p>
 
             {/* Socials */}
@@ -95,7 +99,7 @@ export default function Footer() {
 
           {/* Quick links */}
           <div>
-            <h3 className="text-sm font-bold text-white mb-4">Navigation</h3>
+            <h3 className="text-sm font-bold text-white mb-4">{t.footer.navTitle}</h3>
             <ul className="space-y-2.5" role="list">
               {navLinks.map(({ href, label }) => (
                 <li key={href}>
@@ -113,21 +117,20 @@ export default function Footer() {
           {/* CTA block */}
           <div>
             <h3 className="text-sm font-bold text-white mb-4">
-              Start a Project
+              {t.footer.ctaTitle}
             </h3>
             <p className="text-sm text-neutral-400 leading-relaxed mb-4">
-              Siap memulai project digital Anda? Hubungi kami untuk konsultasi
-              gratis.
+              {t.footer.ctaDesc}
             </p>
             <a
-              href={whatsappUrl()}
+              href={whatsappUrl(t.shared.whatsappDefaultMsg)}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-4 py-2.5 bg-indigo-500 hover:bg-indigo-400 text-white text-sm font-semibold rounded-xl transition-colors"
-              aria-label="Chat with BeOne on WhatsApp"
+              aria-label={t.footer.ctaButtonLabel}
             >
               <MessageCircle size={15} aria-hidden="true" />
-              Let&apos;s Talk
+              {t.footer.ctaButton}
             </a>
             <p className="mt-4 text-xs text-neutral-500">
               {siteConfig.email}
@@ -138,10 +141,10 @@ export default function Footer() {
         {/* Bottom bar */}
         <div className="mt-10 pt-6 border-t border-neutral-800 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-xs text-neutral-500">
-            © {year} BeOne. All rights reserved.
+            © {year} BeOne. {t.footer.copyright}
           </p>
           <p className="text-xs text-neutral-600">
-            Built with Next.js · TypeScript · Tailwind CSS
+            {t.footer.builtWith}
           </p>
         </div>
       </div>

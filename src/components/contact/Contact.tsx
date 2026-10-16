@@ -12,84 +12,56 @@ import {
 import SectionHeader from "@/components/ui/SectionHeader";
 import AnimateOnScroll from "@/components/ui/AnimateOnScroll";
 import { whatsappUrl, siteConfig } from "@/lib/config";
-import { packagePlanOptions, planToServiceMap } from "@/data/pricing";
-import { services } from "@/data/services";
+import { useLanguage } from "@/lib/language";
+import type { Translations } from "@/lib/i18n/types";
 
-interface FormData {
+interface FormState {
   name: string;
   contact: string;
   email: string;
-  profession: string;
-  service: string;
-  packagePlan: string;
-  budget: string;
+  professionId: string;
+  serviceId: string;
+  packageId: string;
+  budgetId: string;
   description: string;
 }
 
-interface FormErrors {
-  [key: string]: string;
-}
-
-const servicesList = [
-  ...services.map((s) => s.title),
-  "Website Maintenance",
-  "Lainnya",
-];
-
-const packageOptions = packagePlanOptions;
-
-const professionOptions = [
-  "Web Developer / Programmer",
-  "UI/UX / Graphic Designer",
-  "Freelancer / Content Creator",
-  "Mahasiswa / Fresh Graduate",
-  "Profesional / Konsultan",
-  "Pemilik Bisnis / UMKM",
-  "Lainnya",
-];
-
-const budgetOptions = [
-  "< Rp150 ribu (Desain Promosi)",
-  "Rp150rb – Rp350 ribu (Portofolio / Katalog)",
-  "Rp350rb – Rp1 juta (Landing Page Bisnis / Portofolio Pro)",
-  "Rp1 – 3 juta",
-  "Rp3 – 6 juta",
-  "> Rp6 juta (Web App / E-Commerce)",
-  "Sesuai Rekomendasi Solusi",
-];
-
-const initialForm: FormData = {
+const initialForm: FormState = {
   name: "",
   contact: "",
   email: "",
-  profession: "",
-  service: "Website Portofolio Pribadi",
-  packagePlan: "",
-  budget: "",
+  professionId: "",
+  serviceId: "personal-portfolio",
+  packageId: "",
+  budgetId: "",
   description: "",
 };
 
-function validate(data: FormData): FormErrors {
-  const errors: FormErrors = {};
-  if (!data.name.trim()) errors.name = "Nama lengkap wajib diisi.";
+function validate(
+  data: FormState,
+  errMsgs: Translations["contact"]["errors"]
+): Record<string, string> {
+  const errors: Record<string, string> = {};
+  if (!data.name.trim()) errors.name = errMsgs.name;
   if (!data.contact.trim()) {
-    errors.contact = "Nomor WhatsApp atau kontak wajib diisi.";
+    errors.contact = errMsgs.contact;
   } else if (!/^[0-9+\-\s()]{8,20}$/.test(data.contact)) {
-    errors.contact = "Format nomor kontak tidak valid.";
+    errors.contact = errMsgs.contactFormat;
   }
   if (data.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
-    errors.email = "Format email tidak valid.";
+    errors.email = errMsgs.emailFormat;
   }
-  if (!data.service) errors.service = "Pilih layanan yang dibutuhkan.";
+  if (!data.serviceId) errors.service = errMsgs.service;
   if (!data.description.trim()) {
-    errors.description = "Ceritakan sedikit kebutuhan atau tujuan website Anda.";
+    errors.description = errMsgs.description;
   }
   return errors;
 }
 
 export default function Contact() {
-  const [form, setForm] = useState<FormData>(initialForm);
-  const [errors, setErrors] = useState<FormErrors>({});
+  const { t } = useLanguage();
+  const [form, setForm] = useState<FormState>(initialForm);
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [status, setStatus] = useState<"idle" | "ready">("idle");
   const [preparedUrl, setPreparedUrl] = useState<string>("");
   const [preparedMessage, setPreparedMessage] = useState<string>("");
@@ -99,41 +71,35 @@ export default function Contact() {
   useEffect(() => {
     const handlePlanSelect = (e: Event) => {
       const detail = (
-        e as CustomEvent<{ planId?: string; service?: string; plan?: string }>
+        e as CustomEvent<{
+          planId?: string;
+          serviceId?: string;
+          service?: string;
+          plan?: string;
+        }>
       ).detail;
       if (detail) {
         setStatus("idle");
         setForm((prev) => {
-          let matchedService = prev.service;
-          let matchedPlan = prev.packagePlan;
+          let matchedService = prev.serviceId;
+          let matchedPackage = prev.packageId;
 
-          if (detail.planId && planToServiceMap[detail.planId]) {
-            matchedService = planToServiceMap[detail.planId].service;
-            matchedPlan = planToServiceMap[detail.planId].packageOption;
-          } else {
-            if (detail.service) {
-              const foundSrv = servicesList.find(
-                (s) =>
-                  s.toLowerCase().includes(detail.service!.toLowerCase()) ||
-                  detail.service!.toLowerCase().includes(s.toLowerCase())
-              );
-              if (foundSrv) matchedService = foundSrv;
-            }
+          if (detail.serviceId) {
+            matchedService = detail.serviceId;
+          }
 
-            if (detail.plan) {
-              const foundPlan = packageOptions.find(
-                (opt) =>
-                  opt.toLowerCase().includes(detail.plan!.toLowerCase()) ||
-                  detail.plan!.toLowerCase().includes(opt.toLowerCase())
-              );
-              if (foundPlan) matchedPlan = foundPlan;
+          if (detail.planId) {
+            matchedPackage = detail.planId;
+            const foundPkg = t.contact.packages.find((p) => p.id === detail.planId);
+            if (foundPkg) {
+              matchedService = foundPkg.serviceId;
             }
           }
 
           return {
             ...prev,
-            service: matchedService,
-            packagePlan: matchedPlan,
+            serviceId: matchedService,
+            packageId: matchedPackage,
           };
         });
       }
@@ -141,7 +107,7 @@ export default function Contact() {
 
     window.addEventListener("beone-select-plan", handlePlanSelect);
     return () => window.removeEventListener("beone-select-plan", handlePlanSelect);
-  }, []);
+  }, [t.contact.packages]);
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -161,7 +127,7 @@ export default function Contact() {
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    const validationErrors = validate(form);
+    const validationErrors = validate(form, t.contact.errors);
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       const firstKey = Object.keys(validationErrors)[0];
@@ -169,19 +135,40 @@ export default function Contact() {
       return;
     }
 
-    // Format clean professional WhatsApp inquiry message
+    const selectedProfession = t.contact.professions.find(
+      (p) => p.id === form.professionId
+    )?.label;
+    const selectedService = t.contact.services.find(
+      (s) => s.id === form.serviceId
+    )?.label;
+    const selectedPackage = t.contact.packages.find(
+      (p) => p.id === form.packageId
+    )?.label;
+    const selectedBudget = t.contact.budgets.find(
+      (b) => b.id === form.budgetId
+    )?.label;
+
+    // Format clean professional WhatsApp inquiry message in active language
     const messageLines = [
-      `*Halo BeOne, saya ingin konsultasi pembuatan website:*`,
-      ``,
-      `👤 *Nama:* ${form.name}`,
-      `📱 *Kontak:* ${form.contact}`,
-      form.email ? `✉️ *Email:* ${form.email}` : null,
-      form.profession ? `💼 *Profesi / Bisnis:* ${form.profession}` : null,
-      `🛠️ *Layanan:* ${form.service}`,
-      form.packagePlan ? `📦 *Paket Diminati:* ${form.packagePlan}` : null,
-      form.budget ? `💰 *Estimasi Budget:* ${form.budget}` : null,
-      ``,
-      `📝 *Deskripsi & Kebutuhan:*`,
+      t.contact.msgGreeting,
+      "",
+      `👤 *${t.contact.msgName}:* ${form.name}`,
+      `📱 *${t.contact.msgContact}:* ${form.contact}`,
+      form.email ? `✉️ *${t.contact.msgEmail}:* ${form.email}` : null,
+      selectedProfession
+        ? `💼 *${t.contact.msgProfession}:* ${selectedProfession}`
+        : null,
+      selectedService
+        ? `🛠️ *${t.contact.msgService}:* ${selectedService}`
+        : null,
+      selectedPackage
+        ? `📦 *${t.contact.msgPackage}:* ${selectedPackage}`
+        : null,
+      selectedBudget
+        ? `💰 *${t.contact.msgBudget}:* ${selectedBudget}`
+        : null,
+      "",
+      `📝 *${t.contact.msgDesc}:*`,
       form.description,
     ]
       .filter((line) => line !== null)
@@ -192,7 +179,6 @@ export default function Contact() {
     setPreparedUrl(targetUrl);
     setStatus("ready");
 
-    // Open directly within user action context to prevent popup blockers
     try {
       window.open(targetUrl, "_blank", "noopener,noreferrer");
     } catch {
@@ -226,9 +212,9 @@ export default function Contact() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <AnimateOnScroll>
           <SectionHeader
-            label="Contact & Consultation"
-            title="Mulai Konsultasi Kebutuhan Anda"
-            subtitle="Ceritakan profil, karya, atau proyek yang ingin Anda bangun. Kami akan membantu merancang solusi website terbaik untuk Anda."
+            label={t.contact.label}
+            title={t.contact.title}
+            subtitle={t.contact.subtitle}
           />
         </AnimateOnScroll>
 
@@ -239,23 +225,23 @@ export default function Contact() {
               <div className="p-6 bg-gradient-to-br from-indigo-50/60 to-white dark:from-neutral-900 dark:to-neutral-900 rounded-2xl border border-indigo-100 dark:border-neutral-800 shadow-sm">
                 <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-green-500 text-white mb-3">
                   <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping" />
-                  Respons Cepat via WhatsApp
+                  {t.contact.whatsappBadge}
                 </div>
                 <h3 className="text-base font-bold text-neutral-950 dark:text-white mb-2">
-                  Diskusi Langsung dengan Tim BeOne
+                  {t.contact.whatsappTitle}
                 </h3>
                 <p className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 mb-5 leading-relaxed">
-                  Ingin bertanya langsung seputar website portofolio, pilihan paket mulai Rp150.000, atau penyesuaian fitur? Hubungi kami via WhatsApp sekarang.
+                  {t.contact.whatsappDesc}
                 </p>
                 <a
-                  href={whatsappUrl()}
+                  href={whatsappUrl(t.shared.whatsappDefaultMsg)}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center justify-center gap-2 w-full px-4 py-3 bg-green-500 hover:bg-green-600 text-white text-sm font-semibold rounded-xl shadow-xs transition-colors"
-                  aria-label="Buka obrolan WhatsApp BeOne"
+                  aria-label={`${t.contact.whatsappCta} +${siteConfig.whatsappNumber}`}
                 >
                   <MessageCircle size={17} aria-hidden="true" />
-                  Chat WhatsApp: +{siteConfig.whatsappNumber}
+                  {t.contact.whatsappCta} +{siteConfig.whatsappNumber}
                 </a>
               </div>
 
@@ -264,16 +250,16 @@ export default function Contact() {
                   <ShieldCheck size={20} className="text-indigo-500 flex-shrink-0 mt-0.5" />
                   <div>
                     <h4 className="text-xs font-bold uppercase tracking-wider text-neutral-400">
-                      Privasi & Keamanan Data
+                      {t.contact.privacyTitle}
                     </h4>
                     <p className="text-xs text-neutral-600 dark:text-neutral-400 mt-0.5 leading-relaxed">
-                      Informasi kontak Anda hanya digunakan untuk keperluan konsultasi project dan tidak akan dibagikan ke pihak manapun.
+                      {t.contact.privacyText}
                     </p>
                   </div>
                 </div>
 
                 <div className="pt-3 border-t border-neutral-200/60 dark:border-neutral-800 flex items-center justify-between text-xs">
-                  <span className="text-neutral-500">Email Resmi:</span>
+                  <span className="text-neutral-500">{t.contact.emailLabel}</span>
                   <a
                     href={`mailto:${siteConfig.email}`}
                     className="font-medium text-indigo-500 hover:underline"
@@ -291,16 +277,16 @@ export default function Contact() {
               <div
                 className="p-8 sm:p-10 bg-neutral-50 dark:bg-neutral-900 rounded-2xl border border-indigo-100 dark:border-neutral-800 text-center shadow-md animate-in fade-in"
                 role="region"
-                aria-label="Status penyiapan pesan WhatsApp"
+                aria-label={t.contact.readyTitle}
               >
                 <div className="w-14 h-14 rounded-full bg-green-100 dark:bg-green-950/60 text-green-600 dark:text-green-400 mx-auto flex items-center justify-center mb-4">
                   <CheckCircle2 size={32} />
                 </div>
                 <h3 className="text-xl font-black text-neutral-950 dark:text-white mb-2">
-                  Detail Inquiry Siap Dikirim
+                  {t.contact.readyTitle}
                 </h3>
                 <p className="text-sm text-neutral-600 dark:text-neutral-400 max-w-md mx-auto leading-relaxed mb-6">
-                  Tautan WhatsApp telah disiapkan dengan detail proyek Anda. Silakan klik tombol di bawah untuk membuka chat atau salin format pesan.
+                  {t.contact.readyDesc}
                 </p>
 
                 {/* Prepared message preview */}
@@ -316,7 +302,7 @@ export default function Contact() {
                     className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-green-500 hover:bg-green-600 text-white text-sm font-semibold rounded-xl shadow-xs transition-colors"
                   >
                     <MessageCircle size={16} />
-                    Buka Chat WhatsApp Sekarang
+                    {t.contact.openChat}
                   </a>
                   <button
                     type="button"
@@ -326,12 +312,12 @@ export default function Contact() {
                     {copied ? (
                       <>
                         <Check size={16} className="text-green-500" />
-                        Pesan Tersalin!
+                        {t.contact.messageCopied}
                       </>
                     ) : (
                       <>
                         <Copy size={16} />
-                        Salin Format Pesan
+                        {t.contact.copyMessage}
                       </>
                     )}
                   </button>
@@ -342,14 +328,14 @@ export default function Contact() {
                   onClick={() => setStatus("idle")}
                   className="text-xs text-neutral-500 dark:text-neutral-400 hover:text-indigo-500 underline transition-colors"
                 >
-                  ← Kembali edit formulir
+                  {t.contact.backToForm}
                 </button>
               </div>
             ) : (
               <form
                 onSubmit={handleSubmit}
                 noValidate
-                aria-label="Formulir inquiry proyek BeOne"
+                aria-label={t.contact.formAria}
                 className="space-y-4 bg-white dark:bg-neutral-900 p-6 sm:p-8 rounded-2xl border border-neutral-200 dark:border-neutral-800 shadow-sm"
               >
                 {/* Name & Contact */}
@@ -359,7 +345,7 @@ export default function Contact() {
                       htmlFor="name"
                       className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5"
                     >
-                      Nama Lengkap <span className="text-red-500">*</span>
+                      {t.contact.nameLabel} <span className="text-red-500">*</span>
                     </label>
                     <input
                       id="name"
@@ -368,7 +354,7 @@ export default function Contact() {
                       autoComplete="name"
                       value={form.name}
                       onChange={handleChange}
-                      placeholder="Nama Anda"
+                      placeholder={t.contact.namePlaceholder}
                       className={fieldClass("name")}
                       aria-required="true"
                       aria-invalid={!!errors.name}
@@ -385,7 +371,7 @@ export default function Contact() {
                       htmlFor="contact"
                       className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5"
                     >
-                      Nomor WhatsApp / HP <span className="text-red-500">*</span>
+                      {t.contact.contactLabel} <span className="text-red-500">*</span>
                     </label>
                     <input
                       id="contact"
@@ -394,7 +380,7 @@ export default function Contact() {
                       autoComplete="tel"
                       value={form.contact}
                       onChange={handleChange}
-                      placeholder="Contoh: 081234567890"
+                      placeholder={t.contact.contactPlaceholder}
                       className={fieldClass("contact")}
                       aria-required="true"
                       aria-invalid={!!errors.contact}
@@ -414,7 +400,7 @@ export default function Contact() {
                       htmlFor="email"
                       className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5"
                     >
-                      Email <span className="text-neutral-400 font-normal">(Opsional)</span>
+                      {t.contact.emailLabel2} <span className="text-neutral-400 font-normal">{t.contact.emailOptional}</span>
                     </label>
                     <input
                       id="email"
@@ -423,7 +409,7 @@ export default function Contact() {
                       autoComplete="email"
                       value={form.email}
                       onChange={handleChange}
-                      placeholder="nama@email.com"
+                      placeholder={t.contact.emailPlaceholder}
                       className={fieldClass("email")}
                     />
                     {errors.email && (
@@ -435,22 +421,22 @@ export default function Contact() {
 
                   <div>
                     <label
-                      htmlFor="profession"
+                      htmlFor="professionId"
                       className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5"
                     >
-                      Profesi / Bidang Usaha
+                      {t.contact.professionLabel}
                     </label>
                     <select
-                      id="profession"
-                      name="profession"
-                      value={form.profession}
+                      id="professionId"
+                      name="professionId"
+                      value={form.professionId}
                       onChange={handleChange}
-                      className={`${fieldClass("profession")} cursor-pointer`}
+                      className={`${fieldClass("professionId")} cursor-pointer`}
                     >
-                      <option value="">Pilih profesi / bidang...</option>
-                      {professionOptions.map((prof) => (
-                        <option key={prof} value={prof}>
-                          {prof}
+                      <option value="">{t.contact.professionPlaceholder}</option>
+                      {t.contact.professions.map((prof) => (
+                        <option key={prof.id} value={prof.id}>
+                          {prof.label}
                         </option>
                       ))}
                     </select>
@@ -461,22 +447,23 @@ export default function Contact() {
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
                     <label
-                      htmlFor="service"
+                      htmlFor="serviceId"
                       className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5"
                     >
-                      Layanan yang Dibutuhkan <span className="text-red-500">*</span>
+                      {t.contact.serviceLabel} <span className="text-red-500">*</span>
                     </label>
                     <select
-                      id="service"
-                      name="service"
-                      value={form.service}
+                      id="serviceId"
+                      name="serviceId"
+                      value={form.serviceId}
                       onChange={handleChange}
-                      className={`${fieldClass("service")} cursor-pointer font-medium`}
+                      className={`${fieldClass("serviceId")} cursor-pointer font-medium`}
                       aria-required="true"
                     >
-                      {servicesList.map((srv) => (
-                        <option key={srv} value={srv}>
-                          {srv === "Personal Portfolio Website" ? "⭐ " + srv : srv}
+                      <option value="">{t.contact.servicePlaceholder}</option>
+                      {t.contact.services.map((srv) => (
+                        <option key={srv.id} value={srv.id}>
+                          {srv.id === "personal-portfolio" ? "⭐ " + srv.label : srv.label}
                         </option>
                       ))}
                     </select>
@@ -489,22 +476,22 @@ export default function Contact() {
 
                   <div>
                     <label
-                      htmlFor="packagePlan"
+                      htmlFor="packageId"
                       className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5"
                     >
-                      Paket yang Diminati
+                      {t.contact.packageLabel}
                     </label>
                     <select
-                      id="packagePlan"
-                      name="packagePlan"
-                      value={form.packagePlan}
+                      id="packageId"
+                      name="packageId"
+                      value={form.packageId}
                       onChange={handleChange}
-                      className={`${fieldClass("packagePlan")} cursor-pointer`}
+                      className={`${fieldClass("packageId")} cursor-pointer`}
                     >
-                      <option value="">Pilih paket atau konsultasi bebas...</option>
-                      {packageOptions.map((pkg) => (
-                        <option key={pkg} value={pkg}>
-                          {pkg}
+                      <option value="">{t.contact.packagePlaceholder}</option>
+                      {t.contact.packages.map((pkg) => (
+                        <option key={pkg.id} value={pkg.id}>
+                          {pkg.label}
                         </option>
                       ))}
                     </select>
@@ -514,22 +501,22 @@ export default function Contact() {
                 {/* Budget */}
                 <div>
                   <label
-                    htmlFor="budget"
+                    htmlFor="budgetId"
                     className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5"
                   >
-                    Estimasi Anggaran <span className="text-neutral-400 font-normal">(Opsional)</span>
+                    {t.contact.budgetLabel} <span className="text-neutral-400 font-normal">{t.contact.budgetOptional}</span>
                   </label>
                   <select
-                    id="budget"
-                    name="budget"
-                    value={form.budget}
+                    id="budgetId"
+                    name="budgetId"
+                    value={form.budgetId}
                     onChange={handleChange}
-                    className={`${fieldClass("budget")} cursor-pointer`}
+                    className={`${fieldClass("budgetId")} cursor-pointer`}
                   >
-                    <option value="">Pilih rentang estimasi budget...</option>
-                    {budgetOptions.map((b) => (
-                      <option key={b} value={b}>
-                        {b}
+                    <option value="">{t.contact.budgetPlaceholder}</option>
+                    {t.contact.budgets.map((b) => (
+                      <option key={b.id} value={b.id}>
+                        {b.label}
                       </option>
                     ))}
                   </select>
@@ -541,7 +528,7 @@ export default function Contact() {
                     htmlFor="description"
                     className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5"
                   >
-                    Deskripsi Kebutuhan & Ekspektasi <span className="text-red-500">*</span>
+                    {t.contact.descLabel} <span className="text-red-500">*</span>
                   </label>
                   <textarea
                     id="description"
@@ -549,7 +536,7 @@ export default function Contact() {
                     rows={4}
                     value={form.description}
                     onChange={handleChange}
-                    placeholder="Contoh: Saya seorang web developer, ingin membuat portofolio single page untuk menampilkan 3 proyek terbaik dan resume pendidikan/keahlian..."
+                    placeholder={t.contact.descPlaceholder}
                     className={`${fieldClass("description")} resize-none`}
                     aria-required="true"
                     aria-invalid={!!errors.description}
@@ -565,14 +552,14 @@ export default function Contact() {
                 <button
                   type="submit"
                   className="w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 text-sm font-semibold text-white bg-indigo-500 hover:bg-indigo-600 rounded-xl transition-colors shadow-md shadow-indigo-200 dark:shadow-indigo-950/40 group"
-                  aria-label="Kirim formulir konsultasi via WhatsApp"
+                  aria-label={t.contact.submitAriaLabel}
                 >
                   <Send size={16} aria-hidden="true" />
-                  Kirim & Mulai Konsultasi WhatsApp
+                  {t.contact.submitBtn}
                 </button>
 
                 <p className="text-[11px] text-neutral-400 dark:text-neutral-500 text-center">
-                  Mengisi formulir ini akan menyiapkan pesan chat WhatsApp yang rapi ke kontak resmi BeOne.
+                  {t.contact.submitHint}
                 </p>
               </form>
             )}

@@ -1,8 +1,13 @@
+"use client";
+
 import { ArrowRight, MessageCircle } from "lucide-react";
 import AnimateOnScroll from "@/components/ui/AnimateOnScroll";
 import { whatsappUrl } from "@/lib/config";
+import { useLanguage } from "@/lib/language";
 
 export default function CTA() {
+  const { t } = useLanguage();
+
   return (
     <section
       id="cta"
@@ -20,28 +25,28 @@ export default function CTA() {
       <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <AnimateOnScroll>
           <p className="text-xs font-semibold text-indigo-400 tracking-widest uppercase mb-4">
-            Mulai Sekarang
+            {t.cta.eyebrow}
           </p>
           <h2
             id="cta-heading"
             className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight leading-tight"
           >
-            Your Work Deserves
+            {t.cta.headline1}
             <br />
-            <span className="gradient-text">to Be Seen.</span>
+            <span className="gradient-text">{t.cta.headline2}</span>
           </h2>
 
           <p className="mt-6 text-base sm:text-lg text-neutral-400 max-w-2xl mx-auto leading-relaxed">
-            Mulai bangun kehadiran digital Anda hari ini. Tampilkan karya, bangun personal branding, atau kembangkan bisnis Anda bersama BeOne.
+            {t.cta.subtext}
           </p>
 
           <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
             <a
               href="#contact"
               className="inline-flex items-center justify-center gap-2 px-7 py-4 text-sm font-semibold text-white bg-indigo-500 hover:bg-indigo-400 rounded-xl transition-colors duration-150 shadow-lg shadow-indigo-900/30 group"
-              aria-label="Start a project — go to contact form"
+              aria-label={t.cta.ctaPrimaryLabel}
             >
-              Start a Project
+              {t.cta.ctaPrimary}
               <ArrowRight
                 size={16}
                 aria-hidden="true"
@@ -49,14 +54,14 @@ export default function CTA() {
               />
             </a>
             <a
-              href={whatsappUrl()}
+              href={whatsappUrl(t.shared.whatsappDefaultMsg)}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center justify-center gap-2 px-7 py-4 text-sm font-semibold text-white bg-white/10 hover:bg-white/15 border border-white/20 rounded-xl transition-colors duration-150"
-              aria-label="Chat on WhatsApp"
+              aria-label={t.cta.ctaSecondaryLabel}
             >
               <MessageCircle size={16} aria-hidden="true" />
-              Chat on WhatsApp
+              {t.cta.ctaSecondary}
             </a>
           </div>
         </AnimateOnScroll>

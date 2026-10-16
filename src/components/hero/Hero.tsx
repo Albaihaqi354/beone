@@ -8,79 +8,7 @@ import {
   ExternalLink,
   ShieldCheck,
 } from "lucide-react";
-
-const valueHighlights = [
-  "Developer, Designer, Freelancer & Mahasiswa",
-  "Pengerjaan Cepat 1–3 Hari (Setelah Materi Lengkap)",
-  "Hosting Gratis & Panduan Domain",
-  "Layanan Mulai Rp75rb (Desain) / Rp150rb (Website)",
-];
-
-const floatingCards = [
-  {
-    id: "portfolio-preview",
-    delay: 0,
-    content: (
-      <div className="p-3">
-        <div className="flex items-center gap-2 mb-1.5">
-          <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-          <span className="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
-            Portfolio Live
-          </span>
-        </div>
-        <div className="text-xs font-bold text-neutral-900 dark:text-white">
-          yourname.vercel.app
-        </div>
-        <div className="text-[10px] text-neutral-500 dark:text-neutral-400 mt-0.5">
-          Hosting Gratis Aktif
-        </div>
-      </div>
-    ),
-    className: "top-8 right-2 md:top-14 md:right-6",
-  },
-  {
-    id: "pricing-card",
-    delay: 0.6,
-    content: (
-      <div className="p-3">
-        <div className="text-xs text-neutral-500 dark:text-neutral-400 font-medium">
-          Mulai dari
-        </div>
-        <div className="text-xl font-black text-indigo-500">
-          Rp150.000
-        </div>
-        <div className="text-[10px] text-neutral-500 dark:text-neutral-400 mt-0.5 flex items-center gap-1">
-          <ShieldCheck size={11} className="text-indigo-400" />
-          Harga Transparan
-        </div>
-      </div>
-    ),
-    className: "bottom-16 left-0 md:bottom-24 md:left-2",
-  },
-  {
-    id: "responsive",
-    delay: 1.2,
-    content: (
-      <div className="p-3 flex items-center gap-2.5">
-        <div className="flex flex-col gap-0.5">
-          <div className="w-8 h-5 border-2 border-neutral-300 dark:border-neutral-600 rounded-xs" />
-        </div>
-        <div className="flex flex-col gap-0.5">
-          <div className="w-4 h-7 border-2 border-indigo-400 rounded-xs" />
-        </div>
-        <div>
-          <span className="text-xs font-semibold text-neutral-800 dark:text-neutral-200 block">
-            Responsive
-          </span>
-          <span className="text-[10px] text-neutral-400 block">
-            Mobile & Desktop
-          </span>
-        </div>
-      </div>
-    ),
-    className: "top-1/2 -right-3 md:right-0 -translate-y-1/2",
-  },
-];
+import { useLanguage } from "@/lib/language";
 
 const containerVariants = {
   hidden: {},
@@ -98,6 +26,74 @@ const fadeIn = {
 };
 
 export default function Hero() {
+  const { t, lang } = useLanguage();
+
+  const floatingCards = [
+    {
+      id: "portfolio-preview",
+      delay: 0,
+      content: (
+        <div className="p-3">
+          <div className="flex items-center gap-2 mb-1.5">
+            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
+              {t.hero.portfolioLive}
+            </span>
+          </div>
+          <div className="text-xs font-bold text-neutral-900 dark:text-white">
+            yourname.vercel.app
+          </div>
+          <div className="text-[10px] text-neutral-500 dark:text-neutral-400 mt-0.5">
+            {t.hero.floatingHostingFree}
+          </div>
+        </div>
+      ),
+      className: "top-8 right-2 md:top-14 md:right-6",
+    },
+    {
+      id: "pricing-card",
+      delay: 0.6,
+      content: (
+        <div className="p-3">
+          <div className="text-xs text-neutral-500 dark:text-neutral-400 font-medium">
+            {t.hero.floatingPriceFrom}
+          </div>
+          <div className="text-xl font-black text-indigo-500">
+            {lang === "en" ? "Rp150,000" : "Rp150.000"}
+          </div>
+          <div className="text-[10px] text-neutral-500 dark:text-neutral-400 mt-0.5 flex items-center gap-1">
+            <ShieldCheck size={11} className="text-indigo-400" />
+            {t.hero.floatingTransparent}
+          </div>
+        </div>
+      ),
+      className: "bottom-16 left-0 md:bottom-24 md:left-2",
+    },
+    {
+      id: "responsive",
+      delay: 1.2,
+      content: (
+        <div className="p-3 flex items-center gap-2.5">
+          <div className="flex flex-col gap-0.5">
+            <div className="w-8 h-5 border-2 border-neutral-300 dark:border-neutral-600 rounded-xs" />
+          </div>
+          <div className="flex flex-col gap-0.5">
+            <div className="w-4 h-7 border-2 border-indigo-400 rounded-xs" />
+          </div>
+          <div>
+            <span className="text-xs font-semibold text-neutral-800 dark:text-neutral-200 block">
+              Responsive
+            </span>
+            <span className="text-[10px] text-neutral-400 block">
+              Mobile & Desktop
+            </span>
+          </div>
+        </div>
+      ),
+      className: "top-1/2 -right-3 md:right-0 -translate-y-1/2",
+    },
+  ];
+
   return (
     <section
       id="home"
@@ -133,28 +129,26 @@ export default function Hero() {
             <motion.div variants={fadeIn} className="inline-flex mb-5">
               <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold tracking-wide uppercase bg-indigo-50 dark:bg-indigo-950/70 text-indigo-600 dark:text-indigo-400 border border-indigo-200/80 dark:border-indigo-800 shadow-xs">
                 <Sparkles size={13} aria-hidden="true" />
-                PERSONAL PORTFOLIO & WEB SOLUTIONS
+                {t.hero.eyebrow}
               </span>
             </motion.div>
 
             {/* Headline */}
             <motion.h1
               variants={fadeUp}
-              className="text-3xl sm:text-5xl lg:text-5xl xl:text-6xl font-black tracking-tight text-neutral-950 dark:text-white leading-[1.12]"
+              className="text-3xl sm:text-5xl lg:text-5xl xl:text-6xl font-black tracking-tight text-neutral-950 dark:text-white leading-[1.14]"
             >
-              Turn Your Work Into
+              {t.hero.headline1}
               <br />
-              <span className="gradient-text">Your Digital Identity.</span>
+              <span className="gradient-text">{t.hero.headline2}</span>
             </motion.h1>
 
             {/* Subheadline */}
             <motion.p
               variants={fadeUp}
-              className="mt-5 text-base sm:text-lg text-neutral-600 dark:text-neutral-300 max-w-2xl mx-auto lg:mx-0 leading-relaxed"
+              className="mt-5 text-base sm:text-lg text-neutral-600 dark:text-neutral-300 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-normal"
             >
-              Buat website portofolio yang dirancang sesuai karakter dan profesimu.
-              Tampilkan karya, pengalaman, dan keahlianmu dalam satu tempat yang
-              profesional dan mudah diakses siapa saja.
+              {t.hero.subheadline}
             </motion.p>
 
             {/* Quick Micro-copy value statement */}
@@ -162,7 +156,7 @@ export default function Hero() {
               variants={fadeUp}
               className="mt-3 text-xs sm:text-sm font-semibold text-neutral-500 dark:text-neutral-400"
             >
-              Custom design · Responsive · Harga transparan
+              {t.hero.microcopy}
             </motion.div>
 
             {/* Main Action CTAs */}
@@ -173,9 +167,9 @@ export default function Hero() {
               <a
                 href="#contact"
                 className="inline-flex items-center justify-center gap-2 px-7 py-3.5 text-sm font-semibold text-white bg-indigo-500 hover:bg-indigo-600 rounded-xl transition-all duration-150 shadow-md shadow-indigo-200 dark:shadow-indigo-950/50 group"
-                aria-label="Buat Website Portofolio — langsung ke formulir konsultasi"
+                aria-label={t.hero.ctaPrimaryLabel}
               >
-                Buat Website Portofolio
+                {t.hero.ctaPrimary}
                 <ArrowRight
                   size={16}
                   aria-hidden="true"
@@ -185,9 +179,9 @@ export default function Hero() {
               <a
                 href="#portfolio"
                 className="inline-flex items-center justify-center gap-2 px-6 py-3.5 text-sm font-semibold text-neutral-700 dark:text-neutral-200 bg-white dark:bg-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-700 border border-neutral-200 dark:border-neutral-700 rounded-xl transition-colors duration-150 group"
-                aria-label="Lihat Demo Portofolio — lihat proyek nyata dan konsep"
+                aria-label={t.hero.ctaSecondaryLabel}
               >
-                Lihat Demo Portofolio
+                {t.hero.ctaSecondary}
               </a>
             </motion.div>
 
@@ -196,7 +190,7 @@ export default function Hero() {
               variants={fadeUp}
               className="mt-10 pt-8 border-t border-neutral-200/60 dark:border-neutral-800 grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-w-xl mx-auto lg:mx-0 text-left"
             >
-              {valueHighlights.map((highlight) => (
+              {t.hero.highlights.map((highlight) => (
                 <div
                   key={highlight}
                   className="flex items-center gap-2 text-xs text-neutral-600 dark:text-neutral-400"
@@ -255,10 +249,10 @@ export default function Hero() {
                     </div>
                     <div>
                       <div className="text-xs font-bold text-neutral-900 dark:text-white">
-                        Your Personal Portfolio
+                        {t.hero.mockupTitle}
                       </div>
                       <div className="text-[11px] text-indigo-500 font-medium">
-                        Software Engineer & Creator
+                        {t.hero.mockupRole}
                       </div>
                     </div>
                   </div>
@@ -266,14 +260,14 @@ export default function Hero() {
                   {/* Mock Hero statement inside mockup */}
                   <div className="p-3 bg-white dark:bg-neutral-800/80 rounded-xl border border-neutral-100 dark:border-neutral-700/60 shadow-xs">
                     <p className="text-[11px] text-neutral-600 dark:text-neutral-300 leading-relaxed font-medium">
-                      &ldquo;Membangun produk digital yang cepat, responsif, dan memberikan dampak nyata.&rdquo;
+                      &ldquo;{t.hero.mockupQuote}&rdquo;
                     </p>
                     <div className="mt-2.5 flex items-center gap-2">
-                      <span className="w-14 h-5 bg-indigo-500 rounded-md flex items-center justify-center text-[9px] font-bold text-white">
-                        Lihat Proyek
+                      <span className="w-16 h-5 bg-indigo-500 rounded-md flex items-center justify-center text-[9px] font-bold text-white px-1">
+                        {t.hero.mockupViewProjects}
                       </span>
                       <span className="w-14 h-5 border border-neutral-200 dark:border-neutral-600 rounded-md flex items-center justify-center text-[9px] font-semibold text-neutral-600 dark:text-neutral-300">
-                        Kontak
+                        {t.hero.mockupContact}
                       </span>
                     </div>
                   </div>
@@ -281,11 +275,11 @@ export default function Hero() {
                   {/* Mock Projects Grid */}
                   <div>
                     <div className="text-[10px] font-bold uppercase tracking-wider text-neutral-400 mb-2">
-                      Showcase Proyek
+                      {t.hero.mockupShowcase}
                     </div>
                     <div className="grid grid-cols-2 gap-2">
                       <div className="p-2.5 bg-neutral-50 dark:bg-neutral-800 rounded-lg border border-neutral-100 dark:border-neutral-700">
-                        <div className="w-full h-10 bg-indigo-100 dark:bg-indigo-950/60 rounded mb-1.5 flex items-center justify-center text-[10px] text-indigo-500 font-mono">
+                        <div className="w-full h-10 bg-indigo-100 dark:bg-indigo-950/60 rounded mb-1.5 flex items-center justify-center text-[10px] text-indigo-500 font-mono font-semibold">
                           Finvera App
                         </div>
                         <div className="text-[10px] font-bold text-neutral-800 dark:text-neutral-200 truncate">
@@ -297,7 +291,7 @@ export default function Hero() {
                       </div>
 
                       <div className="p-2.5 bg-neutral-50 dark:bg-neutral-800 rounded-lg border border-neutral-100 dark:border-neutral-700">
-                        <div className="w-full h-10 bg-purple-100 dark:bg-purple-950/60 rounded mb-1.5 flex items-center justify-center text-[10px] text-purple-500 font-mono">
+                        <div className="w-full h-10 bg-purple-100 dark:bg-purple-950/60 rounded mb-1.5 flex items-center justify-center text-[10px] text-purple-500 font-mono font-semibold">
                           Tickitz Cinema
                         </div>
                         <div className="text-[10px] font-bold text-neutral-800 dark:text-neutral-200 truncate">

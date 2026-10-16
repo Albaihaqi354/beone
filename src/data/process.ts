@@ -10,41 +10,41 @@ export const processSteps: ProcessStep[] = [
   {
     id: "discovery",
     number: "01",
-    title: "Discovery",
+    title: "Konsultasi & Brief",
     description:
-      "Kami memulai dengan memahami kebutuhan, tujuan bisnis, dan target audiens client. Diskusi awal ini membentuk fondasi seluruh project.",
+      "Mendiskusikan profil, tujuan, preferensi visual, dan materi yang disiapkan client sebagai fondasi awal pengerjaan project.",
     icon: "MessageSquare",
   },
   {
     id: "planning",
     number: "02",
-    title: "Planning",
+    title: "Penawaran & Kesepakatan Scope",
     description:
-      "Menentukan scope fitur, spesifikasi teknis, estimasi timeline, dan biaya transparan. Perhitungan estimasi pengerjaan dimulai resmi setelah brief dan materi lengkap diserahkan client.",
+      "Menentukan paket yang tepat, estimasi timeline, dan rincian harga transparan. Estimasi hari kerja resmi dimulai setelah seluruh materi lengkap diterima.",
     icon: "ClipboardList",
   },
   {
-    id: "design",
+    id: "development",
     number: "03",
-    title: "Design",
+    title: "Desain UI & Pengerjaan Teknis",
     description:
-      "Membuat UI/UX dan struktur halaman yang sesuai dengan branding client. Client mendapat preview sebelum development dimulai.",
-    icon: "Palette",
+      "Merancang antarmuka responsif dan membangun website dengan standar kode modern Next.js & TypeScript yang cepat dan ramah SEO dasar.",
+    icon: "Code2",
   },
   {
-    id: "development",
+    id: "review",
     number: "04",
-    title: "Development",
+    title: "Review & Revisi Sesuai Paket",
     description:
-      "Membangun website atau aplikasi menggunakan teknologi modern. Perubahan scope di tengah jalan atau keterlambatan materi dapat memengaruhi jadwal penyelesaian.",
-    icon: "Code2",
+      "Client memeriksa preview website secara langsung dan mengajukan penyesuaian/revisi minor sesuai batas paket yang telah disepakati.",
+    icon: "Palette",
   },
   {
     id: "launch",
     number: "05",
-    title: "Launch",
+    title: "Finalisasi & Serah Terima",
     description:
-      "Deployment ke hosting/server, handover akses, dan panduan penggunaan. Garansi bug 30 hari aktif sejak serah terima untuk menangani kendala teknis bawaan.",
+      "Deployment ke hosting cloud, verifikasi SSL, penyerahan akses penuh, serta aktivasi garansi bug bawaan 30 hari pasca serah terima.",
     icon: "Rocket",
   },
 ];

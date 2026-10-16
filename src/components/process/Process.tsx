@@ -1,3 +1,5 @@
+"use client";
+
 import {
   MessageSquare,
   ClipboardList,
@@ -6,19 +8,21 @@ import {
   Rocket,
   type LucideIcon,
 } from "lucide-react";
-import { processSteps } from "@/data/process";
 import SectionHeader from "@/components/ui/SectionHeader";
 import AnimateOnScroll from "@/components/ui/AnimateOnScroll";
+import { useLanguage } from "@/lib/language";
 
 const iconMap: Record<string, LucideIcon> = {
-  MessageSquare,
-  ClipboardList,
-  Palette,
-  Code2,
-  Rocket,
+  discovery: MessageSquare,
+  planning: ClipboardList,
+  development: Code2,
+  review: Palette,
+  launch: Rocket,
 };
 
 export default function Process() {
+  const { t } = useLanguage();
+
   return (
     <section
       id="process"
@@ -28,9 +32,9 @@ export default function Process() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <AnimateOnScroll>
           <SectionHeader
-            label="Process"
-            title="How We Work"
-            subtitle="Proses kerja yang transparan dan terstruktur dari awal hingga launch."
+            label={t.process.label}
+            title={t.process.title}
+            subtitle={t.process.subtitle}
           />
         </AnimateOnScroll>
 
@@ -44,10 +48,10 @@ export default function Process() {
 
           <ol
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 lg:gap-4"
-            aria-label="Work process steps"
+            aria-label={t.process.stepsAria}
           >
-            {processSteps.map((step, index) => {
-              const Icon = iconMap[step.icon] ?? Code2;
+            {t.process.steps.map((step, index) => {
+              const Icon = iconMap[step.id] ?? Code2;
 
               return (
                 <AnimateOnScroll key={step.id} delay={index * 0.1} direction="up">
@@ -64,7 +68,7 @@ export default function Process() {
                         </div>
                         <span
                           className="absolute -top-2 -right-2 w-6 h-6 bg-indigo-500 text-white text-xs font-black rounded-full flex items-center justify-center"
-                          aria-label={`Step ${step.number}`}
+                          aria-label={`${t.process.stepLabel} ${step.number}`}
                         >
                           {index + 1}
                         </span>
@@ -94,11 +98,11 @@ export default function Process() {
         <AnimateOnScroll delay={0.2}>
           <div className="mt-12 p-5 bg-neutral-900 border border-neutral-800 rounded-2xl text-center">
             <p className="text-sm text-neutral-400">
-              Setiap tahap pengerjaan dilakukan secara transparan dan komunikatif.
-              <span className="text-indigo-400 font-medium ml-1">
-                Garansi bug 30 hari
+              {t.process.bottomNote}{" "}
+              <span className="text-indigo-400 font-medium">
+                {t.process.guarantee}
               </span>{" "}
-              mencakup perbaikan kendala teknis dan fungsional bawaan sesuai kesepakatan awal sejak tanggal serah terima.
+              {t.process.guaranteeDetail}
             </p>
           </div>
         </AnimateOnScroll>

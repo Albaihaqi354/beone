@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Layers,
   Zap,
@@ -7,20 +9,22 @@ import {
   PhoneCall,
   type LucideIcon,
 } from "lucide-react";
-import { benefits } from "@/data/why";
 import SectionHeader from "@/components/ui/SectionHeader";
 import AnimateOnScroll from "@/components/ui/AnimateOnScroll";
+import { useLanguage } from "@/lib/language";
 
 const iconMap: Record<string, LucideIcon> = {
-  Layers,
-  Zap,
-  Monitor,
-  Search,
-  FileText,
-  HeadphonesIcon: PhoneCall,
+  "custom-dev": Layers,
+  "modern-tech": Zap,
+  responsive: Monitor,
+  seo: Search,
+  transparent: FileText,
+  support: PhoneCall,
 };
 
 export default function Why() {
+  const { t } = useLanguage();
+
   return (
     <section
       id="why"
@@ -30,15 +34,15 @@ export default function Why() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <AnimateOnScroll>
           <SectionHeader
-            label="Why Us"
-            title="Why BeOne?"
-            subtitle="Kami percaya bahwa setiap individu dan bisnis berhak memiliki kehadiran digital profesional yang dirancang sesuai identitas unik mereka."
+            label={t.why.label}
+            title={t.why.title}
+            subtitle={t.why.subtitle}
           />
         </AnimateOnScroll>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">
-          {benefits.map((benefit, index) => {
-            const Icon = iconMap[benefit.icon] ?? Zap;
+          {t.why.benefits.map((benefit, index) => {
+            const Icon = iconMap[benefit.id] ?? Zap;
 
             return (
               <AnimateOnScroll key={benefit.id} delay={index * 0.07}>

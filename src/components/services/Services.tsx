@@ -16,47 +16,57 @@ import {
   Zap,
   type LucideIcon,
 } from "lucide-react";
-import { services, type Service } from "@/data/services";
 import SectionHeader from "@/components/ui/SectionHeader";
 import AnimateOnScroll from "@/components/ui/AnimateOnScroll";
+import { useLanguage } from "@/lib/language";
+import type { ServiceItemTranslation } from "@/lib/i18n/types";
 
 const iconMap: Record<string, LucideIcon> = {
-  Sparkles,
-  Palette,
-  BookOpen,
-  Layout,
-  Building2,
-  Globe,
-  ShoppingCart,
-  Code2,
-  Smartphone,
+  "personal-portfolio": Sparkles,
+  "promo-design": Palette,
+  "umkm-catalog": BookOpen,
+  "business-landing-page": Layout,
+  "company-profile": Building2,
+  "business-website": Globe,
+  ecommerce: ShoppingCart,
+  "custom-web-app": Code2,
+  "mobile-app": Smartphone,
 };
 
-const categoryTabs = [
-  { id: "all", label: "Semua Layanan" },
-  { id: "entry", label: "Entry-Level (Rp75rb–Rp500rb)", icon: Zap },
-  { id: "personal", label: "Personal & Creative" },
-  { id: "business", label: "Business Websites" },
-  { id: "advanced", label: "Advanced Development" },
-] as const;
+const entryServiceIds = new Set([
+  "personal-portfolio",
+  "promo-design",
+  "umkm-catalog",
+  "business-landing-page",
+]);
 
-type CategoryTab = (typeof categoryTabs)[number]["id"];
+type CategoryTabId = "all" | "entry" | "personal" | "business" | "advanced";
 
 export default function Services() {
-  const [activeCategory, setActiveCategory] = useState<CategoryTab>("all");
+  const { t, lang } = useLanguage();
+  const [activeCategory, setActiveCategory] = useState<CategoryTabId>("all");
 
-  const filteredServices = services.filter((s) => {
+  const categoryTabs: { id: CategoryTabId; label: string; icon?: LucideIcon }[] = [
+    { id: "all", label: t.services.filterAll },
+    { id: "entry", label: t.services.filterEntry, icon: Zap },
+    { id: "personal", label: t.services.filterPersonal },
+    { id: "business", label: t.services.filterBusiness },
+    { id: "advanced", label: t.services.filterAdvanced },
+  ];
+
+  const filteredServices = t.services.items.filter((s) => {
     if (activeCategory === "all") return true;
-    if (activeCategory === "entry") return s.isEntryLevel;
+    if (activeCategory === "entry") return entryServiceIds.has(s.id);
     return s.category === activeCategory;
   });
 
-  const handleSelectService = (service: Service) => {
+  const handleSelectService = (service: ServiceItemTranslation) => {
     if (typeof window !== "undefined") {
       window.dispatchEvent(
         new CustomEvent("beone-select-plan", {
           detail: {
             planId: service.id,
+            serviceId: service.id,
             service: service.title,
             plan: service.title,
           },
@@ -74,9 +84,9 @@ export default function Services() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <AnimateOnScroll>
           <SectionHeader
-            label="Katalog Layanan"
-            title="Layanan Digital Sesuai Kebutuhan & Anggaran"
-            subtitle="Mulai dari solusi entry-level terjangkau (Rp75.000–Rp500.000) untuk mulai online cepat, hingga sistem web kustom berskala penuh."
+            label={t.services.label}
+            title={t.services.title}
+            subtitle={t.services.subtitle}
           />
         </AnimateOnScroll>
 
@@ -84,7 +94,7 @@ export default function Services() {
         <AnimateOnScroll delay={0.05}>
           <div className="flex flex-wrap justify-center gap-2 mb-10">
             {categoryTabs.map((tab) => {
-              const Icon = "icon" in tab ? tab.icon : null;
+              const Icon = tab.icon;
               const isActive = activeCategory === tab.id;
 
               return (
@@ -110,11 +120,11 @@ export default function Services() {
         <div
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
           role="list"
-          aria-label="Daftar layanan BeOne"
+          aria-label={t.services.label}
         >
           {filteredServices.map((service, index) => {
-            const Icon = iconMap[service.icon] ?? Code2;
-            const isEntry = service.isEntryLevel;
+            const Icon = iconMap[service.id] ?? Code2;
+            const isEntry = entryServiceIds.has(service.id);
 
             return (
               <AnimateOnScroll key={service.id} delay={index * 0.05}>
@@ -125,7 +135,7 @@ export default function Services() {
                       ? "border-indigo-200/90 dark:border-indigo-900/60 shadow-sm hover:border-indigo-400 hover:shadow-md"
                       : "border-neutral-200/80 dark:border-neutral-800 hover:border-neutral-300 dark:hover:border-neutral-700 hover:shadow-sm"
                   }`}
-                  aria-label={`Layanan: ${service.title}`}
+                  aria-label={`${t.services.label}: ${service.title}`}
                 >
                   {/* Top Badges */}
                   <div className="flex items-start justify-between gap-2 mb-4">
@@ -160,11 +170,11 @@ export default function Services() {
                     {service.description}
                   </p>
 
-                  {/* Scope Summary or Key Inclusions */}
+                  {/* Scope Summary */}
                   {service.scopeSummary && (
                     <div className="mb-4 p-3 rounded-xl bg-neutral-50 dark:bg-neutral-800/60 border border-neutral-100 dark:border-neutral-800 text-[11px] text-neutral-600 dark:text-neutral-300">
                       <span className="font-semibold block text-neutral-900 dark:text-white mb-0.5">
-                        Cakupan Layanan:
+                        {lang === "en" ? "Service Scope:" : "Cakupan Layanan:"}
                       </span>
                       {service.scopeSummary}
                     </div>
@@ -174,9 +184,9 @@ export default function Services() {
                   {service.useCases && service.useCases.length > 0 && (
                     <div className="mb-5 flex-1">
                       <span className="text-[11px] font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-500 block mb-2">
-                        Target Pengguna:
+                        {t.services.useCases}:
                       </span>
-                      <ul className="space-y-1.5" aria-label={`Target pengguna ${service.title}`}>
+                      <ul className="space-y-1.5" aria-label={`${t.services.useCases} ${service.title}`}>
                         {service.useCases.slice(0, 3).map((useCase) => (
                           <li
                             key={useCase}
@@ -198,7 +208,7 @@ export default function Services() {
                   <div className="mt-auto pt-4 border-t border-neutral-100 dark:border-neutral-800 flex items-center justify-between gap-3">
                     <div>
                       <span className="text-[11px] text-neutral-400 dark:text-neutral-500 block">
-                        {service.priceNote || "Investasi"}
+                        {service.priceNote || (lang === "en" ? "Investment" : "Investasi")}
                       </span>
                       <span className="text-base sm:text-lg font-black text-neutral-950 dark:text-white">
                         {service.startingPrice}
@@ -209,9 +219,9 @@ export default function Services() {
                       href="#contact"
                       onClick={() => handleSelectService(service)}
                       className="inline-flex items-center gap-1 px-3.5 py-2 bg-indigo-50 dark:bg-indigo-950/60 hover:bg-indigo-500 text-indigo-600 dark:text-indigo-400 hover:text-white text-xs font-semibold rounded-xl transition-all duration-150 group/btn"
-                      aria-label={`Pilih layanan ${service.title}`}
+                      aria-label={`${t.services.selectService} — ${service.title}`}
                     >
-                      Pilih Layanan
+                      {t.services.selectService}
                       <ArrowRight
                         size={13}
                         className="group-hover/btn:translate-x-0.5 transition-transform"
@@ -229,17 +239,21 @@ export default function Services() {
           <div className="mt-12 p-6 rounded-2xl bg-neutral-50 dark:bg-neutral-900 border border-neutral-200/80 dark:border-neutral-800 flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
             <div>
               <h4 className="text-sm font-bold text-neutral-950 dark:text-white">
-                Punya Kebutuhan Spesifik atau Custom Diluar Paket?
+                {lang === "en"
+                  ? "Have Specific or Custom Requirements Outside These Packages?"
+                  : "Punya Kebutuhan Spesifik atau Custom Diluar Paket?"}
               </h4>
               <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1 max-w-2xl">
-                Kami siap menyesuaikan ruang lingkup pengerjaan sesuai kebutuhan unik Anda dengan estimasi biaya dan waktu yang transparan sejak awal.
+                {lang === "en"
+                  ? "We are ready to tailor deliverables to your exact business needs with upfront, transparent cost and delivery timelines."
+                  : "Kami siap menyesuaikan ruang lingkup pengerjaan sesuai kebutuhan unik Anda dengan estimasi biaya dan waktu yang transparan sejak awal."}
               </p>
             </div>
             <a
               href="#contact"
               className="px-5 py-2.5 text-xs font-semibold bg-neutral-950 dark:bg-white text-white dark:text-neutral-950 hover:bg-neutral-800 dark:hover:bg-neutral-100 rounded-xl transition-colors whitespace-nowrap shadow-xs"
             >
-              Konsultasi Proyek Kustom
+              {lang === "en" ? "Custom Project Consultation" : "Konsultasi Proyek Kustom"}
             </a>
           </div>
         </AnimateOnScroll>

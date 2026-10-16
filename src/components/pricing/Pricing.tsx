@@ -2,40 +2,46 @@
 
 import { useState } from "react";
 import { Check, Sparkles, MessageCircle, ArrowRight, ShieldCheck, Info, Zap } from "lucide-react";
-import {
-  entryPricingPlans,
-  portfolioPricingPlans,
-  businessPricingPlans,
-  addons,
-  planToServiceMap,
-  type PricingPlan,
-} from "@/data/pricing";
 import SectionHeader from "@/components/ui/SectionHeader";
 import AnimateOnScroll from "@/components/ui/AnimateOnScroll";
 import { whatsappUrl } from "@/lib/config";
+import { useLanguage } from "@/lib/language";
+import type { PricingPlanTranslation } from "@/lib/i18n/types";
+
+const planToServiceIdMap: Record<string, string> = {
+  "promo-design": "promo-design",
+  "umkm-catalog": "umkm-catalog",
+  "portfolio-starter": "personal-portfolio",
+  "portfolio-professional": "personal-portfolio",
+  "portfolio-premium": "personal-portfolio",
+  "business-landing-page": "business-landing-page",
+  "company-profile": "company-profile",
+  "business-website": "business-website",
+  ecommerce: "ecommerce",
+  "custom-web-app": "custom-web-app",
+};
 
 export default function Pricing() {
+  const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState<"entry" | "portfolio" | "business">("entry");
 
   const currentPlans =
     activeTab === "entry"
-      ? entryPricingPlans
+      ? t.pricing.entryPlans
       : activeTab === "portfolio"
-      ? portfolioPricingPlans
-      : businessPricingPlans;
+      ? t.pricing.portfolioPlans
+      : t.pricing.businessPlans;
 
-  const handleSelectPlan = (plan: PricingPlan) => {
+  const handleSelectPlan = (plan: PricingPlanTranslation) => {
     if (typeof window !== "undefined") {
-      const mapping = planToServiceMap[plan.id];
-      const mappedService = mapping?.service || "Website Portofolio Pribadi";
-      const mappedPlan = mapping?.packageOption || plan.name;
-
+      const serviceId = planToServiceIdMap[plan.id] || "personal-portfolio";
       window.dispatchEvent(
         new CustomEvent("beone-select-plan", {
           detail: {
             planId: plan.id,
-            service: mappedService,
-            plan: mappedPlan,
+            serviceId,
+            service: plan.name,
+            plan: plan.name,
           },
         })
       );
@@ -51,9 +57,9 @@ export default function Pricing() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <AnimateOnScroll>
           <SectionHeader
-            label="Pricing Strategy"
-            title="Daftar Harga & Paket Transparan"
-            subtitle="Pilihan paket hemat mulai Rp75.000 untuk menguji pasar dan mulai online secepatnya, dengan batasan ruang lingkup yang jelas."
+            label={t.pricing.label}
+            title={t.pricing.title}
+            subtitle={t.pricing.subtitle}
           />
         </AnimateOnScroll>
 
@@ -62,7 +68,7 @@ export default function Pricing() {
           <div className="flex justify-center mb-10">
             <div
               role="tablist"
-              aria-label="Pilihan kategori paket harga"
+              aria-label={t.pricing.categoryAria}
               className="inline-flex p-1.5 rounded-2xl bg-neutral-200/80 dark:bg-neutral-800 border border-neutral-300/60 dark:border-neutral-700 shadow-inner max-w-full overflow-x-auto"
             >
               <button
@@ -79,7 +85,7 @@ export default function Pricing() {
                 }`}
               >
                 <Zap size={14} className="text-amber-500" aria-hidden="true" />
-                Entry-Level (Rp75rb–Rp500rb)
+                {t.pricing.tabEntry}
               </button>
 
               <button
@@ -96,7 +102,7 @@ export default function Pricing() {
                 }`}
               >
                 <Sparkles size={14} aria-hidden="true" />
-                Website Portofolio Lengkap
+                {t.pricing.tabPortfolio}
               </button>
 
               <button
@@ -112,7 +118,7 @@ export default function Pricing() {
                     : "text-neutral-600 dark:text-neutral-400 hover:text-neutral-950 dark:hover:text-white"
                 }`}
               >
-                Solusi Bisnis & Kustom
+                {t.pricing.tabBusiness}
               </button>
             </div>
           </div>
@@ -142,16 +148,16 @@ export default function Pricing() {
                       ? "border-indigo-500/80 bg-white dark:bg-neutral-900 shadow-xl shadow-indigo-500/10 dark:shadow-indigo-950/40 ring-2 ring-indigo-500/30"
                       : "border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:border-neutral-300 dark:hover:border-neutral-700 hover:shadow-md"
                   }`}
-                  aria-label={`${plan.name} pricing plan`}
+                  aria-label={`${plan.name} ${t.pricing.planAria}`}
                 >
                   {/* Badge */}
                   {isPopular && (
                     <div
                       className="absolute -top-3 left-1/2 -translate-x-1/2 flex items-center gap-1 px-3 py-0.5 bg-indigo-500 text-white text-[11px] font-bold rounded-full shadow-xs whitespace-nowrap"
-                      aria-label="Paket rekomendasi utama"
+                      aria-label={t.pricing.recommended}
                     >
                       <Sparkles size={11} aria-hidden="true" />
-                      Rekomendasi Utama
+                      {t.pricing.recommended}
                     </div>
                   )}
 
@@ -198,7 +204,7 @@ export default function Pricing() {
                     {/* Features list */}
                     <ul
                       className="flex flex-col gap-2 flex-1 mb-5"
-                      aria-label={`Fitur dalam paket ${plan.name}`}
+                      aria-label={`${t.pricing.featuresAria}: ${plan.name}`}
                     >
                       {plan.features.map((feature) => (
                         <li key={feature} className="flex items-start gap-2 text-xs text-neutral-600 dark:text-neutral-300">
@@ -241,15 +247,15 @@ export default function Pricing() {
             <ShieldCheck size={18} className="text-indigo-500 flex-shrink-0 mt-0.5" />
             <div className="space-y-1.5 leading-relaxed">
               <span className="font-bold text-neutral-900 dark:text-white block">
-                Ketentuan Layanan, Estimasi Waktu & Garansi:
+                {t.pricing.termsTitle}
               </span>
-              <p>
-                1. <strong>Domain Khusus (.com/.id):</strong> Tidak termasuk dalam paket entry-level kecuali dinyatakan eksplisit. Kami menyediakan panduan setup atau opsi bantuan aktivasi.<br />
-                2. <strong>Hosting Gratis:</strong> Menggunakan platform cloud modern (Vercel/Netlify/GitHub Pages) dengan SSL aktif tanpa tagihan sewa server bulanan.<br />
-                3. <strong>Perhitungan Estimasi Waktu:</strong> Estimasi hari kerja dihitung resmi setelah seluruh brief, materi (teks/foto/data), dan scope disepakati lengkap. Keterlambatan materi atau penambahan scope di tengah jalan dapat memengaruhi jadwal penyelesaian.<br />
-                4. <strong>Garansi Bug 30 Hari:</strong> Menjamin perbaikan kendala fungsional bawaan dari kode yang dibangun BeOne tanpa biaya tambahan (tidak mencakup penambahan fitur baru di luar kesepakatan).<br />
-                5. <strong>Paket Desain Promosi:</strong> Merupakan paket lengkap 5 desain konten siap posting (bukan harga per 1 desain) dengan materi teks dan foto produk dari pelanggan.
-              </p>
+              <div className="space-y-1">
+                {t.pricing.terms.map((term, i) => (
+                  <p key={term.label}>
+                    {i + 1}. <strong>{term.label}</strong> {term.text}
+                  </p>
+                ))}
+              </div>
             </div>
           </div>
         </AnimateOnScroll>
@@ -260,29 +266,29 @@ export default function Pricing() {
             <div className="mb-5 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div>
                 <h3 className="text-xl font-bold text-neutral-950 dark:text-white">
-                  Add-on & Fitur Tambahan
+                  {t.pricing.addonsTitle}
                 </h3>
                 <p className="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400 mt-0.5">
-                  Tambahkan fitur atau halaman ekstra sesuai kebutuhan proyek Anda dengan biaya terukur.
+                  {t.pricing.addonsSubtitle}
                 </p>
               </div>
               <a
-                href={whatsappUrl("Halo BeOne, saya ingin menanyakan add-on untuk project saya.")}
+                href={whatsappUrl(t.pricing.askWhatsappMsg)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1.5 text-xs font-semibold text-indigo-500 hover:text-indigo-600"
               >
                 <MessageCircle size={14} />
-                Tanya Kebutuhan Khusus
+                {t.pricing.addonsAskCustom}
               </a>
             </div>
 
             <div
               className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5"
               role="list"
-              aria-label="Daftar add-ons"
+              aria-label={t.pricing.addonsTitle}
             >
-              {addons.map((addon) => (
+              {t.pricing.addons.map((addon) => (
                 <div
                   key={addon.name}
                   role="listitem"
@@ -299,7 +305,7 @@ export default function Pricing() {
             </div>
 
             <p className="mt-4 text-xs text-neutral-400 dark:text-neutral-500">
-              * Estimasi biaya add-on dapat disesuaikan berdasarkan kompleksitas spesifik yang diinginkan.
+              {t.pricing.addonsNote}
             </p>
           </div>
         </AnimateOnScroll>

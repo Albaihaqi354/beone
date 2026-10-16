@@ -2,12 +2,13 @@
 
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
-import { faqItems } from "@/data/faq";
 import SectionHeader from "@/components/ui/SectionHeader";
 import AnimateOnScroll from "@/components/ui/AnimateOnScroll";
 import { motion, AnimatePresence } from "framer-motion";
+import { useLanguage } from "@/lib/language";
 
 export default function FAQ() {
+  const { t } = useLanguage();
   const [openId, setOpenId] = useState<string | null>(null);
 
   const toggle = (id: string) => setOpenId((prev) => (prev === id ? null : id));
@@ -21,14 +22,14 @@ export default function FAQ() {
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         <AnimateOnScroll>
           <SectionHeader
-            label="FAQ"
-            title="Frequently Asked Questions"
-            subtitle="Pertanyaan yang sering ditanyakan oleh calon client."
+            label={t.faq.label}
+            title={t.faq.title}
+            subtitle={t.faq.subtitle}
           />
         </AnimateOnScroll>
 
-        <dl className="flex flex-col gap-3" aria-label="Frequently asked questions">
-          {faqItems.map((item, index) => {
+        <dl className="flex flex-col gap-3" aria-label={t.faq.aria}>
+          {t.faq.items.map((item, index) => {
             const isOpen = openId === item.id;
 
             return (
@@ -43,7 +44,7 @@ export default function FAQ() {
                       id={`faq-question-${item.id}`}
                       className="w-full flex items-center justify-between gap-4 px-6 py-4 text-left bg-white dark:bg-neutral-900 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
                     >
-                      <span className="text-base font-semibold text-neutral-900 dark:text-white pr-2">
+                      <span className="text-base font-semibold text-neutral-950 dark:text-white pr-2">
                         {item.question}
                       </span>
                       <ChevronDown
@@ -86,13 +87,13 @@ export default function FAQ() {
         <AnimateOnScroll delay={0.15}>
           <div className="mt-10 text-center">
             <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-4">
-              Masih ada pertanyaan lain?
+              {t.faq.stillHaveQuestions}
             </p>
             <a
               href="#contact"
               className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800 rounded-xl hover:bg-indigo-50 dark:hover:bg-indigo-950/40 transition-colors"
             >
-              Tanya Kami Langsung
+              {t.faq.askUs}
             </a>
           </div>
         </AnimateOnScroll>
