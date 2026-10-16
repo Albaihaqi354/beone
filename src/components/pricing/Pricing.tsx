@@ -22,7 +22,7 @@ const planToServiceIdMap: Record<string, string> = {
 };
 
 export default function Pricing() {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const [activeTab, setActiveTab] = useState<"entry" | "portfolio" | "business">("entry");
 
   const currentPlans =
@@ -124,24 +124,28 @@ export default function Pricing() {
           </div>
         </AnimateOnScroll>
 
-        {/* Pricing Cards Grid */}
+        {/* Pricing Cards Grid / Mobile Horizontal Scroll Carousel */}
         <div
           id="pricing-panel"
           role="tabpanel"
           aria-labelledby={`tab-${activeTab}`}
-          className={`grid grid-cols-1 ${
+          className={`flex sm:grid overflow-x-auto sm:overflow-x-visible snap-x snap-mandatory scroll-smooth pb-4 sm:pb-0 pt-4 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:mx-0 lg:px-0 no-scrollbar sm:grid-cols-2 ${
             activeTab === "entry"
-              ? "sm:grid-cols-2 lg:grid-cols-4 max-w-7xl mx-auto"
+              ? "lg:grid-cols-4 max-w-7xl mx-auto"
               : activeTab === "portfolio"
               ? "md:grid-cols-3 max-w-6xl mx-auto"
-              : "md:grid-cols-2 xl:grid-cols-4"
-          } gap-6 items-stretch`}
+              : "xl:grid-cols-4"
+          } gap-5 sm:gap-6 items-stretch`}
         >
           {currentPlans.map((plan, index) => {
             const isPopular = plan.popular;
 
             return (
-              <AnimateOnScroll key={plan.id} delay={index * 0.06}>
+              <AnimateOnScroll
+                key={plan.id}
+                delay={index * 0.06}
+                className="w-[82vw] sm:w-auto min-w-[280px] max-w-[340px] sm:min-w-0 sm:max-w-none shrink-0 sm:shrink snap-start flex flex-col h-auto sm:h-full"
+              >
                 <div
                   className={`relative flex flex-col h-full rounded-2xl border transition-all duration-200 ${
                     isPopular
@@ -239,6 +243,14 @@ export default function Pricing() {
               </AnimateOnScroll>
             );
           })}
+          {/* Mobile trailing spacer for comfortable end padding */}
+          <div className="shrink-0 w-2 sm:hidden" aria-hidden="true" />
+        </div>
+
+        {/* Mobile Swipe Cue */}
+        <div className="flex sm:hidden items-center justify-center gap-1.5 mt-3 text-xs text-neutral-400 dark:text-neutral-500">
+          <span className="w-1.5 h-1.5 rounded-full bg-indigo-500/70 animate-pulse" />
+          <span>{lang === "en" ? "Swipe horizontally to compare packages" : "Geser ke samping untuk membandingkan paket"}</span>
         </div>
 
         {/* Pricing Terms & Scope Notice */}

@@ -116,9 +116,9 @@ export default function Services() {
           </div>
         </AnimateOnScroll>
 
-        {/* Services Grid */}
+        {/* Services Grid / Mobile Horizontal Scroll Carousel */}
         <div
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+          className="flex md:grid md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6 overflow-x-auto md:overflow-x-visible snap-x snap-mandatory scroll-smooth pb-4 md:pb-0 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:mx-0 lg:px-0 no-scrollbar"
           role="list"
           aria-label={t.services.label}
         >
@@ -127,7 +127,11 @@ export default function Services() {
             const isEntry = entryServiceIds.has(service.id);
 
             return (
-              <AnimateOnScroll key={service.id} delay={index * 0.05}>
+              <AnimateOnScroll
+                key={service.id}
+                delay={index * 0.05}
+                className="w-[82vw] sm:w-[85vw] min-w-[280px] max-w-[340px] md:w-auto md:min-w-0 md:max-w-none shrink-0 md:shrink snap-start flex flex-col h-auto md:h-full"
+              >
                 <article
                   role="listitem"
                   className={`group relative flex flex-col h-full bg-white dark:bg-neutral-900 rounded-2xl p-6 sm:p-7 border transition-all duration-200 ${
@@ -232,6 +236,14 @@ export default function Services() {
               </AnimateOnScroll>
             );
           })}
+          {/* Mobile trailing spacer for comfortable end padding */}
+          <div className="shrink-0 w-2 md:hidden" aria-hidden="true" />
+        </div>
+
+        {/* Mobile Swipe Cue */}
+        <div className="flex md:hidden items-center justify-center gap-1.5 mt-3 text-xs text-neutral-400 dark:text-neutral-500">
+          <span className="w-1.5 h-1.5 rounded-full bg-indigo-500/70 animate-pulse" />
+          <span>{lang === "en" ? "Swipe horizontally to see more services" : "Geser ke samping untuk layanan lainnya"}</span>
         </div>
 
         {/* Note on Scope & Custom Requests */}

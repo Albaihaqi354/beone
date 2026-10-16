@@ -91,15 +91,19 @@ export default function PortfolioShowcase() {
           />
         </AnimateOnScroll>
 
-        {/* Projects Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8 items-stretch">
+        {/* Projects Grid / Mobile Horizontal Scroll Carousel */}
+        <div className="flex lg:grid lg:grid-cols-3 gap-5 md:gap-8 items-stretch overflow-x-auto lg:overflow-x-visible snap-x snap-mandatory scroll-smooth pb-4 lg:pb-0 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:mx-0 lg:px-0 no-scrollbar">
           {projects.map((project, index) => {
             const isFinvera = project.id === "finvera";
             const isTickitz = project.id === "tickitz";
             const isConcept = project.isConceptual;
 
             return (
-              <AnimateOnScroll key={project.id} delay={index * 0.1}>
+              <AnimateOnScroll
+                key={project.id}
+                delay={index * 0.1}
+                className="w-[85vw] min-w-[290px] max-w-[360px] lg:w-auto lg:min-w-0 lg:max-w-none shrink-0 lg:shrink snap-start flex flex-col h-auto lg:h-full"
+              >
                 <article
                   className="flex flex-col h-full bg-white dark:bg-neutral-900 border border-neutral-200/80 dark:border-neutral-800 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:border-indigo-200 dark:hover:border-indigo-800 transition-all duration-300 group"
                   aria-label={`Portfolio project: ${project.title}`}
@@ -303,6 +307,14 @@ export default function PortfolioShowcase() {
               </AnimateOnScroll>
             );
           })}
+          {/* Mobile trailing spacer for comfortable end padding */}
+          <div className="shrink-0 w-2 lg:hidden" aria-hidden="true" />
+        </div>
+
+        {/* Mobile Swipe Cue */}
+        <div className="flex lg:hidden items-center justify-center gap-1.5 mt-3 text-xs text-neutral-400 dark:text-neutral-500">
+          <span className="w-1.5 h-1.5 rounded-full bg-indigo-500/70 animate-pulse" />
+          <span>{lang === "en" ? "Swipe horizontally to explore portfolio projects" : "Geser ke samping untuk melihat proyek portofolio"}</span>
         </div>
 
         {/* Bottom Portfolio Guarantee Note */}

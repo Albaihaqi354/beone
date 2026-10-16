@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <!-- Background Gradient (Dark Luxury Slate) -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#121217" />
+      <stop offset="100%" stop-color="#08080a" />
+    </linearGradient>
+
+    <!-- Glowing Tech Border -->
+    <linearGradient id="borderGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6366f1" stop-opacity="0.9" />
+      <stop offset="50%" stop-color="#8b5cf6" stop-opacity="0.4" />
+      <stop offset="100%" stop-color="#38bdf8" stop-opacity="0.7" />
+    </linearGradient>
+
+    <!-- Ultra Crisp Vibrant Gradient for B -->
+    <linearGradient id="bGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#a5b4fc" />
+      <stop offset="30%" stop-color="#818cf8" />
+      <stop offset="70%" stop-color="#6366f1" />
+      <stop offset="100%" stop-color="#a855f7" />
+    </linearGradient>
+
+    <radialGradient id="ambientGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#6366f1" stop-opacity="0.22" />
+      <stop offset="100%" stop-color="#6366f1" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+
+  <!-- Squircle Base -->
+  <rect width="512" height="512" rx="120" fill="url(#bgGrad)" />
+  <rect x="6" y="6" width="500" height="500" rx="114" fill="none" stroke="url(#borderGrad)" stroke-width="10" />
+
+  <!-- Ambient Glow -->
+  <circle cx="256" cy="256" r="160" fill="url(#ambientGlow)" />
+
+  <!-- Perfectly Centered Letter B -->
+  <path d="
+    M 126 116
+    C 126 106, 134 98, 144 98
+    H 276
+    C 336 98, 374 130, 374 182
+    C 374 220, 348 246, 314 254
+    C 358 262, 386 294, 386 342
+    C 386 396, 340 414, 276 414
+    H 144
+    C 134 414, 126 406, 126 396
+    Z
+
+    M 204 162
+    V 228
+    H 268
+    C 294 228, 310 214, 310 195
+    C 310 176, 294 162, 268 162
+    Z
+
+    M 204 284
+    V 352
+    H 272
+    C 300 352, 318 336, 318 318
+    C 318 300, 300 284, 272 284
+    Z
+  " fill-rule="evenodd" fill="url(#bGrad)" />
+</svg>

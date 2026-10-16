@@ -11,6 +11,7 @@ import FAQ from "@/components/faq/FAQ";
 import CTA from "@/components/cta/CTA";
 import Contact from "@/components/contact/Contact";
 import Footer from "@/components/footer/Footer";
+import ScrollToTop from "@/components/ui/ScrollToTop";
 
 export default function Home() {
   return (
@@ -30,6 +31,7 @@ export default function Home() {
         <Contact />
       </main>
       <Footer />
+      <ScrollToTop />
     </>
   );
 }

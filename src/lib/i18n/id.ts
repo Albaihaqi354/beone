@@ -28,6 +28,7 @@ export const id: Translations = {
     langToggle: "Pilih bahasa",
     navAria: "Navigasi Utama",
     mobileMenuAria: "Menu navigasi mobile",
+    scrollToTop: "Kembali ke atas",
   },
 
   /* ─── Hero ─── */

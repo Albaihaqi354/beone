@@ -28,6 +28,7 @@ export const en: Translations = {
     langToggle: "Select language",
     navAria: "Main Navigation",
     mobileMenuAria: "Mobile navigation menu",
+    scrollToTop: "Scroll to top",
   },
 
   /* ─── Hero ─── */

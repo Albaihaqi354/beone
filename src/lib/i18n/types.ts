@@ -19,6 +19,7 @@ export interface NavTranslations {
   langToggle: string;
   navAria: string;
   mobileMenuAria: string;
+  scrollToTop: string;
 }
 
 export interface HeroTranslations {
