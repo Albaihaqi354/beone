@@ -12,6 +12,8 @@ import {
 import SectionHeader from "@/components/ui/SectionHeader";
 import AnimateOnScroll from "@/components/ui/AnimateOnScroll";
 import { whatsappUrl, siteConfig } from "@/lib/config";
+import { packagePlanOptions, planToServiceMap } from "@/data/pricing";
+import { services } from "@/data/services";
 
 interface FormData {
   name: string;
@@ -29,32 +31,12 @@ interface FormErrors {
 }
 
 const servicesList = [
-  "Website Portofolio Pribadi",
-  "Desain Konten Promosi",
-  "Katalog Digital UMKM",
-  "Landing Page Bisnis",
-  "Company Profile",
-  "Business Website Lengkap",
-  "E-Commerce",
-  "Custom Web App",
-  "Mobile App",
+  ...services.map((s) => s.title),
   "Website Maintenance",
   "Lainnya",
 ];
 
-const packageOptions = [
-  "Desain Konten Promosi (Paket 5 Desain) — Rp75.000–100.000",
-  "Katalog Digital UMKM — mulai Rp150.000",
-  "Portofolio Pribadi Starter — mulai Rp150.000",
-  "Portofolio Pribadi Professional — Rp349.000",
-  "Portofolio Pribadi Premium — mulai Rp599.000",
-  "Landing Page Bisnis — Rp350.000–500.000",
-  "Company Profile — Rp2.500.000",
-  "Business Website Lengkap — Rp4.000.000",
-  "E-Commerce Toko Online — mulai Rp6.000.000",
-  "Custom Web App — mulai Rp7.500.000",
-  "Belum Memilih Paket / Ingin Konsultasi Dulu",
-];
+const packageOptions = packagePlanOptions;
 
 const professionOptions = [
   "Web Developer / Programmer",
@@ -117,28 +99,35 @@ export default function Contact() {
   useEffect(() => {
     const handlePlanSelect = (e: Event) => {
       const detail = (
-        e as CustomEvent<{ service?: string; plan?: string }>
+        e as CustomEvent<{ planId?: string; service?: string; plan?: string }>
       ).detail;
       if (detail) {
+        setStatus("idle");
         setForm((prev) => {
           let matchedService = prev.service;
-          if (detail.service) {
-            const foundSrv = servicesList.find(
-              (s) =>
-                s.toLowerCase().includes(detail.service!.toLowerCase()) ||
-                detail.service!.toLowerCase().includes(s.toLowerCase())
-            );
-            if (foundSrv) matchedService = foundSrv;
-          }
-
           let matchedPlan = prev.packagePlan;
-          if (detail.plan) {
-            const foundPlan = packageOptions.find(
-              (opt) =>
-                opt.toLowerCase().includes(detail.plan!.toLowerCase()) ||
-                detail.plan!.toLowerCase().includes(opt.toLowerCase())
-            );
-            if (foundPlan) matchedPlan = foundPlan;
+
+          if (detail.planId && planToServiceMap[detail.planId]) {
+            matchedService = planToServiceMap[detail.planId].service;
+            matchedPlan = planToServiceMap[detail.planId].packageOption;
+          } else {
+            if (detail.service) {
+              const foundSrv = servicesList.find(
+                (s) =>
+                  s.toLowerCase().includes(detail.service!.toLowerCase()) ||
+                  detail.service!.toLowerCase().includes(s.toLowerCase())
+              );
+              if (foundSrv) matchedService = foundSrv;
+            }
+
+            if (detail.plan) {
+              const foundPlan = packageOptions.find(
+                (opt) =>
+                  opt.toLowerCase().includes(detail.plan!.toLowerCase()) ||
+                  detail.plan!.toLowerCase().includes(opt.toLowerCase())
+              );
+              if (foundPlan) matchedPlan = foundPlan;
+            }
           }
 
           return {
@@ -256,7 +245,7 @@ export default function Contact() {
                   Diskusi Langsung dengan Tim BeOne
                 </h3>
                 <p className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 mb-5 leading-relaxed">
-                  Ingin bertanya langsung seputar website portofolio, pilihan paket Rp199.000, atau penyesuaian fitur? Hubungi kami via WhatsApp sekarang.
+                  Ingin bertanya langsung seputar website portofolio, pilihan paket mulai Rp150.000, atau penyesuaian fitur? Hubungi kami via WhatsApp sekarang.
                 </p>
                 <a
                   href={whatsappUrl()}

@@ -33,7 +33,7 @@ export const services: Service[] = [
     featured: true,
     badge: "Layanan Unggulan",
     scopeSummary:
-      "1 halaman responsif, profil/bio, keahlian, maks 3 proyek dasar, kontak & tautan sosial, penyesuaian visual, publikasi hosting gratis.",
+      "Tersedia Paket Starter (mulai Rp150.000) 1 halaman responsif maks 3 proyek dasar, Professional (Rp349.000) hingga 6 showcase karya terkurasi, dan Premium (mulai Rp599.000) studi kasus mendalam.",
     useCases: [
       "Web Developer & Programmer",
       "UI/UX & Graphic Designer",

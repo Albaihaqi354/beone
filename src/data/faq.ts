@@ -9,7 +9,7 @@ export const faqItems: FAQItem[] = [
     id: "entry-services",
     question: "Apa saja layanan entry-level BeOne dengan biaya terjangkau?",
     answer:
-      "BeOne menyediakan 4 layanan entry-level hemat untuk membantu Anda langsung online: Desain Konten Promosi (Rp75.000–100.000 untuk paket 5 desain), Katalog Digital UMKM (mulai Rp150.000), Website Portofolio Pribadi (mulai Rp150.000), dan Landing Page Bisnis (Rp350.000–500.000). Seluruh layanan dirancang efisien dan siap dalam 1–3 hari kerja.",
+      "BeOne menyediakan 4 layanan entry-level hemat untuk membantu Anda langsung online: Desain Konten Promosi (Rp75.000–100.000 untuk paket 5 desain), Katalog Digital UMKM (mulai Rp150.000), Website Portofolio Pribadi Starter (mulai Rp150.000), dan Landing Page Bisnis (Rp350.000–500.000). Estimasi pengerjaan cepat (1–3 hari kerja) terhitung setelah seluruh materi dan brief lengkap diserahkan.",
   },
   {
     id: "promo-design-scope",
@@ -25,15 +25,27 @@ export const faqItems: FAQItem[] = [
   },
   {
     id: "portfolio-starter-vs-pro",
-    question: "Apa perbedaan Portofolio Starter (Rp150.000) dan Portofolio Professional (Rp349.000)?",
+    question: "Apa perbedaan Portofolio Starter (Rp150.000), Professional (Rp349.000), dan Premium (Rp599.000)?",
     answer:
-      "Paket Starter (Rp150.000) adalah single page ringkas berfokus pada bio, ringkasan keahlian, maksimal 3 proyek dasar, kontak, dan 1x revisi minor — sangat cocok untuk mahasiswa atau pemula. Sedangkan Paket Professional (Rp349.000) menawarkan desain lebih terkurasi dan berkarakter, struktur lengkap (About, Skills, Projects hingga 6 karya interaktif, Experience timeline, Contact), animasi halus, 2x revisi, dan bantuan setup custom domain.",
+      "Paket Starter (Rp150.000) adalah single page ringkas berfokus pada bio, ringkasan keahlian, maksimal 3 proyek dasar, kontak, dan 1x revisi minor — sangat cocok untuk mahasiswa atau pemula. Paket Professional (Rp349.000) menawarkan desain lebih terkurasi dan berkarakter, struktur lengkap (About, Skills, Projects hingga 6 karya interaktif, Experience timeline, Contact), animasi halus, 2x revisi, dan bantuan setup custom domain. Sedangkan Paket Premium (mulai Rp599.000) ditujukan untuk profesional atau senior developer yang membutuhkan arsitektur kustom, studi kasus proyek mendalam, halaman/filter khusus, dan 3x revisi.",
   },
   {
     id: "business-landing-page-scope",
     question: "Apa yang membedakan Landing Page Bisnis Rp350.000 vs Rp500.000?",
     answer:
       "Paket dasar Rp350.000 mencakup landing page satu halaman fokus konversi dengan 3–4 section utama (Hero, Layanan/Produk, Keunggulan, Kontak WhatsApp) dengan materi siap pakai dari pelanggan. Biaya mendekati Rp500.000 berlaku jika membutuhkan section tambahan (misal FAQ, galeri, form khusus), perapian materi visual, atau penyesuaian desain yang lebih spesifik.",
+  },
+  {
+    id: "project-timeline",
+    question: "Kapan estimasi pengerjaan mulai dihitung dan apa yang memengaruhi timeline?",
+    answer:
+      "Perhitungan estimasi hari kerja dimulai resmi setelah seluruh materi (teks, foto produk/portofolio, logo), brief kebutuhan, dan ruang lingkup project telah lengkap diserahkan pelanggan dan disepakati bersama. Keterlambatan penyerahan materi atau permintaan penambahan fitur/perubahan scope di tengah pengerjaan akan menyesuaikan jadwal penyelesaian secara realistis.",
+  },
+  {
+    id: "warranty-and-maintenance",
+    question: "Apa batasan garansi bug 30 hari dan bagaimana transparansi biaya domain/hosting?",
+    answer:
+      "Garansi bug 30 hari mencakup perbaikan error fungsional, broken layout di berbagai layar, atau kendala teknis bawaan dari kode yang dibangun BeOne sesuai kesepakatan awal tanpa biaya tambahan. Garansi tidak mencakup request fitur baru, perubahan desain besar di luar kesepakatan, atau kerusakan akibat modifikasi pihak luar. Untuk jangka panjang, tersedia paket maintenance tahunan untuk pemeliharaan teknis rutin. Biaya resmi perpanjangan sewa domain (.com/.id) atau server cloud berbayar dari pihak ketiga dibayarkan transparan sesuai tagihan invoice resmi registrar/provider tanpa biaya tersembunyi.",
   },
   {
     id: "portfolio-hosting",

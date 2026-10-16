@@ -1,9 +1,24 @@
+"use client";
+
 import { Check, Shield } from "lucide-react";
-import { maintenancePlans } from "@/data/maintenance";
+import { maintenancePlans, type MaintenancePlan } from "@/data/maintenance";
 import SectionHeader from "@/components/ui/SectionHeader";
 import AnimateOnScroll from "@/components/ui/AnimateOnScroll";
 
 export default function Maintenance() {
+  const handleSelectPlan = (plan: MaintenancePlan) => {
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(
+        new CustomEvent("beone-select-plan", {
+          detail: {
+            service: "Website Maintenance",
+            plan: `Paket Maintenance ${plan.name} (${plan.price}/${plan.period})`,
+          },
+        })
+      );
+    }
+  };
+
   return (
     <section
       id="maintenance"
@@ -70,10 +85,11 @@ export default function Maintenance() {
                 {/* CTA */}
                 <a
                   href="#contact"
+                  onClick={() => handleSelectPlan(plan)}
                   className="mt-5 flex items-center justify-center py-2.5 rounded-xl text-sm font-semibold border border-neutral-200 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800 hover:border-neutral-300 dark:hover:border-neutral-600 transition-colors"
-                  aria-label={`Choose ${plan.name} maintenance plan`}
+                  aria-label={`Pilih paket maintenance ${plan.name}`}
                 >
-                  Choose {plan.name}
+                  Pilih Paket {plan.name}
                 </a>
               </div>
             </AnimateOnScroll>
@@ -81,9 +97,14 @@ export default function Maintenance() {
         </div>
 
         <AnimateOnScroll delay={0.15}>
-          <p className="mt-6 text-center text-xs text-neutral-400 dark:text-neutral-500">
-            New features, redesign, and major changes are quoted separately.
-          </p>
+          <div className="mt-8 p-4 rounded-xl bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-xs text-neutral-500 dark:text-neutral-400 text-center max-w-3xl mx-auto space-y-1">
+            <p className="font-semibold text-neutral-800 dark:text-neutral-200">
+              Transparansi Biaya Pihak Ketiga & Ruang Lingkup Maintenance:
+            </p>
+            <p>
+              Biaya perpanjangan tahunan nama domain (.com/.id) atau server hosting berbayar pihak ketiga ditagihkan transparan sesuai invoice riil penyedia registrar/cloud tanpa markup tersembunyi. Untuk website dengan hosting gratis (Vercel/Netlify), tidak ada biaya sewa server bulanan. Fitur baru, perombakan desain menyeluruh, atau migrasi sistem dikuotasikan secara terpisah.
+            </p>
+          </div>
         </AnimateOnScroll>
       </div>
     </section>

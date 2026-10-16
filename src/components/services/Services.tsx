@@ -56,8 +56,9 @@ export default function Services() {
       window.dispatchEvent(
         new CustomEvent("beone-select-plan", {
           detail: {
+            planId: service.id,
             service: service.title,
-            plan: service.isEntryLevel ? service.title : undefined,
+            plan: service.title,
           },
         })
       );

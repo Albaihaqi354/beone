@@ -20,7 +20,7 @@ export const processSteps: ProcessStep[] = [
     number: "02",
     title: "Planning",
     description:
-      "Menentukan scope, fitur, timeline, teknologi, dan estimasi biaya. Semua disepakati bersama sebelum pengerjaan dimulai.",
+      "Menentukan scope fitur, spesifikasi teknis, estimasi timeline, dan biaya transparan. Perhitungan estimasi pengerjaan dimulai resmi setelah brief dan materi lengkap diserahkan client.",
     icon: "ClipboardList",
   },
   {
@@ -36,7 +36,7 @@ export const processSteps: ProcessStep[] = [
     number: "04",
     title: "Development",
     description:
-      "Membangun website atau aplikasi menggunakan teknologi modern. Setiap fitur diuji sebelum diserahkan untuk review.",
+      "Membangun website atau aplikasi menggunakan teknologi modern. Perubahan scope di tengah jalan atau keterlambatan materi dapat memengaruhi jadwal penyelesaian.",
     icon: "Code2",
   },
   {
@@ -44,7 +44,7 @@ export const processSteps: ProcessStep[] = [
     number: "05",
     title: "Launch",
     description:
-      "Deployment ke server, handover akses, dan support setelah project selesai. Garansi bug 30 hari untuk setiap project.",
+      "Deployment ke hosting/server, handover akses, dan panduan penggunaan. Garansi bug 30 hari aktif sejak serah terima untuk menangani kendala teknis bawaan.",
     icon: "Rocket",
   },
 ];

@@ -263,13 +263,25 @@ export default function PortfolioShowcase() {
                   Ingin Portofolio yang Mewakili Karakter Anda Sendiri?
                 </h4>
                 <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-1 max-w-2xl leading-relaxed">
-                  Kami membuat website portofolio dari nol sesuai identitas, warna kesukaan, dan profesi Anda — bukan sekadar template kaku. Siap tayang dalam 1–3 hari kerja.
+                  Kami membuat website portofolio dari nol sesuai identitas, warna kesukaan, dan profesi Anda — bukan sekadar template kaku. Siap tayang dalam 1–3 hari kerja setelah materi lengkap diserahkan.
                 </p>
               </div>
             </div>
             <a
               href="#contact"
-              className="inline-flex items-center gap-2 px-5 py-3 text-sm font-semibold text-white bg-neutral-950 dark:bg-white text-white dark:text-neutral-950 hover:bg-neutral-800 dark:hover:bg-neutral-100 rounded-xl transition-colors whitespace-nowrap shadow-sm"
+              onClick={() => {
+                if (typeof window !== "undefined") {
+                  window.dispatchEvent(
+                    new CustomEvent("beone-select-plan", {
+                      detail: {
+                        planId: "portfolio-starter",
+                        service: "Website Portofolio Pribadi",
+                      },
+                    })
+                  );
+                }
+              }}
+              className="inline-flex items-center gap-2 px-5 py-3 text-sm font-semibold bg-neutral-950 dark:bg-white text-white dark:text-neutral-950 hover:bg-neutral-800 dark:hover:bg-neutral-100 rounded-xl transition-colors whitespace-nowrap shadow-sm"
             >
               Mulai Konsultasi Portofolio
               <ArrowRight size={16} />

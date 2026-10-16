@@ -28,7 +28,7 @@ export const entryPricingPlans: PricingPlan[] = [
     price: "Rp75.000–100.000",
     priceNote: "Paket lengkap 5 desain (bukan per desain)",
     target: "UMKM, pemilik toko online, dan kreator yang butuh visual promosi siap posting di media sosial.",
-    duration: "1–2 hari kerja",
+    duration: "1–2 hari kerja (setelah materi lengkap)",
     revisions: "1–2x revisi minor",
     hostingInfo: "File final kualitas tinggi (PNG / JPG) siap posting",
     cta: "Pesan Paket Desain",
@@ -50,7 +50,7 @@ export const entryPricingPlans: PricingPlan[] = [
     price: "Rp150.000",
     priceNote: "Mulai dari",
     target: "Pelaku usaha kuliner, kafe, warung makan, butik pakaian, dan UMKM produk rumahan.",
-    duration: "1–2 hari kerja",
+    duration: "1–2 hari kerja (setelah materi lengkap)",
     revisions: "1x revisi minor",
     hostingInfo: "Hosting gratis via Vercel / Netlify (tanpa biaya bulanan)",
     cta: "Pilih Katalog UMKM",
@@ -72,7 +72,7 @@ export const entryPricingPlans: PricingPlan[] = [
     price: "Rp150.000",
     priceNote: "Mulai dari",
     target: "Developer, desainer, freelancer, mahasiswa & pencari kerja yang butuh portofolio ringkas cepat tayang.",
-    duration: "1–3 hari kerja",
+    duration: "1–3 hari kerja (setelah materi lengkap)",
     revisions: "1x revisi minor",
     hostingInfo: "Hosting gratis via Vercel / Netlify / GitHub Pages (tanpa biaya bulanan)",
     cta: "Pilih Portofolio Starter",
@@ -98,7 +98,7 @@ export const entryPricingPlans: PricingPlan[] = [
     price: "Rp350.000–500.000",
     priceNote: "Tergantung section & kebutuhan",
     target: "Pelaku usaha jasa, UMKM, atau penawaran produk khusus yang butuh satu halaman terarah untuk promosi.",
-    duration: "2–4 hari kerja",
+    duration: "2–4 hari kerja (setelah materi lengkap)",
     revisions: "2x revisi",
     hostingInfo: "Hosting gratis tanpa biaya server bulanan",
     cta: "Pilih Landing Page Bisnis",
@@ -112,7 +112,7 @@ export const entryPricingPlans: PricingPlan[] = [
       "Desain responsif mobile-first",
       "Hosting gratis tanpa biaya sewa server bulanan",
       "2x revisi",
-      "*Catatan:* Harga final bergantung pada konten, jumlah section, dan fitur tambahan",
+      "*Catatan:* Harga final bergantung pada konten, jumlah section, dan materi desain",
     ],
   },
 ];
@@ -121,12 +121,12 @@ export const entryPricingPlans: PricingPlan[] = [
 export const portfolioPricingPlans: PricingPlan[] = [
   {
     id: "portfolio-starter",
-    name: "Portfolio Starter",
+    name: "Portofolio Pribadi Starter",
     label: "Pelajar & Pemula",
     price: "Rp150.000",
     priceNote: "Mulai dari",
     target: "Mahasiswa, fresh graduate, atau pemula yang butuh portofolio personal rapi dan cepat online.",
-    duration: "1–3 hari kerja",
+    duration: "1–3 hari kerja (setelah materi lengkap)",
     revisions: "1x revisi minor",
     hostingInfo: "Hosting gratis via Vercel / Netlify / GitHub Pages (tanpa biaya bulanan)",
     cta: "Pilih Starter",
@@ -146,12 +146,12 @@ export const portfolioPricingPlans: PricingPlan[] = [
   },
   {
     id: "portfolio-professional",
-    name: "Portfolio Professional",
+    name: "Portofolio Pribadi Professional",
     label: "Rekomendasi Utama",
     price: "Rp349.000",
     priceNote: "Paling populer & terkurasi",
     target: "Web developer, UI/UX designer, freelancer, dan profesional yang ingin personal branding lebih kuat.",
-    duration: "3–5 hari kerja",
+    duration: "3–5 hari kerja (setelah materi lengkap)",
     revisions: "2x revisi",
     hostingInfo: "Hosting gratis via Vercel / Netlify + bantuan setup custom domain",
     cta: "Pilih Professional",
@@ -171,12 +171,12 @@ export const portfolioPricingPlans: PricingPlan[] = [
   },
   {
     id: "portfolio-premium",
-    name: "Portfolio Premium",
+    name: "Portofolio Pribadi Premium",
     label: "Kustom Mendalam",
     price: "Rp599.000",
     priceNote: "Mulai dari",
     target: "Senior developer, konsultan, kreator konten, atau profesional yang membutuhkan studi kasus mendalam.",
-    duration: "5–10 hari kerja",
+    duration: "5–10 hari kerja (setelah brief & scope disepakati)",
     revisions: "3x revisi",
     hostingInfo: "Hosting gratis / konfigurasi server sesuai kesepakatan",
     cta: "Konsultasi Premium",
@@ -202,7 +202,7 @@ export const businessPricingPlans: PricingPlan[] = [
     name: "Company Profile",
     label: "Kredibilitas Bisnis",
     price: "Rp2.500.000",
-    duration: "7–14 hari kerja",
+    duration: "7–14 hari kerja (setelah materi lengkap)",
     revisions: "3x revisi",
     hostingInfo: "Termasuk domain .com & hosting tahun pertama",
     cta: "Pilih Company Profile",
@@ -225,7 +225,7 @@ export const businessPricingPlans: PricingPlan[] = [
     name: "Business Website Lengkap",
     label: "Website Berfitur",
     price: "Rp4.000.000",
-    duration: "2–3 minggu",
+    duration: "2–3 minggu (tahap terstruktur)",
     revisions: "4x revisi",
     hostingInfo: "Termasuk domain .com & hosting tahun pertama",
     cta: "Pilih Business Website",
@@ -251,7 +251,7 @@ export const businessPricingPlans: PricingPlan[] = [
     label: "Toko Online",
     price: "Rp6.000.000",
     priceNote: "Mulai dari",
-    duration: "3–5 minggu",
+    duration: "3–5 minggu (tahap terstruktur)",
     revisions: "Sesuai scope",
     hostingInfo: "Termasuk domain & hosting 1 tahun",
     cta: "Pilih E-Commerce",
@@ -275,7 +275,7 @@ export const businessPricingPlans: PricingPlan[] = [
     name: "Custom Web App",
     label: "Sistem Kustom",
     price: "Rp7.500.000",
-    priceNote: " dari",
+    priceNote: "Mulai dari",
     duration: "Sesuai scope kebutuhan",
     cta: "Diskusi Project Custom",
     isCustom: true,
@@ -318,3 +318,65 @@ export const addons: Addon[] = [
   { name: "Fitur Export Excel / PDF", startingPrice: "Rp500.000" },
   { name: "Optimasi SEO Lanjutan", startingPrice: "Rp750.000" },
 ];
+
+/** ─── SINGLE SOURCE OF TRUTH UNTUK FORM KONTAK & EVENT DISPATCH ─── */
+export const packagePlanOptions: string[] = [
+  "Desain Konten Promosi (Paket 5 Desain) — Rp75.000–100.000",
+  "Katalog Digital UMKM — mulai Rp150.000",
+  "Portofolio Pribadi Starter — mulai Rp150.000",
+  "Portofolio Pribadi Professional — Rp349.000",
+  "Portofolio Pribadi Premium — mulai Rp599.000",
+  "Landing Page Bisnis — Rp350.000–500.000",
+  "Company Profile — Rp2.500.000",
+  "Business Website Lengkap — Rp4.000.000",
+  "E-Commerce Toko Online — mulai Rp6.000.000",
+  "Custom Web App — mulai Rp7.500.000",
+  "Belum Memilih Paket / Ingin Konsultasi Dulu",
+];
+
+export const planToServiceMap: Record<
+  string,
+  { service: string; packageOption: string }
+> = {
+  "promo-design": {
+    service: "Desain Konten Promosi",
+    packageOption: "Desain Konten Promosi (Paket 5 Desain) — Rp75.000–100.000",
+  },
+  "umkm-catalog": {
+    service: "Katalog Digital UMKM",
+    packageOption: "Katalog Digital UMKM — mulai Rp150.000",
+  },
+  "portfolio-starter": {
+    service: "Website Portofolio Pribadi",
+    packageOption: "Portofolio Pribadi Starter — mulai Rp150.000",
+  },
+  "portfolio-professional": {
+    service: "Website Portofolio Pribadi",
+    packageOption: "Portofolio Pribadi Professional — Rp349.000",
+  },
+  "portfolio-premium": {
+    service: "Website Portofolio Pribadi",
+    packageOption: "Portofolio Pribadi Premium — mulai Rp599.000",
+  },
+  "business-landing-page": {
+    service: "Landing Page Bisnis",
+    packageOption: "Landing Page Bisnis — Rp350.000–500.000",
+  },
+  "company-profile": {
+    service: "Company Profile",
+    packageOption: "Company Profile — Rp2.500.000",
+  },
+  "business-website": {
+    service: "Business Website Lengkap",
+    packageOption: "Business Website Lengkap — Rp4.000.000",
+  },
+  ecommerce: {
+    service: "E-Commerce",
+    packageOption: "E-Commerce Toko Online — mulai Rp6.000.000",
+  },
+  "custom-web-app": {
+    service: "Custom Web App",
+    packageOption: "Custom Web App — mulai Rp7.500.000",
+  },
+};
+

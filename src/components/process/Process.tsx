@@ -94,11 +94,11 @@ export default function Process() {
         <AnimateOnScroll delay={0.2}>
           <div className="mt-12 p-5 bg-neutral-900 border border-neutral-800 rounded-2xl text-center">
             <p className="text-sm text-neutral-400">
-              Setiap tahap dilakukan secara transparan dan melibatkan komunikasi aktif dengan client.
+              Setiap tahap pengerjaan dilakukan secara transparan dan komunikatif.
               <span className="text-indigo-400 font-medium ml-1">
                 Garansi bug 30 hari
               </span>{" "}
-              untuk setiap project yang kami kerjakan.
+              mencakup perbaikan kendala teknis dan fungsional bawaan sesuai kesepakatan awal sejak tanggal serah terima.
             </p>
           </div>
         </AnimateOnScroll>

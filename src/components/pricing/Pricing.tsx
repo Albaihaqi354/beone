@@ -7,6 +7,7 @@ import {
   portfolioPricingPlans,
   businessPricingPlans,
   addons,
+  planToServiceMap,
   type PricingPlan,
 } from "@/data/pricing";
 import SectionHeader from "@/components/ui/SectionHeader";
@@ -25,20 +26,16 @@ export default function Pricing() {
 
   const handleSelectPlan = (plan: PricingPlan) => {
     if (typeof window !== "undefined") {
-      let mappedService = "Website Portofolio Pribadi";
-      if (plan.id === "promo-design") mappedService = "Desain Konten Promosi";
-      else if (plan.id === "umkm-catalog") mappedService = "Katalog Digital UMKM";
-      else if (plan.id === "business-landing-page") mappedService = "Landing Page Bisnis";
-      else if (plan.id === "company-profile") mappedService = "Company Profile";
-      else if (plan.id === "business-website") mappedService = "Business Website";
-      else if (plan.id === "ecommerce") mappedService = "E-Commerce";
-      else if (plan.id === "custom-web-app") mappedService = "Custom Web App";
+      const mapping = planToServiceMap[plan.id];
+      const mappedService = mapping?.service || "Website Portofolio Pribadi";
+      const mappedPlan = mapping?.packageOption || plan.name;
 
       window.dispatchEvent(
         new CustomEvent("beone-select-plan", {
           detail: {
+            planId: plan.id,
             service: mappedService,
-            plan: plan.name,
+            plan: mappedPlan,
           },
         })
       );
@@ -242,15 +239,16 @@ export default function Pricing() {
         <AnimateOnScroll delay={0.15}>
           <div className="mt-10 p-5 rounded-2xl bg-indigo-50/50 dark:bg-indigo-950/20 border border-indigo-100 dark:border-indigo-900/60 text-xs text-neutral-600 dark:text-neutral-400 max-w-4xl mx-auto flex flex-col sm:flex-row gap-3 items-start">
             <ShieldCheck size={18} className="text-indigo-500 flex-shrink-0 mt-0.5" />
-            <div className="space-y-1">
+            <div className="space-y-1.5 leading-relaxed">
               <span className="font-bold text-neutral-900 dark:text-white block">
-                Cakupan & Batas Revisi Paket Entry-Level:
+                Ketentuan Layanan, Estimasi Waktu & Garansi:
               </span>
               <p>
-                1. <strong>Domain Khusus (.com/.id)</strong> tidak termasuk dalam paket entry-level kecuali dinyatakan secara eksplisit (kami menyediakan panduan gratis / bantuan setup).<br />
-                2. <strong>Hosting Gratis</strong> (Vercel/Netlify) digunakan tanpa biaya sewa server bulanan untuk website portofolio, katalog, dan landing page sederhana.<br />
-                3. <strong>Fitur Backend Kompleks</strong> seperti database besar, sistem pembayaran otomatis (payment gateway), atau dashboard admin tidak termasuk dalam paket sederhana.<br />
-                4. <strong>Paket Desain Promosi</strong> adalah paket 5 desain konten siap posting (bukan harga per 1 desain) dengan materi teks & info dari pelanggan.
+                1. <strong>Domain Khusus (.com/.id):</strong> Tidak termasuk dalam paket entry-level kecuali dinyatakan eksplisit. Kami menyediakan panduan setup atau opsi bantuan aktivasi.<br />
+                2. <strong>Hosting Gratis:</strong> Menggunakan platform cloud modern (Vercel/Netlify/GitHub Pages) dengan SSL aktif tanpa tagihan sewa server bulanan.<br />
+                3. <strong>Perhitungan Estimasi Waktu:</strong> Estimasi hari kerja dihitung resmi setelah seluruh brief, materi (teks/foto/data), dan scope disepakati lengkap. Keterlambatan materi atau penambahan scope di tengah jalan dapat memengaruhi jadwal penyelesaian.<br />
+                4. <strong>Garansi Bug 30 Hari:</strong> Menjamin perbaikan kendala fungsional bawaan dari kode yang dibangun BeOne tanpa biaya tambahan (tidak mencakup penambahan fitur baru di luar kesepakatan).<br />
+                5. <strong>Paket Desain Promosi:</strong> Merupakan paket lengkap 5 desain konten siap posting (bukan harga per 1 desain) dengan materi teks dan foto produk dari pelanggan.
               </p>
             </div>
           </div>

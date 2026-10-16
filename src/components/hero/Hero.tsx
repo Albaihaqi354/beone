@@ -11,7 +11,7 @@ import {
 
 const valueHighlights = [
   "Developer, Designer, Freelancer & Mahasiswa",
-  "Pengerjaan Cepat 1–3 Hari",
+  "Pengerjaan Cepat 1–3 Hari (Setelah Materi Lengkap)",
   "Hosting Gratis & Panduan Domain",
   "Layanan Mulai Rp75rb (Desain) / Rp150rb (Website)",
 ];

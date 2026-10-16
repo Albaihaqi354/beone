@@ -46,6 +46,6 @@ export const benefits: Benefit[] = [
     icon: "HeadphonesIcon",
     title: "After-Sales Support",
     description:
-      "Tersedia maintenance dan support setelah project selesai. Garansi bug 30 hari untuk setiap project.",
+      "Tersedia opsi maintenance setelah serah terima. Garansi bug 30 hari mencakup perbaikan kendala fungsional bawaan sesuai scope kesepakatan awal.",
   },
 ];
