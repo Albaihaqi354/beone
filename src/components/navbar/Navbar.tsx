@@ -2,35 +2,54 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { Menu, X, MessageCircle } from "lucide-react";
+import { Menu, X, ArrowUpRight } from "lucide-react";
 import { whatsappUrl } from "@/lib/config";
 import { useLanguage } from "@/lib/language";
-import ThemeToggle from "@/components/ui/ThemeToggle";
-import LanguageSwitcher from "@/components/ui/LanguageSwitcher";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function Navbar() {
   const { t } = useLanguage();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState("home");
 
   const navLinks = [
-    { href: "#home", label: t.nav.home },
-    { href: "#portfolio", label: t.nav.portfolio },
-    { href: "#services", label: t.nav.services },
-    { href: "#pricing", label: t.nav.pricing },
-    { href: "#process", label: t.nav.process },
-    { href: "#faq", label: t.nav.faq },
-    { href: "#contact", label: t.nav.contact },
+    { href: "#home", label: "Home" },
+    { href: "#about", label: "About" },
+    { href: "#services", label: "Services" },
+    { href: "#portfolio", label: "Selected Works" },
+    { href: "#contact", label: "Contact" },
   ];
 
   const handleScroll = useCallback(() => {
-    setScrolled(window.scrollY > 20);
+    setScrolled(window.scrollY > 40);
   }, []);
 
   useEffect(() => {
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, [handleScroll]);
+
+  useEffect(() => {
+    // Intersection observer for active section tracking
+    const sections = ["home", "about", "services", "portfolio", "contact"];
+    const observers: IntersectionObserver[] = [];
+
+    sections.forEach((id) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const obs = new IntersectionObserver(
+        ([entry]) => {
+          if (entry.isIntersecting) setActiveSection(id);
+        },
+        { rootMargin: "-40% 0px -40% 0px", threshold: 0 }
+      );
+      obs.observe(el);
+      observers.push(obs);
+    });
+
+    return () => observers.forEach((o) => o.disconnect());
+  }, []);
 
   useEffect(() => {
     const handleResize = () => {
@@ -55,71 +74,84 @@ export default function Navbar() {
     };
   }, [menuOpen]);
 
-  const handleNavClick = () => setMenuOpen(false);
-
   return (
     <header
       role="banner"
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
         scrolled
-          ? "bg-white/95 dark:bg-neutral-950/95 backdrop-blur-md shadow-xs border-b border-neutral-200/80 dark:border-neutral-800"
-          : "bg-white/60 dark:bg-neutral-950/60 backdrop-blur-xs"
+          ? "bg-[var(--background)]/95 backdrop-blur-md border-b border-[var(--border)]"
+          : "bg-transparent"
       }`}
     >
       <nav
-        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
-        aria-label={t.nav.navAria}
+        className="max-w-[1400px] mx-auto px-6 sm:px-8 lg:px-12"
+        aria-label="Main Navigation"
       >
-        <div className="flex items-center justify-between h-16 md:h-18">
-          {/* Logo */}
+        <div className="flex items-center justify-between h-16 md:h-20">
+
+          {/* Wordmark */}
           <Link
             href="/"
-            className="flex items-center gap-1 group focus-visible:outline-none"
-            aria-label={`BeOne — ${t.nav.home}`}
+            className="group focus-visible:outline-none"
+            aria-label="BeOne — homepage"
           >
-            <span className="text-xl font-black tracking-tight text-neutral-950 dark:text-white group-hover:opacity-85 transition-opacity">
-              Be<span className="text-indigo-500">One</span>
+            <span
+              className="font-display text-xl font-bold tracking-tight text-[var(--ink)] group-hover:opacity-70 transition-opacity duration-300"
+              style={{ fontFamily: "var(--font-playfair)" }}
+            >
+              Be<span className="italic">One</span>
             </span>
           </Link>
 
-          {/* Desktop nav */}
-          <ul className="hidden md:flex items-center gap-1" role="list">
-            {navLinks.map(({ href, label }) => (
-              <li key={href}>
-                <a
-                  href={href}
-                  className="px-3 py-2 text-sm font-medium text-neutral-600 dark:text-neutral-300 hover:text-neutral-950 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-800/80 rounded-lg transition-colors duration-150"
-                >
-                  {label}
-                </a>
-              </li>
-            ))}
+          {/* Desktop nav links — centered */}
+          <ul className="hidden md:flex items-center gap-8" role="list">
+            {navLinks.map(({ href, label }) => {
+              const sectionId = href.replace("#", "");
+              const isActive = activeSection === sectionId;
+              return (
+                <li key={href}>
+                  <a
+                    href={href}
+                    className={`relative text-sm tracking-wide transition-colors duration-200 ${
+                      isActive
+                        ? "text-[var(--ink)]"
+                        : "text-[var(--ink-muted)] hover:text-[var(--ink)]"
+                    }`}
+                  >
+                    {label}
+                    {isActive && (
+                      <motion.span
+                        layoutId="nav-indicator"
+                        className="absolute -bottom-1 left-0 right-0 h-px bg-[var(--ink)]"
+                        transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                      />
+                    )}
+                  </a>
+                </li>
+              );
+            })}
           </ul>
 
-          {/* Desktop right — lang switcher + theme toggle + primary CTA */}
-          <div className="hidden md:flex items-center gap-2.5">
-            <LanguageSwitcher />
-            <ThemeToggle />
+          {/* Desktop CTA */}
+          <div className="hidden md:flex items-center gap-4">
             <a
               href="#contact"
-              className="inline-flex items-center justify-center gap-1.5 px-4 py-2 text-sm font-semibold text-white bg-indigo-500 hover:bg-indigo-600 rounded-xl transition-all duration-150 shadow-sm shadow-indigo-200 dark:shadow-indigo-950/40"
-              aria-label={`${t.nav.cta} — menuju formulir kontak`}
+              className="inline-flex items-center gap-1.5 px-5 py-2.5 text-sm font-medium text-[var(--background)] bg-[var(--ink)] hover:opacity-80 transition-opacity duration-200"
             >
-              {t.nav.cta}
+              Start a Project
+              <ArrowUpRight size={14} strokeWidth={2} aria-hidden="true" />
             </a>
           </div>
 
-          {/* Mobile right — lang switcher + toggle + hamburger */}
-          <div className="md:hidden flex items-center gap-1.5">
-            <LanguageSwitcher />
-            <ThemeToggle />
+          {/* Mobile hamburger */}
+          <div className="md:hidden flex items-center">
             <button
               type="button"
               onClick={() => setMenuOpen(!menuOpen)}
-              className="p-2.5 rounded-xl text-neutral-700 dark:text-neutral-300 hover:text-neutral-950 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+              className="p-2 text-[var(--ink)] hover:opacity-70 transition-opacity"
               aria-expanded={menuOpen}
               aria-controls="mobile-menu"
-              aria-label={menuOpen ? t.nav.closeMenu : t.nav.openMenu}
+              aria-label={menuOpen ? "Close menu" : "Open menu"}
             >
               {menuOpen ? (
                 <X size={22} aria-hidden="true" />
@@ -132,53 +164,71 @@ export default function Navbar() {
       </nav>
 
       {/* Mobile menu */}
-      <div
-        id="mobile-menu"
-        role="dialog"
-        aria-modal="true"
-        aria-label={t.nav.mobileMenuAria}
-        className={`md:hidden transition-all duration-300 overflow-hidden ${
-          menuOpen ? "max-h-[85vh] opacity-100 shadow-xl" : "max-h-0 opacity-0 pointer-events-none"
-        } bg-white dark:bg-neutral-950 border-b border-neutral-200 dark:border-neutral-800`}
-      >
-        <nav className="max-w-7xl mx-auto px-4 pb-6 pt-3 flex flex-col gap-1">
-          {navLinks.map(({ href, label }) => (
-            <a
-              key={href}
-              href={href}
-              onClick={handleNavClick}
-              className="px-4 py-3 text-base font-medium text-neutral-800 dark:text-neutral-200 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-neutral-50 dark:hover:bg-neutral-900 rounded-xl transition-colors"
-            >
-              {label}
-            </a>
-          ))}
-          <div className="pt-3 border-t border-neutral-100 dark:border-neutral-800 flex flex-col gap-2">
-            <div className="flex items-center justify-between px-4 py-2 bg-neutral-50 dark:bg-neutral-900/80 rounded-xl">
-              <span className="text-xs font-semibold text-neutral-600 dark:text-neutral-400">
-                {t.nav.langToggle}
-              </span>
-              <LanguageSwitcher />
-            </div>
-            <a
-              href="#contact"
-              onClick={handleNavClick}
-              className="inline-flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold text-white bg-indigo-500 hover:bg-indigo-600 rounded-xl transition-colors shadow-sm"
-            >
-              {t.nav.cta}
-            </a>
-            <a
-              href={whatsappUrl(t.shared.whatsappDefaultMsg)}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={handleNavClick}
-              className="inline-flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold text-neutral-700 dark:text-neutral-200 bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 rounded-xl transition-colors"
-            >
-              <MessageCircle size={16} aria-hidden="true" />
-              {t.nav.chatWhatsapp}
-            </a>
-          </div>
-        </nav>
-      </div>
+      <AnimatePresence>
+        {menuOpen && (
+          <motion.div
+            id="mobile-menu"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Mobile navigation"
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+            className="md:hidden fixed inset-0 top-16 bg-[var(--background)] z-40 flex flex-col"
+          >
+            {/* Top border line */}
+            <div className="h-px bg-[var(--border)]" />
+
+            <nav className="flex-1 px-6 pt-10 pb-8 flex flex-col justify-between">
+              <ul className="flex flex-col gap-1" role="list">
+                {navLinks.map(({ href, label }, i) => (
+                  <motion.li
+                    key={href}
+                    initial={{ opacity: 0, x: -16 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: i * 0.06, duration: 0.3, ease: "easeOut" }}
+                  >
+                    <a
+                      href={href}
+                      onClick={() => setMenuOpen(false)}
+                      className="block py-4 text-3xl font-display font-medium text-[var(--ink)] border-b border-[var(--border)] hover:opacity-60 transition-opacity"
+                      style={{ fontFamily: "var(--font-playfair)" }}
+                    >
+                      {label}
+                    </a>
+                  </motion.li>
+                ))}
+              </ul>
+
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.35, duration: 0.3 }}
+                className="pt-8 flex flex-col gap-3"
+              >
+                <a
+                  href="#contact"
+                  onClick={() => setMenuOpen(false)}
+                  className="inline-flex items-center justify-center gap-2 px-6 py-4 text-base font-medium text-[var(--background)] bg-[var(--ink)] hover:opacity-80 transition-opacity"
+                >
+                  Start a Project
+                  <ArrowUpRight size={16} aria-hidden="true" />
+                </a>
+                <a
+                  href={whatsappUrl(t.shared.whatsappDefaultMsg)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setMenuOpen(false)}
+                  className="inline-flex items-center justify-center gap-2 px-6 py-4 text-sm font-medium text-[var(--ink)] border border-[var(--border)] hover:border-[var(--border-strong)] transition-colors"
+                >
+                  WhatsApp
+                </a>
+              </motion.div>
+            </nav>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </header>
   );
 }

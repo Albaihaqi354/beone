@@ -1,57 +1,91 @@
 @import "tailwindcss";
 
-/* ─── Design Tokens — Light ─────────────────────────────── */
+/* ─── Editorial Design Tokens ────────────────────────────── */
 :root {
-  --background: #ffffff;
-  --foreground: #0a0a0a;
+  /* Base palette — warm ivory / off-white */
+  --background: #f8f5f0;
+  --foreground: #0d0d0d;
+  --surface: #ffffff;
+  --surface-2: #f2ede6;
 
-  --accent: #6366f1;
-  --accent-light: #818cf8;
-  --accent-dark: #4f46e5;
+  /* Editorial accent — deep charcoal & warm undertone */
+  --ink: #0d0d0d;
+  --ink-soft: #3a3530;
+  --ink-muted: #7a7068;
 
-  --neutral-50:  #fafafa;
-  --neutral-100: #f4f4f5;
-  --neutral-200: #e4e4e7;
-  --neutral-300: #d4d4d8;
-  --neutral-400: #a1a1aa;
-  --neutral-500: #71717a;
-  --neutral-600: #52525b;
-  --neutral-700: #3f3f46;
-  --neutral-800: #27272a;
-  --neutral-900: #18181b;
-  --neutral-950: #09090b;
+  /* Accent: restrained warm terracotta/ochre tone */
+  --accent: #c8a96e;
+  --accent-light: #e0cba0;
+  --accent-dark: #a8823c;
+
+  /* Borders & separators */
+  --border: #d8d0c4;
+  --border-strong: #b0a898;
+
+  /* Neutral scale — warm tint */
+  --neutral-50:  #faf8f4;
+  --neutral-100: #f2ede6;
+  --neutral-200: #e4ddd3;
+  --neutral-300: #d0c8bc;
+  --neutral-400: #b0a898;
+  --neutral-500: #8a8278;
+  --neutral-600: #6a6258;
+  --neutral-700: #4a4440;
+  --neutral-800: #2e2a26;
+  --neutral-900: #1a1714;
+  --neutral-950: #0d0b09;
 }
 
-/* ─── Design Tokens — Dark ──────────────────────────────── */
+/* ─── Dark Mode ──────────────────────────────────────────── */
 .dark {
-  --background: #0c0c0e;
-  --foreground: #f4f4f5;
+  --background: #0f0e0c;
+  --foreground: #f0ece4;
+  --surface: #1a1815;
+  --surface-2: #211f1b;
 
-  --neutral-50:  #18181b;
-  --neutral-100: #1c1c1f;
-  --neutral-200: #27272a;
-  --neutral-300: #3f3f46;
-  --neutral-400: #71717a;
-  --neutral-500: #a1a1aa;
-  --neutral-600: #d4d4d8;
-  --neutral-700: #e4e4e7;
-  --neutral-800: #f4f4f5;
-  --neutral-900: #fafafa;
-  --neutral-950: #ffffff;
+  --ink: #f0ece4;
+  --ink-soft: #c8c0b4;
+  --ink-muted: #7a7268;
+
+  --accent: #c8a96e;
+  --accent-light: #e0cba0;
+  --accent-dark: #a8823c;
+
+  --border: #2e2a26;
+  --border-strong: #4a4440;
+
+  --neutral-50:  #1a1815;
+  --neutral-100: #211f1b;
+  --neutral-200: #2e2a26;
+  --neutral-300: #3e3a34;
+  --neutral-400: #5a5550;
+  --neutral-500: #7a7268;
+  --neutral-600: #9a9288;
+  --neutral-700: #b8b0a4;
+  --neutral-800: #d4ccc0;
+  --neutral-900: #e8e0d4;
+  --neutral-950: #f0ece4;
 }
 
 /* ─── Tailwind v4 theme extension ───────────────────────── */
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --color-accent:       var(--accent);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-ink-muted: var(--ink-muted);
+  --color-accent: var(--accent);
   --color-accent-light: var(--accent-light);
-  --color-accent-dark:  var(--accent-dark);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-accent-dark: var(--accent-dark);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --font-sans: var(--font-inter);
+  --font-display: var(--font-playfair);
 }
 
-/* ─── Base ───────────────────────────────────────────────── */
+/* ─── Base Reset ─────────────────────────────────────────── */
 *,
 *::before,
 *::after {
@@ -75,7 +109,7 @@ html {
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-geist-sans, Arial, Helvetica, sans-serif);
+  font-family: var(--font-inter, 'Inter', Georgia, sans-serif);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   line-height: 1.6;
@@ -83,50 +117,55 @@ body {
 }
 
 /* ─── Scrollbar ──────────────────────────────────────────── */
-::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar { width: 5px; }
 ::-webkit-scrollbar-track { background: var(--neutral-100); }
-::-webkit-scrollbar-thumb { background: var(--neutral-300); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+::-webkit-scrollbar-thumb { background: var(--neutral-300); border-radius: 0; }
+::-webkit-scrollbar-thumb:hover { background: var(--neutral-500); }
 
 /* ─── Focus ring ─────────────────────────────────────────── */
 :focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 1.5px solid var(--accent);
   outline-offset: 3px;
-  border-radius: 4px;
 }
 
-/* ─── Section spacing ────────────────────────────────────── */
+/* ─── Typography Utilities ───────────────────────────────── */
+.font-display {
+  font-family: var(--font-playfair, 'Playfair Display', Georgia, serif);
+}
+
+/* ─── Editorial Section Spacing ─────────────────────────── */
 .section-padding {
-  padding-top: 5rem;
-  padding-bottom: 5rem;
+  padding-top: 6rem;
+  padding-bottom: 6rem;
 }
 @media (min-width: 768px) {
   .section-padding {
-    padding-top: 7rem;
-    padding-bottom: 7rem;
+    padding-top: 8rem;
+    padding-bottom: 8rem;
+  }
+}
+@media (min-width: 1280px) {
+  .section-padding {
+    padding-top: 10rem;
+    padding-bottom: 10rem;
   }
 }
 
-/* ─── Gradient text ──────────────────────────────────────── */
-.gradient-text {
-  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+/* ─── Thin Separator ─────────────────────────────────────── */
+.editorial-divider {
+  width: 100%;
+  height: 1px;
+  background: var(--border);
 }
 
-/* ─── Card hover ─────────────────────────────────────────── */
-.card-hover {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-.card-hover:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 20px 40px -10px rgba(99, 102, 241, 0.15),
-              0 4px 12px -2px rgba(0, 0, 0, 0.06);
-}
-.dark .card-hover:hover {
-  box-shadow: 0 20px 40px -10px rgba(99, 102, 241, 0.25),
-              0 4px 12px -2px rgba(0, 0, 0, 0.4);
+/* ─── Editorial Label ────────────────────────────────────── */
+.editorial-label {
+  font-family: var(--font-inter, sans-serif);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
 }
 
 /* ─── Hide scrollbar utility ────────────────────────────── */
@@ -136,4 +175,23 @@ body {
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+/* ─── Smooth Image Hover ─────────────────────────────────── */
+.img-hover {
+  overflow: hidden;
+}
+.img-hover img {
+  transition: transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.img-hover:hover img {
+  transform: scale(1.04);
+}
+
+/* ─── Gradient text (warm) ───────────────────────────────── */
+.gradient-text {
+  background: linear-gradient(135deg, var(--ink) 0%, var(--accent-dark) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }

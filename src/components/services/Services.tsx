@@ -1,274 +1,256 @@
 "use client";
 
-import { useState } from "react";
-import {
-  Sparkles,
-  Palette,
-  BookOpen,
-  Layout,
-  Building2,
-  Globe,
-  ShoppingCart,
-  Code2,
-  Smartphone,
-  ArrowRight,
-  CheckCircle2,
-  Zap,
-  type LucideIcon,
-} from "lucide-react";
-import SectionHeader from "@/components/ui/SectionHeader";
-import AnimateOnScroll from "@/components/ui/AnimateOnScroll";
-import { useLanguage } from "@/lib/language";
-import type { ServiceItemTranslation } from "@/lib/i18n/types";
+import { useRef, useState } from "react";
+import { motion, useInView } from "framer-motion";
+import { ArrowUpRight } from "lucide-react";
 
-const iconMap: Record<string, LucideIcon> = {
-  "personal-portfolio": Sparkles,
-  "promo-design": Palette,
-  "umkm-catalog": BookOpen,
-  "business-landing-page": Layout,
-  "company-profile": Building2,
-  "business-website": Globe,
-  ecommerce: ShoppingCart,
-  "custom-web-app": Code2,
-  "mobile-app": Smartphone,
-};
+function InView({
+  children,
+  className,
+  delay = 0,
+}: {
+  children: React.ReactNode;
+  className?: string;
+  delay?: number;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { once: true, margin: "-80px" });
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 28 }}
+      animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 28 }}
+      transition={{ duration: 0.75, delay, ease: [0.22, 1, 0.36, 1] }}
+      className={className}
+    >
+      {children}
+    </motion.div>
+  );
+}
 
-const entryServiceIds = new Set([
-  "personal-portfolio",
-  "promo-design",
-  "umkm-catalog",
-  "business-landing-page",
-]);
-
-type CategoryTabId = "all" | "entry" | "personal" | "business" | "advanced";
+const services = [
+  {
+    num: "01",
+    title: "Personal Portfolio Website",
+    category: "Personal & Creative",
+    price: "From Rp150,000",
+    description:
+      "A single-page website showcasing your profile, skills, and best work — built around your personal brand, not a rigid template.",
+    tags: ["Single Page", "Responsive", "Free Hosting"],
+  },
+  {
+    num: "02",
+    title: "Promotional Content Design",
+    category: "Personal & Creative",
+    price: "Rp75,000–100,000",
+    description:
+      "A complete pack of 5 ready-to-post promotional visuals for social media — crafted to match your brand identity.",
+    tags: ["Package of 5", "PNG/JPG", "Social Media"],
+  },
+  {
+    num: "03",
+    title: "Digital Catalog for Small Businesses",
+    category: "Business Websites",
+    price: "From Rp150,000",
+    description:
+      "A clean online product menu or catalog letting customers browse and order directly via WhatsApp — no monthly server fees.",
+    tags: ["WhatsApp Order", "Mobile-First", "Free Hosting"],
+  },
+  {
+    num: "04",
+    title: "Business Landing Page",
+    category: "Business Websites",
+    price: "Rp350,000–500,000",
+    description:
+      "A conversion-focused single page featuring your offer, key advantages, and a clear WhatsApp call-to-action.",
+    tags: ["1 Page", "Conversion-Focused", "Free Hosting"],
+  },
+  {
+    num: "05",
+    title: "Company Profile",
+    category: "Business Websites",
+    price: "From Rp2,500,000",
+    description:
+      "A professional 5–6 page website presenting your company identity, services, and credentials to corporate clients.",
+    tags: ["5–6 Pages", "Custom UI/UX", ".com Domain + Hosting"],
+  },
+  {
+    num: "06",
+    title: "Full Business Website",
+    category: "Business Websites",
+    price: "From Rp4,000,000",
+    description:
+      "A feature-rich website with dynamic product catalog, blog, search filters, and a lightweight CMS for easy content management.",
+    tags: ["Up to 10 Pages", "CMS", ".com Domain + Hosting"],
+  },
+  {
+    num: "07",
+    title: "E-Commerce Store",
+    category: "Advanced Development",
+    price: "From Rp6,000,000",
+    description:
+      "A complete online store with product management, cart, checkout flow, and an admin dashboard for orders and inventory.",
+    tags: ["Full Store", "Admin Dashboard", "Payment Gateway"],
+  },
+  {
+    num: "08",
+    title: "Custom Web Application",
+    category: "Advanced Development",
+    price: "From Rp7,500,000",
+    description:
+      "Bespoke web systems built around your unique workflow — inventory management, POS, booking, HR, or SaaS products.",
+    tags: ["Custom Scope", "REST API", "Role-Based Auth"],
+  },
+  {
+    num: "09",
+    title: "Mobile Application",
+    category: "Advanced Development",
+    price: "From Rp8,000,000",
+    description:
+      "Cross-platform Android & iOS mobile apps for business operations or customer-facing digital products.",
+    tags: ["Android & iOS", "Cross-Platform", "Modern UX"],
+  },
+];
 
 export default function Services() {
-  const { t, lang } = useLanguage();
-  const [activeCategory, setActiveCategory] = useState<CategoryTabId>("all");
-
-  const categoryTabs: { id: CategoryTabId; label: string; icon?: LucideIcon }[] = [
-    { id: "all", label: t.services.filterAll },
-    { id: "entry", label: t.services.filterEntry, icon: Zap },
-    { id: "personal", label: t.services.filterPersonal },
-    { id: "business", label: t.services.filterBusiness },
-    { id: "advanced", label: t.services.filterAdvanced },
-  ];
-
-  const filteredServices = t.services.items.filter((s) => {
-    if (activeCategory === "all") return true;
-    if (activeCategory === "entry") return entryServiceIds.has(s.id);
-    return s.category === activeCategory;
-  });
-
-  const handleSelectService = (service: ServiceItemTranslation) => {
-    if (typeof window !== "undefined") {
-      window.dispatchEvent(
-        new CustomEvent("beone-select-plan", {
-          detail: {
-            planId: service.id,
-            serviceId: service.id,
-            service: service.title,
-            plan: service.title,
-          },
-        })
-      );
-    }
-  };
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   return (
     <section
       id="services"
       aria-labelledby="services-heading"
-      className="section-padding bg-white dark:bg-neutral-950 relative overflow-hidden"
+      className="section-padding bg-[var(--background)]"
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <AnimateOnScroll>
-          <SectionHeader
-            label={t.services.label}
-            title={t.services.title}
-            subtitle={t.services.subtitle}
-          />
-        </AnimateOnScroll>
+      <div className="max-w-[1400px] mx-auto px-6 sm:px-8 lg:px-12">
 
-        {/* Category Tabs Filter */}
-        <AnimateOnScroll delay={0.05}>
-          <div className="flex flex-wrap justify-center gap-2 mb-10">
-            {categoryTabs.map((tab) => {
-              const Icon = tab.icon;
-              const isActive = activeCategory === tab.id;
+        {/* Section header */}
+        <div className="grid lg:grid-cols-12 gap-8 lg:gap-20 mb-16 md:mb-20">
+          <InView className="lg:col-span-5">
+            <p className="editorial-label mb-6">What We Do</p>
+            <h2
+              id="services-heading"
+              className="font-display text-4xl sm:text-5xl font-bold leading-[1.08] tracking-tight text-[var(--ink)]"
+              style={{ fontFamily: "var(--font-playfair)" }}
+            >
+              Services built
+              <br />
+              for every scale
+              <br />
+              <span className="italic font-medium">& budget.</span>
+            </h2>
+          </InView>
+          <InView delay={0.1} className="lg:col-span-6 lg:col-start-7 lg:pt-16">
+            <p className="text-base text-[var(--ink-soft)] leading-relaxed">
+              From affordable entry-level packages to full-scale custom systems —
+              every service is delivered with clean code, honest pricing, and
+              results that outlast the project itself.
+            </p>
+          </InView>
+        </div>
 
-              return (
-                <button
-                  key={tab.id}
-                  type="button"
-                  onClick={() => setActiveCategory(tab.id)}
-                  className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-150 ${
-                    isActive
-                      ? "bg-indigo-500 text-white shadow-xs"
-                      : "bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 hover:text-neutral-950 dark:hover:text-white hover:bg-neutral-200 dark:hover:bg-neutral-700"
-                  }`}
-                >
-                  {Icon && <Icon size={14} className={isActive ? "text-white" : "text-amber-500"} />}
-                  {tab.label}
-                </button>
-              );
-            })}
-          </div>
-        </AnimateOnScroll>
+        {/* Top divider */}
+        <div className="h-px bg-[var(--border)]" />
 
-        {/* Services Grid / Mobile Horizontal Scroll Carousel */}
-        <div
-          className="flex md:grid md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6 overflow-x-auto md:overflow-x-visible snap-x snap-mandatory scroll-smooth pb-4 md:pb-0 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:mx-0 lg:px-0 no-scrollbar"
-          role="list"
-          aria-label={t.services.label}
-        >
-          {filteredServices.map((service, index) => {
-            const Icon = iconMap[service.id] ?? Code2;
-            const isEntry = entryServiceIds.has(service.id);
-
-            return (
-              <AnimateOnScroll
-                key={service.id}
-                delay={index * 0.05}
-                className="w-[82vw] sm:w-[85vw] min-w-[280px] max-w-[340px] md:w-auto md:min-w-0 md:max-w-none shrink-0 md:shrink snap-start flex flex-col h-auto md:h-full"
+        {/* Service list */}
+        <div>
+          {services.map((service, i) => (
+            <InView key={service.num} delay={0.04 * i}>
+              <div
+                className="relative border-b border-[var(--border)] group cursor-pointer"
+                onMouseEnter={() => setHoveredIndex(i)}
+                onMouseLeave={() => setHoveredIndex(null)}
+                role="article"
+                aria-label={service.title}
               >
-                <article
-                  role="listitem"
-                  className={`group relative flex flex-col h-full bg-white dark:bg-neutral-900 rounded-2xl p-6 sm:p-7 border transition-all duration-200 ${
-                    isEntry
-                      ? "border-indigo-200/90 dark:border-indigo-900/60 shadow-sm hover:border-indigo-400 hover:shadow-md"
-                      : "border-neutral-200/80 dark:border-neutral-800 hover:border-neutral-300 dark:hover:border-neutral-700 hover:shadow-sm"
-                  }`}
-                  aria-label={`${t.services.label}: ${service.title}`}
-                >
-                  {/* Top Badges */}
-                  <div className="flex items-start justify-between gap-2 mb-4">
-                    <div
-                      className={`inline-flex items-center justify-center w-11 h-11 rounded-xl ${
-                        isEntry
-                          ? "bg-indigo-50 dark:bg-indigo-950/70 text-indigo-600 dark:text-indigo-400"
-                          : "bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300"
-                      }`}
-                      aria-hidden="true"
-                    >
-                      <Icon size={22} />
-                    </div>
+                {/* Hover background */}
+                <motion.div
+                  className="absolute inset-0 bg-[var(--surface-2)] pointer-events-none"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: hoveredIndex === i ? 1 : 0 }}
+                  transition={{ duration: 0.2 }}
+                />
 
-                    <div className="flex flex-wrap gap-1.5 justify-end">
-                      {service.badge && (
-                        <span className="px-2.5 py-1 text-[11px] font-bold rounded-full bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-900">
-                          {service.badge}
+                <div className="relative flex flex-col sm:flex-row sm:items-center gap-4 py-6 sm:py-7 px-0 sm:px-2">
+                  {/* Number */}
+                  <span className="editorial-label text-[var(--accent)] w-10 shrink-0">
+                    {service.num}
+                  </span>
+
+                  {/* Title + category */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                      <h3
+                        className="font-display text-xl sm:text-2xl font-semibold text-[var(--ink)] group-hover:opacity-80 transition-opacity"
+                        style={{ fontFamily: "var(--font-playfair)" }}
+                      >
+                        {service.title}
+                      </h3>
+                      <span className="editorial-label text-[var(--ink-muted)]">
+                        {service.category}
+                      </span>
+                    </div>
+                    <p className="mt-1.5 text-sm text-[var(--ink-muted)] leading-relaxed max-w-2xl">
+                      {service.description}
+                    </p>
+                  </div>
+
+                  {/* Tags + price + arrow */}
+                  <div className="flex flex-col sm:items-end gap-2 shrink-0 sm:ml-8">
+                    <div className="flex flex-wrap gap-1.5">
+                      {service.tags.map((tag) => (
+                        <span
+                          key={tag}
+                          className="px-2 py-0.5 text-[11px] font-medium border border-[var(--border)] text-[var(--ink-muted)]"
+                        >
+                          {tag}
                         </span>
-                      )}
-                      <span className="px-2 py-0.5 text-[10px] font-medium rounded-md bg-neutral-100 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400">
-                        {service.categoryLabel}
+                      ))}
+                    </div>
+                    <div className="flex items-center gap-3 mt-1">
+                      <span className="text-sm font-semibold text-[var(--ink)]">
+                        {service.price}
                       </span>
+                      <a
+                        href="#contact"
+                        aria-label={`Inquire about ${service.title}`}
+                        className="w-8 h-8 flex items-center justify-center border border-[var(--border)] text-[var(--ink-muted)] group-hover:bg-[var(--ink)] group-hover:text-[var(--background)] group-hover:border-[var(--ink)] transition-all duration-200"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (typeof window !== "undefined") {
+                            window.dispatchEvent(
+                              new CustomEvent("beone-select-plan", {
+                                detail: { serviceId: service.num },
+                              })
+                            );
+                          }
+                        }}
+                      >
+                        <ArrowUpRight size={14} aria-hidden="true" />
+                      </a>
                     </div>
                   </div>
-
-                  {/* Title & Description */}
-                  <h3 className="text-xl font-bold text-neutral-950 dark:text-white mb-2">
-                    {service.title}
-                  </h3>
-                  <p className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed mb-4">
-                    {service.description}
-                  </p>
-
-                  {/* Scope Summary */}
-                  {service.scopeSummary && (
-                    <div className="mb-4 p-3 rounded-xl bg-neutral-50 dark:bg-neutral-800/60 border border-neutral-100 dark:border-neutral-800 text-[11px] text-neutral-600 dark:text-neutral-300">
-                      <span className="font-semibold block text-neutral-900 dark:text-white mb-0.5">
-                        {lang === "en" ? "Service Scope:" : "Cakupan Layanan:"}
-                      </span>
-                      {service.scopeSummary}
-                    </div>
-                  )}
-
-                  {/* Use Cases list */}
-                  {service.useCases && service.useCases.length > 0 && (
-                    <div className="mb-5 flex-1">
-                      <span className="text-[11px] font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-500 block mb-2">
-                        {t.services.useCases}:
-                      </span>
-                      <ul className="space-y-1.5" aria-label={`${t.services.useCases} ${service.title}`}>
-                        {service.useCases.slice(0, 3).map((useCase) => (
-                          <li
-                            key={useCase}
-                            className="flex items-start gap-2 text-xs text-neutral-600 dark:text-neutral-400"
-                          >
-                            <CheckCircle2
-                              size={13}
-                              className="text-indigo-500 flex-shrink-0 mt-0.5"
-                              aria-hidden="true"
-                            />
-                            <span>{useCase}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-
-                  {/* Bottom: Price & CTA */}
-                  <div className="mt-auto pt-4 border-t border-neutral-100 dark:border-neutral-800 flex items-center justify-between gap-3">
-                    <div>
-                      <span className="text-[11px] text-neutral-400 dark:text-neutral-500 block">
-                        {service.priceNote || (lang === "en" ? "Investment" : "Investasi")}
-                      </span>
-                      <span className="text-base sm:text-lg font-black text-neutral-950 dark:text-white">
-                        {service.startingPrice}
-                      </span>
-                    </div>
-
-                    <a
-                      href="#contact"
-                      onClick={() => handleSelectService(service)}
-                      className="inline-flex items-center gap-1 px-3.5 py-2 bg-indigo-50 dark:bg-indigo-950/60 hover:bg-indigo-500 text-indigo-600 dark:text-indigo-400 hover:text-white text-xs font-semibold rounded-xl transition-all duration-150 group/btn"
-                      aria-label={`${t.services.selectService} — ${service.title}`}
-                    >
-                      {t.services.selectService}
-                      <ArrowRight
-                        size={13}
-                        className="group-hover/btn:translate-x-0.5 transition-transform"
-                      />
-                    </a>
-                  </div>
-                </article>
-              </AnimateOnScroll>
-            );
-          })}
-          {/* Mobile trailing spacer for comfortable end padding */}
-          <div className="shrink-0 w-2 md:hidden" aria-hidden="true" />
+                </div>
+              </div>
+            </InView>
+          ))}
         </div>
 
-        {/* Mobile Swipe Cue */}
-        <div className="flex md:hidden items-center justify-center gap-1.5 mt-3 text-xs text-neutral-400 dark:text-neutral-500">
-          <span className="w-1.5 h-1.5 rounded-full bg-indigo-500/70 animate-pulse" />
-          <span>{lang === "en" ? "Swipe horizontally to see more services" : "Geser ke samping untuk layanan lainnya"}</span>
-        </div>
-
-        {/* Note on Scope & Custom Requests */}
-        <AnimateOnScroll delay={0.15}>
-          <div className="mt-12 p-6 rounded-2xl bg-neutral-50 dark:bg-neutral-900 border border-neutral-200/80 dark:border-neutral-800 flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
-            <div>
-              <h4 className="text-sm font-bold text-neutral-950 dark:text-white">
-                {lang === "en"
-                  ? "Have Specific or Custom Requirements Outside These Packages?"
-                  : "Punya Kebutuhan Spesifik atau Custom Diluar Paket?"}
-              </h4>
-              <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1 max-w-2xl">
-                {lang === "en"
-                  ? "We are ready to tailor deliverables to your exact business needs with upfront, transparent cost and delivery timelines."
-                  : "Kami siap menyesuaikan ruang lingkup pengerjaan sesuai kebutuhan unik Anda dengan estimasi biaya dan waktu yang transparan sejak awal."}
-              </p>
-            </div>
+        {/* Footer CTA */}
+        <InView delay={0.1}>
+          <div className="mt-14 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+            <p className="text-sm text-[var(--ink-muted)] max-w-md">
+              Not sure which service fits your needs? Let&apos;s talk through your
+              project and find the right scope together.
+            </p>
             <a
               href="#contact"
-              className="px-5 py-2.5 text-xs font-semibold bg-neutral-950 dark:bg-white text-white dark:text-neutral-950 hover:bg-neutral-800 dark:hover:bg-neutral-100 rounded-xl transition-colors whitespace-nowrap shadow-xs"
+              className="inline-flex items-center gap-2 px-6 py-3.5 text-sm font-medium text-[var(--background)] bg-[var(--ink)] hover:opacity-80 transition-opacity shrink-0"
             >
-              {lang === "en" ? "Custom Project Consultation" : "Konsultasi Proyek Kustom"}
+              Free Consultation
+              <ArrowUpRight size={14} aria-hidden="true" />
             </a>
           </div>
-        </AnimateOnScroll>
+        </InView>
       </div>
     </section>
   );

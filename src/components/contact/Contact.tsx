@@ -1,16 +1,15 @@
 "use client";
 
-import { useState, useEffect, type FormEvent } from "react";
+import { useState, useEffect, type FormEvent, useRef } from "react";
+import { motion, useInView } from "framer-motion";
 import {
   Send,
   MessageCircle,
   CheckCircle2,
   Copy,
   Check,
-  ShieldCheck,
+  ArrowUpRight,
 } from "lucide-react";
-import SectionHeader from "@/components/ui/SectionHeader";
-import AnimateOnScroll from "@/components/ui/AnimateOnScroll";
 import { whatsappUrl, siteConfig } from "@/lib/config";
 import { useLanguage } from "@/lib/language";
 import type { Translations } from "@/lib/i18n/types";
@@ -52,11 +51,23 @@ function validate(
     errors.email = errMsgs.emailFormat;
   }
   if (!data.serviceId) errors.service = errMsgs.service;
-  if (!data.description.trim()) {
-    errors.description = errMsgs.description;
-  }
+  if (!data.description.trim()) errors.description = errMsgs.description;
   return errors;
 }
+
+function InView({ children, className, delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { once: true, margin: "-80px" });
+  return (
+    <motion.div ref={ref} initial={{ opacity: 0, y: 28 }} animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 28 }} transition={{ duration: 0.75, delay, ease: [0.22, 1, 0.36, 1] }} className={className}>
+      {children}
+    </motion.div>
+  );
+}
+
+const fieldBase =
+  "w-full px-4 py-3 text-sm text-[var(--ink)] bg-transparent border-b border-[var(--border)] placeholder:text-[var(--ink-muted)] focus:outline-none focus:border-[var(--ink)] transition-colors duration-150";
+const fieldError = "border-red-400 focus:border-red-500";
 
 export default function Contact() {
   const { t } = useLanguage();
@@ -67,15 +78,12 @@ export default function Contact() {
   const [preparedMessage, setPreparedMessage] = useState<string>("");
   const [copied, setCopied] = useState<boolean>(false);
 
-  // Sync with plan selection events from Services, Pricing, or Hero
   useEffect(() => {
     const handlePlanSelect = (e: Event) => {
       const detail = (
         e as CustomEvent<{
           planId?: string;
           serviceId?: string;
-          service?: string;
-          plan?: string;
         }>
       ).detail;
       if (detail) {
@@ -83,46 +91,24 @@ export default function Contact() {
         setForm((prev) => {
           let matchedService = prev.serviceId;
           let matchedPackage = prev.packageId;
-
-          if (detail.serviceId) {
-            matchedService = detail.serviceId;
-          }
-
+          if (detail.serviceId) matchedService = detail.serviceId;
           if (detail.planId) {
             matchedPackage = detail.planId;
             const foundPkg = t.contact.packages.find((p) => p.id === detail.planId);
-            if (foundPkg) {
-              matchedService = foundPkg.serviceId;
-            }
+            if (foundPkg) matchedService = foundPkg.serviceId;
           }
-
-          return {
-            ...prev,
-            serviceId: matchedService,
-            packageId: matchedPackage,
-          };
+          return { ...prev, serviceId: matchedService, packageId: matchedPackage };
         });
       }
     };
-
     window.addEventListener("beone-select-plan", handlePlanSelect);
     return () => window.removeEventListener("beone-select-plan", handlePlanSelect);
   }, [t.contact.packages]);
 
-  const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
-  ) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
-    if (errors[name]) {
-      setErrors((prev) => {
-        const next = { ...prev };
-        delete next[name];
-        return next;
-      });
-    }
+    if (errors[name]) setErrors((prev) => { const n = { ...prev }; delete n[name]; return n; });
   };
 
   const handleSubmit = (e: FormEvent) => {
@@ -130,60 +116,32 @@ export default function Contact() {
     const validationErrors = validate(form, t.contact.errors);
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
-      const firstKey = Object.keys(validationErrors)[0];
-      document.getElementById(firstKey)?.focus();
+      document.getElementById(Object.keys(validationErrors)[0])?.focus();
       return;
     }
 
-    const selectedProfession = t.contact.professions.find(
-      (p) => p.id === form.professionId
-    )?.label;
-    const selectedService = t.contact.services.find(
-      (s) => s.id === form.serviceId
-    )?.label;
-    const selectedPackage = t.contact.packages.find(
-      (p) => p.id === form.packageId
-    )?.label;
-    const selectedBudget = t.contact.budgets.find(
-      (b) => b.id === form.budgetId
-    )?.label;
+    const selectedProfession = t.contact.professions.find((p) => p.id === form.professionId)?.label;
+    const selectedService = t.contact.services.find((s) => s.id === form.serviceId)?.label;
+    const selectedPackage = t.contact.packages.find((p) => p.id === form.packageId)?.label;
+    const selectedBudget = t.contact.budgets.find((b) => b.id === form.budgetId)?.label;
 
-    // Format clean professional WhatsApp inquiry message in active language
     const messageLines = [
-      t.contact.msgGreeting,
-      "",
+      t.contact.msgGreeting, "",
       `👤 *${t.contact.msgName}:* ${form.name}`,
       `📱 *${t.contact.msgContact}:* ${form.contact}`,
       form.email ? `✉️ *${t.contact.msgEmail}:* ${form.email}` : null,
-      selectedProfession
-        ? `💼 *${t.contact.msgProfession}:* ${selectedProfession}`
-        : null,
-      selectedService
-        ? `🛠️ *${t.contact.msgService}:* ${selectedService}`
-        : null,
-      selectedPackage
-        ? `📦 *${t.contact.msgPackage}:* ${selectedPackage}`
-        : null,
-      selectedBudget
-        ? `💰 *${t.contact.msgBudget}:* ${selectedBudget}`
-        : null,
-      "",
-      `📝 *${t.contact.msgDesc}:*`,
-      form.description,
-    ]
-      .filter((line) => line !== null)
-      .join("\n");
+      selectedProfession ? `💼 *${t.contact.msgProfession}:* ${selectedProfession}` : null,
+      selectedService ? `🛠️ *${t.contact.msgService}:* ${selectedService}` : null,
+      selectedPackage ? `📦 *${t.contact.msgPackage}:* ${selectedPackage}` : null,
+      selectedBudget ? `💰 *${t.contact.msgBudget}:* ${selectedBudget}` : null,
+      "", `📝 *${t.contact.msgDesc}:*`, form.description,
+    ].filter(Boolean).join("\n");
 
     const targetUrl = whatsappUrl(messageLines);
     setPreparedMessage(messageLines);
     setPreparedUrl(targetUrl);
     setStatus("ready");
-
-    try {
-      window.open(targetUrl, "_blank", "noopener,noreferrer");
-    } catch {
-      // Fallback handled smoothly by the ready screen
-    }
+    try { window.open(targetUrl, "_blank", "noopener,noreferrer"); } catch { /* fallback */ }
   };
 
   const handleCopyMessage = async () => {
@@ -191,161 +149,151 @@ export default function Contact() {
       await navigator.clipboard.writeText(preparedMessage);
       setCopied(true);
       setTimeout(() => setCopied(false), 2500);
-    } catch {
-      // Clipboard fallback
-    }
+    } catch { /* ignore */ }
   };
 
-  const fieldClass = (name: string) =>
-    `w-full px-4 py-3 rounded-xl border text-sm text-neutral-900 dark:text-neutral-100 bg-white dark:bg-neutral-800 placeholder:text-neutral-400 dark:placeholder:text-neutral-500 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent ${
-      errors[name]
-        ? "border-red-300 dark:border-red-700 bg-red-50/50 dark:bg-red-950/20"
-        : "border-neutral-200 dark:border-neutral-700 hover:border-neutral-300 dark:hover:border-neutral-600"
-    }`;
+  const field = (name: string) =>
+    `${fieldBase} ${errors[name] ? fieldError : ""}`;
 
   return (
     <section
       id="contact"
       aria-labelledby="contact-heading"
-      className="section-padding bg-white dark:bg-neutral-950 relative overflow-hidden"
+      className="section-padding bg-[var(--background)]"
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <AnimateOnScroll>
-          <SectionHeader
-            label={t.contact.label}
-            title={t.contact.title}
-            subtitle={t.contact.subtitle}
-          />
-        </AnimateOnScroll>
+      <div className="max-w-[1400px] mx-auto px-6 sm:px-8 lg:px-12">
 
-        <div className="grid lg:grid-cols-12 gap-10 lg:gap-14 items-start">
-          {/* Left Column: Direct WhatsApp & Info */}
-          <AnimateOnScroll className="lg:col-span-5" direction="left">
-            <div className="space-y-5">
-              <div className="p-6 bg-gradient-to-br from-indigo-50/60 to-white dark:from-neutral-900 dark:to-neutral-900 rounded-2xl border border-indigo-100 dark:border-neutral-800 shadow-sm">
-                <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-green-500 text-white mb-3">
-                  <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping" />
-                  {t.contact.whatsappBadge}
-                </div>
-                <h3 className="text-base font-bold text-neutral-950 dark:text-white mb-2">
-                  {t.contact.whatsappTitle}
-                </h3>
-                <p className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 mb-5 leading-relaxed">
-                  {t.contact.whatsappDesc}
-                </p>
-                <a
-                  href={whatsappUrl(t.shared.whatsappDefaultMsg)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-2 w-full px-4 py-3 bg-green-500 hover:bg-green-600 text-white text-sm font-semibold rounded-xl shadow-xs transition-colors"
-                  aria-label={`${t.contact.whatsappCta} +${siteConfig.whatsappNumber}`}
-                >
-                  <MessageCircle size={17} aria-hidden="true" />
-                  {t.contact.whatsappCta} +{siteConfig.whatsappNumber}
-                </a>
-              </div>
+        {/* Top divider */}
+        <div className="h-px bg-[var(--border)] mb-16 md:mb-24" />
 
-              <div className="p-6 bg-neutral-50 dark:bg-neutral-900 rounded-2xl border border-neutral-200/80 dark:border-neutral-800 space-y-4">
-                <div className="flex items-start gap-3">
-                  <ShieldCheck size={20} className="text-indigo-500 flex-shrink-0 mt-0.5" />
-                  <div>
-                    <h4 className="text-xs font-bold uppercase tracking-wider text-neutral-400">
-                      {t.contact.privacyTitle}
-                    </h4>
-                    <p className="text-xs text-neutral-600 dark:text-neutral-400 mt-0.5 leading-relaxed">
-                      {t.contact.privacyText}
-                    </p>
-                  </div>
-                </div>
+        {/* Header */}
+        <div className="grid lg:grid-cols-12 gap-10 lg:gap-20 mb-14 md:mb-18">
+          <InView className="lg:col-span-5">
+            <p className="editorial-label mb-6">Get in Touch</p>
+            <h2
+              id="contact-heading"
+              className="font-display text-4xl sm:text-5xl font-bold leading-[1.08] tracking-tight text-[var(--ink)]"
+              style={{ fontFamily: "var(--font-playfair)" }}
+            >
+              Tell us about
+              <br />
+              your{" "}
+              <span className="italic font-medium">project.</span>
+            </h2>
+          </InView>
+        </div>
 
-                <div className="pt-3 border-t border-neutral-200/60 dark:border-neutral-800 flex items-center justify-between text-xs">
-                  <span className="text-neutral-500">{t.contact.emailLabel}</span>
+        {/* Two-column layout */}
+        <div className="grid lg:grid-cols-12 gap-12 lg:gap-20">
+
+          {/* Left — info */}
+          <InView className="lg:col-span-4" delay={0}>
+            <div className="space-y-10">
+              {/* Direct WhatsApp */}
+              <div>
+                <p className="editorial-label mb-4">Direct Contact</p>
+                <div className="space-y-4">
+                  <a
+                    href={whatsappUrl(t.shared.whatsappDefaultMsg)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group flex items-center gap-3 text-sm text-[var(--ink-soft)] hover:text-[var(--ink)] transition-colors"
+                  >
+                    <span className="w-9 h-9 flex items-center justify-center border border-[var(--border)] group-hover:bg-[var(--ink)] group-hover:text-[var(--background)] group-hover:border-[var(--ink)] transition-all">
+                      <MessageCircle size={15} aria-hidden="true" />
+                    </span>
+                    <span>WhatsApp +{siteConfig.whatsappNumber}</span>
+                  </a>
                   <a
                     href={`mailto:${siteConfig.email}`}
-                    className="font-medium text-indigo-500 hover:underline"
+                    className="group flex items-center gap-3 text-sm text-[var(--ink-soft)] hover:text-[var(--ink)] transition-colors"
                   >
-                    {siteConfig.email}
+                    <span className="w-9 h-9 flex items-center justify-center border border-[var(--border)] group-hover:bg-[var(--ink)] group-hover:text-[var(--background)] group-hover:border-[var(--ink)] transition-all text-xs">
+                      @
+                    </span>
+                    <span>{siteConfig.email}</span>
                   </a>
                 </div>
               </div>
+
+              {/* What to expect */}
+              <div>
+                <p className="editorial-label mb-4">What to Expect</p>
+                <ul className="space-y-3 text-sm text-[var(--ink-muted)]">
+                  {[
+                    "Response within 24 hours",
+                    "Free initial consultation",
+                    "Transparent scope & pricing",
+                    "No commitment required",
+                  ].map((item) => (
+                    <li key={item} className="flex items-start gap-2">
+                      <span className="w-1 h-1 rounded-full bg-[var(--accent)] mt-2 shrink-0" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
-          </AnimateOnScroll>
+          </InView>
 
-          {/* Right Column: Interactive Inquiry Form / WhatsApp Action Screen */}
-          <AnimateOnScroll className="lg:col-span-7" direction="right" delay={0.1}>
+          {/* Right — form or ready state */}
+          <InView className="lg:col-span-8" delay={0.1}>
             {status === "ready" ? (
-              <div
-                className="p-8 sm:p-10 bg-neutral-50 dark:bg-neutral-900 rounded-2xl border border-indigo-100 dark:border-neutral-800 text-center shadow-md animate-in fade-in"
-                role="region"
-                aria-label={t.contact.readyTitle}
-              >
-                <div className="w-14 h-14 rounded-full bg-green-100 dark:bg-green-950/60 text-green-600 dark:text-green-400 mx-auto flex items-center justify-center mb-4">
-                  <CheckCircle2 size={32} />
+              <div className="py-10 text-center border border-[var(--border)] px-8">
+                <div className="w-12 h-12 border border-[var(--border)] flex items-center justify-center mx-auto mb-5">
+                  <CheckCircle2 size={24} className="text-[var(--accent-dark)]" />
                 </div>
-                <h3 className="text-xl font-black text-neutral-950 dark:text-white mb-2">
-                  {t.contact.readyTitle}
+                <h3
+                  className="font-display text-2xl font-bold text-[var(--ink)] mb-2"
+                  style={{ fontFamily: "var(--font-playfair)" }}
+                >
+                  Message Ready
                 </h3>
-                <p className="text-sm text-neutral-600 dark:text-neutral-400 max-w-md mx-auto leading-relaxed mb-6">
-                  {t.contact.readyDesc}
+                <p className="text-sm text-[var(--ink-muted)] max-w-md mx-auto mb-8 leading-relaxed">
+                  Your message has been prepared. If WhatsApp didn&apos;t open
+                  automatically, use the button below.
                 </p>
-
-                {/* Prepared message preview */}
-                <div className="mb-6 p-4 bg-white dark:bg-neutral-800/80 rounded-xl border border-neutral-200 dark:border-neutral-700 text-left text-xs font-mono text-neutral-700 dark:text-neutral-300 whitespace-pre-line max-h-48 overflow-y-auto">
+                <div className="bg-[var(--surface-2)] border border-[var(--border)] p-4 text-left text-xs font-mono text-[var(--ink-soft)] whitespace-pre-line max-h-48 overflow-y-auto mb-7">
                   {preparedMessage}
                 </div>
-
-                <div className="flex flex-col sm:flex-row gap-3 justify-center mb-4">
+                <div className="flex flex-col sm:flex-row gap-3 justify-center mb-5">
                   <a
                     href={preparedUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-green-500 hover:bg-green-600 text-white text-sm font-semibold rounded-xl shadow-xs transition-colors"
+                    className="inline-flex items-center justify-center gap-2 px-6 py-3.5 text-sm font-medium text-[var(--background)] bg-[var(--ink)] hover:opacity-80 transition-opacity"
                   >
-                    <MessageCircle size={16} />
-                    {t.contact.openChat}
+                    <MessageCircle size={15} />
+                    Open WhatsApp
                   </a>
                   <button
                     type="button"
                     onClick={handleCopyMessage}
-                    className="inline-flex items-center justify-center gap-2 px-5 py-3 bg-white dark:bg-neutral-800 hover:bg-neutral-100 dark:hover:bg-neutral-700 text-neutral-800 dark:text-neutral-200 border border-neutral-200 dark:border-neutral-700 text-sm font-semibold rounded-xl transition-colors"
+                    className="inline-flex items-center justify-center gap-2 px-5 py-3.5 text-sm font-medium text-[var(--ink)] border border-[var(--border)] hover:border-[var(--border-strong)] transition-colors"
                   >
-                    {copied ? (
-                      <>
-                        <Check size={16} className="text-green-500" />
-                        {t.contact.messageCopied}
-                      </>
-                    ) : (
-                      <>
-                        <Copy size={16} />
-                        {t.contact.copyMessage}
-                      </>
-                    )}
+                    {copied ? <><Check size={15} className="text-[var(--accent-dark)]" /> Copied</> : <><Copy size={15} /> Copy Message</>}
                   </button>
                 </div>
-
                 <button
                   type="button"
                   onClick={() => setStatus("idle")}
-                  className="text-xs text-neutral-500 dark:text-neutral-400 hover:text-indigo-500 underline transition-colors"
+                  className="text-xs text-[var(--ink-muted)] hover:text-[var(--ink)] underline transition-colors"
                 >
-                  {t.contact.backToForm}
+                  Back to form
                 </button>
               </div>
             ) : (
               <form
                 onSubmit={handleSubmit}
                 noValidate
-                aria-label={t.contact.formAria}
-                className="space-y-4 bg-white dark:bg-neutral-900 p-6 sm:p-8 rounded-2xl border border-neutral-200 dark:border-neutral-800 shadow-sm"
+                aria-label="Project inquiry form"
+                className="space-y-0"
               >
-                {/* Name & Contact */}
-                <div className="grid sm:grid-cols-2 gap-4">
-                  <div>
-                    <label
-                      htmlFor="name"
-                      className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5"
-                    >
-                      {t.contact.nameLabel} <span className="text-red-500">*</span>
+                {/* Name + Contact row */}
+                <div className="grid sm:grid-cols-2 gap-x-8 border-b border-[var(--border)]">
+                  <div className="py-2">
+                    <label htmlFor="name" className="editorial-label block mb-2">
+                      Name <span className="text-red-400">*</span>
                     </label>
                     <input
                       id="name"
@@ -354,24 +302,16 @@ export default function Contact() {
                       autoComplete="name"
                       value={form.name}
                       onChange={handleChange}
-                      placeholder={t.contact.namePlaceholder}
-                      className={fieldClass("name")}
+                      placeholder="Your name"
+                      className={`${field("name")} border-b-0`}
                       aria-required="true"
                       aria-invalid={!!errors.name}
                     />
-                    {errors.name && (
-                      <p role="alert" className="mt-1 text-xs text-red-500">
-                        {errors.name}
-                      </p>
-                    )}
+                    {errors.name && <p role="alert" className="mt-1 text-xs text-red-400">{errors.name}</p>}
                   </div>
-
-                  <div>
-                    <label
-                      htmlFor="contact"
-                      className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5"
-                    >
-                      {t.contact.contactLabel} <span className="text-red-500">*</span>
+                  <div className="py-2 border-t sm:border-t-0 sm:border-l border-[var(--border)] sm:pl-8">
+                    <label htmlFor="contact" className="editorial-label block mb-2">
+                      WhatsApp / Phone <span className="text-red-400">*</span>
                     </label>
                     <input
                       id="contact"
@@ -380,27 +320,20 @@ export default function Contact() {
                       autoComplete="tel"
                       value={form.contact}
                       onChange={handleChange}
-                      placeholder={t.contact.contactPlaceholder}
-                      className={fieldClass("contact")}
+                      placeholder="+62 8xx-xxxx-xxxx"
+                      className={`${field("contact")} border-b-0`}
                       aria-required="true"
                       aria-invalid={!!errors.contact}
                     />
-                    {errors.contact && (
-                      <p role="alert" className="mt-1 text-xs text-red-500">
-                        {errors.contact}
-                      </p>
-                    )}
+                    {errors.contact && <p role="alert" className="mt-1 text-xs text-red-400">{errors.contact}</p>}
                   </div>
                 </div>
 
-                {/* Email & Profession */}
-                <div className="grid sm:grid-cols-2 gap-4">
-                  <div>
-                    <label
-                      htmlFor="email"
-                      className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5"
-                    >
-                      {t.contact.emailLabel2} <span className="text-neutral-400 font-normal">{t.contact.emailOptional}</span>
+                {/* Email + Profession */}
+                <div className="grid sm:grid-cols-2 gap-x-8 border-b border-[var(--border)]">
+                  <div className="py-5">
+                    <label htmlFor="email" className="editorial-label block mb-2">
+                      Email <span className="text-[var(--ink-muted)] font-normal normal-case tracking-normal text-[11px]">(optional)</span>
                     </label>
                     <input
                       id="email"
@@ -409,161 +342,125 @@ export default function Contact() {
                       autoComplete="email"
                       value={form.email}
                       onChange={handleChange}
-                      placeholder={t.contact.emailPlaceholder}
-                      className={fieldClass("email")}
+                      placeholder="you@example.com"
+                      className={`${field("email")} border-b-0`}
                     />
-                    {errors.email && (
-                      <p role="alert" className="mt-1 text-xs text-red-500">
-                        {errors.email}
-                      </p>
-                    )}
+                    {errors.email && <p role="alert" className="mt-1 text-xs text-red-400">{errors.email}</p>}
                   </div>
-
-                  <div>
-                    <label
-                      htmlFor="professionId"
-                      className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5"
-                    >
-                      {t.contact.professionLabel}
+                  <div className="py-5 border-t sm:border-t-0 sm:border-l border-[var(--border)] sm:pl-8">
+                    <label htmlFor="professionId" className="editorial-label block mb-2">
+                      Profession
                     </label>
                     <select
                       id="professionId"
                       name="professionId"
                       value={form.professionId}
                       onChange={handleChange}
-                      className={`${fieldClass("professionId")} cursor-pointer`}
+                      className={`${field("professionId")} border-b-0 cursor-pointer bg-transparent`}
                     >
-                      <option value="">{t.contact.professionPlaceholder}</option>
-                      {t.contact.professions.map((prof) => (
-                        <option key={prof.id} value={prof.id}>
-                          {prof.label}
-                        </option>
+                      <option value="">Select your profession</option>
+                      {t.contact.professions.map((p) => (
+                        <option key={p.id} value={p.id}>{p.label}</option>
                       ))}
                     </select>
                   </div>
                 </div>
 
-                {/* Service & Package */}
-                <div className="grid sm:grid-cols-2 gap-4">
-                  <div>
-                    <label
-                      htmlFor="serviceId"
-                      className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5"
-                    >
-                      {t.contact.serviceLabel} <span className="text-red-500">*</span>
+                {/* Service + Package */}
+                <div className="grid sm:grid-cols-2 gap-x-8 border-b border-[var(--border)]">
+                  <div className="py-5">
+                    <label htmlFor="serviceId" className="editorial-label block mb-2">
+                      Service Needed <span className="text-red-400">*</span>
                     </label>
                     <select
                       id="serviceId"
                       name="serviceId"
                       value={form.serviceId}
                       onChange={handleChange}
-                      className={`${fieldClass("serviceId")} cursor-pointer font-medium`}
+                      className={`${field("serviceId")} border-b-0 cursor-pointer bg-transparent`}
                       aria-required="true"
                     >
-                      <option value="">{t.contact.servicePlaceholder}</option>
-                      {t.contact.services.map((srv) => (
-                        <option key={srv.id} value={srv.id}>
-                          {srv.id === "personal-portfolio" ? "⭐ " + srv.label : srv.label}
-                        </option>
+                      <option value="">Choose a service</option>
+                      {t.contact.services.map((s) => (
+                        <option key={s.id} value={s.id}>{s.label}</option>
                       ))}
                     </select>
-                    {errors.service && (
-                      <p role="alert" className="mt-1 text-xs text-red-500">
-                        {errors.service}
-                      </p>
-                    )}
+                    {errors.service && <p role="alert" className="mt-1 text-xs text-red-400">{errors.service}</p>}
                   </div>
-
-                  <div>
-                    <label
-                      htmlFor="packageId"
-                      className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5"
-                    >
-                      {t.contact.packageLabel}
+                  <div className="py-5 border-t sm:border-t-0 sm:border-l border-[var(--border)] sm:pl-8">
+                    <label htmlFor="packageId" className="editorial-label block mb-2">
+                      Package
                     </label>
                     <select
                       id="packageId"
                       name="packageId"
                       value={form.packageId}
                       onChange={handleChange}
-                      className={`${fieldClass("packageId")} cursor-pointer`}
+                      className={`${field("packageId")} border-b-0 cursor-pointer bg-transparent`}
                     >
-                      <option value="">{t.contact.packagePlaceholder}</option>
-                      {t.contact.packages.map((pkg) => (
-                        <option key={pkg.id} value={pkg.id}>
-                          {pkg.label}
-                        </option>
+                      <option value="">Select a package</option>
+                      {t.contact.packages.map((p) => (
+                        <option key={p.id} value={p.id}>{p.label}</option>
                       ))}
                     </select>
                   </div>
                 </div>
 
                 {/* Budget */}
-                <div>
-                  <label
-                    htmlFor="budgetId"
-                    className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5"
-                  >
-                    {t.contact.budgetLabel} <span className="text-neutral-400 font-normal">{t.contact.budgetOptional}</span>
+                <div className="border-b border-[var(--border)] py-5">
+                  <label htmlFor="budgetId" className="editorial-label block mb-2">
+                    Budget Range <span className="text-[var(--ink-muted)] font-normal normal-case tracking-normal text-[11px]">(optional)</span>
                   </label>
                   <select
                     id="budgetId"
                     name="budgetId"
                     value={form.budgetId}
                     onChange={handleChange}
-                    className={`${fieldClass("budgetId")} cursor-pointer`}
+                    className={`${field("budgetId")} border-b-0 cursor-pointer bg-transparent`}
                   >
-                    <option value="">{t.contact.budgetPlaceholder}</option>
+                    <option value="">Select a budget range</option>
                     {t.contact.budgets.map((b) => (
-                      <option key={b.id} value={b.id}>
-                        {b.label}
-                      </option>
+                      <option key={b.id} value={b.id}>{b.label}</option>
                     ))}
                   </select>
                 </div>
 
                 {/* Description */}
-                <div>
-                  <label
-                    htmlFor="description"
-                    className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5"
-                  >
-                    {t.contact.descLabel} <span className="text-red-500">*</span>
+                <div className="border-b border-[var(--border)] py-5">
+                  <label htmlFor="description" className="editorial-label block mb-2">
+                    Project Description <span className="text-red-400">*</span>
                   </label>
                   <textarea
                     id="description"
                     name="description"
-                    rows={4}
+                    rows={5}
                     value={form.description}
                     onChange={handleChange}
-                    placeholder={t.contact.descPlaceholder}
-                    className={`${fieldClass("description")} resize-none`}
+                    placeholder="Tell us about your project — what you're building, your goals, and any specific requirements..."
+                    className={`${field("description")} border-b-0 resize-none`}
                     aria-required="true"
                     aria-invalid={!!errors.description}
                   />
-                  {errors.description && (
-                    <p role="alert" className="mt-1 text-xs text-red-500">
-                      {errors.description}
-                    </p>
-                  )}
+                  {errors.description && <p role="alert" className="mt-1 text-xs text-red-400">{errors.description}</p>}
                 </div>
 
-                {/* Submit Button */}
-                <button
-                  type="submit"
-                  className="w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 text-sm font-semibold text-white bg-indigo-500 hover:bg-indigo-600 rounded-xl transition-colors shadow-md shadow-indigo-200 dark:shadow-indigo-950/40 group"
-                  aria-label={t.contact.submitAriaLabel}
-                >
-                  <Send size={16} aria-hidden="true" />
-                  {t.contact.submitBtn}
-                </button>
-
-                <p className="text-[11px] text-neutral-400 dark:text-neutral-500 text-center">
-                  {t.contact.submitHint}
-                </p>
+                {/* Submit */}
+                <div className="pt-8 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                  <button
+                    type="submit"
+                    className="inline-flex items-center gap-2 px-7 py-4 text-sm font-medium text-[var(--background)] bg-[var(--ink)] hover:opacity-80 transition-opacity group"
+                  >
+                    <Send size={14} aria-hidden="true" />
+                    Send via WhatsApp
+                    <ArrowUpRight size={13} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" aria-hidden="true" />
+                  </button>
+                  <p className="text-xs text-[var(--ink-muted)]">
+                    Opens WhatsApp with your details pre-filled
+                  </p>
+                </div>
               </form>
             )}
-          </AnimateOnScroll>
+          </InView>
         </div>
       </div>
     </section>

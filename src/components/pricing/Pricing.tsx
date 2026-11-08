@@ -1,49 +1,285 @@
 "use client";
 
-import { useState } from "react";
-import { Check, Sparkles, MessageCircle, ArrowRight, ShieldCheck, Info, Zap } from "lucide-react";
-import SectionHeader from "@/components/ui/SectionHeader";
-import AnimateOnScroll from "@/components/ui/AnimateOnScroll";
-import { whatsappUrl } from "@/lib/config";
-import { useLanguage } from "@/lib/language";
-import type { PricingPlanTranslation } from "@/lib/i18n/types";
+import { useRef, useState } from "react";
+import { motion, useInView, AnimatePresence } from "framer-motion";
+import { ArrowUpRight, Check } from "lucide-react";
 
-const planToServiceIdMap: Record<string, string> = {
-  "promo-design": "promo-design",
-  "umkm-catalog": "umkm-catalog",
-  "portfolio-starter": "personal-portfolio",
-  "portfolio-professional": "personal-portfolio",
-  "portfolio-premium": "personal-portfolio",
-  "business-landing-page": "business-landing-page",
-  "company-profile": "company-profile",
-  "business-website": "business-website",
-  ecommerce: "ecommerce",
-  "custom-web-app": "custom-web-app",
+function InView({
+  children,
+  className,
+  delay = 0,
+}: {
+  children: React.ReactNode;
+  className?: string;
+  delay?: number;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { once: true, margin: "-80px" });
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 28 }}
+      animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 28 }}
+      transition={{ duration: 0.75, delay, ease: [0.22, 1, 0.36, 1] }}
+      className={className}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+type Tab = "entry" | "portfolio" | "business";
+
+interface Plan {
+  id: string;
+  name: string;
+  price: string;
+  priceNote?: string;
+  duration: string;
+  revisions?: string;
+  hostingInfo?: string;
+  features: string[];
+  cta: string;
+  popular?: boolean;
+  isCustom?: boolean;
+}
+
+const tabs: { id: Tab; label: string }[] = [
+  { id: "entry", label: "Entry-Level" },
+  { id: "portfolio", label: "Portfolio" },
+  { id: "business", label: "Business" },
+];
+
+const plans: Record<Tab, Plan[]> = {
+  entry: [
+    {
+      id: "promo-design",
+      name: "Promotional Content Design",
+      price: "Rp75,000–100,000",
+      priceNote: "Package of 5 designs",
+      duration: "1–2 business days",
+      revisions: "1–2x minor",
+      hostingInfo: "High-res PNG/JPG files delivered",
+      features: [
+        "5 promotional content designs",
+        "1 agreed format (Feed 1:1 or Story 9:16)",
+        "Brand-aligned visual styling",
+        "High-resolution final files (PNG / JPG)",
+        "1–2 rounds of minor revisions",
+      ],
+      cta: "Order Design Package",
+    },
+    {
+      id: "umkm-catalog",
+      name: "Small Business Digital Catalog",
+      price: "From Rp150,000",
+      duration: "1–2 business days",
+      revisions: "1x minor",
+      hostingInfo: "Free hosting via Vercel / Netlify",
+      features: [
+        "Online product or menu catalog",
+        "Photos, names, prices, descriptions",
+        "WhatsApp order button per item",
+        "Smartphone-optimized responsive layout",
+        "Free cloud hosting (no monthly fees)",
+      ],
+      cta: "Choose Catalog",
+    },
+    {
+      id: "portfolio-starter-entry",
+      name: "Personal Portfolio Starter",
+      price: "From Rp150,000",
+      duration: "1–3 business days",
+      revisions: "1x minor",
+      hostingInfo: "Free hosting via Vercel / Netlify / GitHub Pages",
+      popular: true,
+      features: [
+        "1 structured single page",
+        "Profile, skills, experience highlights",
+        "Up to 3 selected projects",
+        "Contact section & social links",
+        "Responsive design (mobile & desktop)",
+        "Published on free cloud hosting",
+      ],
+      cta: "Choose Portfolio Starter",
+    },
+    {
+      id: "business-landing-page",
+      name: "Business Landing Page",
+      price: "Rp350,000–500,000",
+      priceNote: "Depends on section count",
+      duration: "2–4 business days",
+      revisions: "2x",
+      hostingInfo: "Free hosting, zero monthly fees",
+      features: [
+        "Single-page conversion-focused site",
+        "Hero with clear value proposition",
+        "Service/product overview section",
+        "Business strengths & highlights",
+        "WhatsApp / contact CTA buttons",
+        "Mobile-first responsive design",
+      ],
+      cta: "Choose Landing Page",
+    },
+  ],
+  portfolio: [
+    {
+      id: "portfolio-starter",
+      name: "Portfolio Starter",
+      price: "From Rp150,000",
+      duration: "1–3 business days",
+      revisions: "1x minor",
+      hostingInfo: "Free hosting, no monthly fee",
+      features: [
+        "1 structured single page",
+        "Short profile & professional bio",
+        "Education / work experience history",
+        "Skills list",
+        "Up to 3 selected projects",
+        "Contact & social links",
+        "Responsive design",
+        "Self-setup domain guide",
+      ],
+      cta: "Choose Starter",
+    },
+    {
+      id: "portfolio-professional",
+      name: "Portfolio Professional",
+      price: "Rp349,000",
+      priceNote: "Most popular & curated",
+      duration: "3–5 business days",
+      revisions: "2x",
+      hostingInfo: "Free hosting + custom domain connection help",
+      popular: true,
+      features: [
+        "1 page with distinct personal branding",
+        "Full sections: About, Skills, Projects, Experience, Contact",
+        "Up to 6 interactive project showcases",
+        "Smooth animations & transitions",
+        "Mobile-first responsive design",
+        "WhatsApp CTA & direct contact form",
+        "Domain connection guidance & assistance",
+      ],
+      cta: "Choose Professional",
+    },
+    {
+      id: "portfolio-premium",
+      name: "Portfolio Premium",
+      price: "From Rp599,000",
+      duration: "5–10 business days",
+      revisions: "3x",
+      hostingInfo: "Free hosting / custom server as agreed",
+      isCustom: true,
+      features: [
+        "Advanced architecture & bespoke design",
+        "In-depth project case studies",
+        "Additional pages/sections as agreed",
+        "Project filters, blog, or custom forms",
+        "Cross-browser testing",
+        "Custom animations & micro-interactions",
+        "Final price after consultation",
+      ],
+      cta: "Consult Premium",
+    },
+  ],
+  business: [
+    {
+      id: "company-profile",
+      name: "Company Profile",
+      price: "Rp2,500,000",
+      duration: "7–14 business days",
+      revisions: "3x",
+      hostingInfo: ".com domain & 1st-year hosting included",
+      features: [
+        "Up to 5–6 professional pages",
+        "Custom UI/UX & corporate identity",
+        "Home, About, Services, Portfolio, Contact",
+        "WhatsApp button & contact form",
+        "Google Maps & basic on-page SEO",
+        "Google Analytics & SSL / HTTPS",
+        "30-day bug guarantee",
+      ],
+      cta: "Choose Company Profile",
+    },
+    {
+      id: "business-website",
+      name: "Full Business Website",
+      price: "Rp4,000,000",
+      duration: "2–3 weeks",
+      revisions: "4x",
+      hostingInfo: ".com domain & 1st-year hosting included",
+      popular: true,
+      features: [
+        "Up to 10 structured pages",
+        "Custom UI/UX & design system",
+        "Dynamic product/service catalog",
+        "Content search & category filtering",
+        "Company blog/news system",
+        "Lightweight CMS for content management",
+        "Database & backend API",
+        "30-day bug guarantee",
+      ],
+      cta: "Choose Business Website",
+    },
+    {
+      id: "ecommerce",
+      name: "E-Commerce Store",
+      price: "From Rp6,000,000",
+      duration: "3–5 weeks",
+      revisions: "Per scope",
+      hostingInfo: "Domain & 1st-year hosting included",
+      features: [
+        "Product catalog & detail pages",
+        "Shopping cart & checkout flow",
+        "User accounts & order history",
+        "Admin dashboard for inventory",
+        "WhatsApp order / payment gateway",
+        "Mobile-first responsive design",
+        "SSL & production deployment",
+        "30-day bug warranty",
+      ],
+      cta: "Choose E-Commerce",
+    },
+    {
+      id: "custom-web-app",
+      name: "Custom Web App",
+      price: "From Rp7,500,000",
+      duration: "Based on scope",
+      isCustom: true,
+      features: [
+        "Inventory, POS, HR, Booking, CRM, SaaS",
+        "Features built around your workflow",
+        "Custom UI/UX & modern database",
+        "REST API & role-based auth",
+        "Analytics dashboard & reporting",
+        "Cloud / server deployment",
+        "30-day bug warranty & documentation",
+      ],
+      cta: "Discuss Custom Project",
+    },
+  ],
 };
 
+const addons = [
+  { name: "Additional Page", price: "Rp200,000" },
+  { name: "Additional Section", price: "Rp100,000" },
+  { name: "Custom Domain Setup (.com/.id)", price: "Rp250,000" },
+  { name: "User Authentication / Login", price: "Rp500,000" },
+  { name: "Admin Dashboard", price: "Rp750,000" },
+  { name: "Database & Backend API", price: "Rp750,000" },
+  { name: "Payment Gateway Integration", price: "Rp750,000" },
+  { name: "CMS / Content Management", price: "Rp1,000,000" },
+  { name: "Third-Party API Integration", price: "Rp500,000" },
+  { name: "Advanced SEO Optimization", price: "Rp750,000" },
+];
+
 export default function Pricing() {
-  const { t, lang } = useLanguage();
-  const [activeTab, setActiveTab] = useState<"entry" | "portfolio" | "business">("entry");
+  const [activeTab, setActiveTab] = useState<Tab>("entry");
 
-  const currentPlans =
-    activeTab === "entry"
-      ? t.pricing.entryPlans
-      : activeTab === "portfolio"
-      ? t.pricing.portfolioPlans
-      : t.pricing.businessPlans;
-
-  const handleSelectPlan = (plan: PricingPlanTranslation) => {
+  const dispatchPlan = (id: string) => {
     if (typeof window !== "undefined") {
-      const serviceId = planToServiceIdMap[plan.id] || "personal-portfolio";
       window.dispatchEvent(
-        new CustomEvent("beone-select-plan", {
-          detail: {
-            planId: plan.id,
-            serviceId,
-            service: plan.name,
-            plan: plan.name,
-          },
-        })
+        new CustomEvent("beone-select-plan", { detail: { planId: id } })
       );
     }
   };
@@ -52,275 +288,211 @@ export default function Pricing() {
     <section
       id="pricing"
       aria-labelledby="pricing-heading"
-      className="section-padding bg-neutral-50 dark:bg-neutral-900/50 relative overflow-hidden"
+      className="section-padding bg-[var(--background)]"
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <AnimateOnScroll>
-          <SectionHeader
-            label={t.pricing.label}
-            title={t.pricing.title}
-            subtitle={t.pricing.subtitle}
-          />
-        </AnimateOnScroll>
+      <div className="max-w-[1400px] mx-auto px-6 sm:px-8 lg:px-12">
 
-        {/* Category Switcher Tabs */}
-        <AnimateOnScroll delay={0.05}>
-          <div className="flex justify-center mb-10">
-            <div
-              role="tablist"
-              aria-label={t.pricing.categoryAria}
-              className="inline-flex p-1.5 rounded-2xl bg-neutral-200/80 dark:bg-neutral-800 border border-neutral-300/60 dark:border-neutral-700 shadow-inner max-w-full overflow-x-auto"
+        {/* Top divider */}
+        <div className="h-px bg-[var(--border)] mb-16 md:mb-24" />
+
+        {/* Header */}
+        <div className="grid lg:grid-cols-12 gap-8 lg:gap-20 mb-14 md:mb-18">
+          <InView className="lg:col-span-5">
+            <p className="editorial-label mb-6">Packages & Investment</p>
+            <h2
+              id="pricing-heading"
+              className="font-display text-4xl sm:text-5xl font-bold leading-[1.08] tracking-tight text-[var(--ink)]"
+              style={{ fontFamily: "var(--font-playfair)" }}
             >
-              <button
-                type="button"
-                role="tab"
-                id="tab-entry"
-                aria-selected={activeTab === "entry"}
-                aria-controls="pricing-panel"
-                onClick={() => setActiveTab("entry")}
-                className={`flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all duration-200 whitespace-nowrap ${
-                  activeTab === "entry"
-                    ? "bg-white dark:bg-neutral-900 text-indigo-600 dark:text-indigo-400 shadow-sm"
-                    : "text-neutral-600 dark:text-neutral-400 hover:text-neutral-950 dark:hover:text-white"
-                }`}
-              >
-                <Zap size={14} className="text-amber-500" aria-hidden="true" />
-                {t.pricing.tabEntry}
-              </button>
+              Transparent
+              <br />
+              pricing for
+              <br />
+              <span className="italic font-medium">every budget.</span>
+            </h2>
+          </InView>
+          <InView delay={0.1} className="lg:col-span-6 lg:col-start-7 lg:pt-14">
+            <p className="text-base text-[var(--ink-soft)] leading-relaxed">
+              Every package has a defined scope, honest timeline, and no
+              hidden costs. Prices are fixed — what you see is what you
+              pay.
+            </p>
+          </InView>
+        </div>
 
+        {/* Tab switcher */}
+        <InView>
+          <div
+            className="flex gap-0 border border-[var(--border)] w-fit mb-12 md:mb-16"
+            role="tablist"
+            aria-label="Pricing category"
+          >
+            {tabs.map((tab) => (
               <button
-                type="button"
+                key={tab.id}
                 role="tab"
-                id="tab-portfolio"
-                aria-selected={activeTab === "portfolio"}
-                aria-controls="pricing-panel"
-                onClick={() => setActiveTab("portfolio")}
-                className={`flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all duration-200 whitespace-nowrap ${
-                  activeTab === "portfolio"
-                    ? "bg-white dark:bg-neutral-900 text-indigo-600 dark:text-indigo-400 shadow-sm"
-                    : "text-neutral-600 dark:text-neutral-400 hover:text-neutral-950 dark:hover:text-white"
+                aria-selected={activeTab === tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`px-5 py-3 text-sm font-medium transition-colors duration-150 ${
+                  activeTab === tab.id
+                    ? "bg-[var(--ink)] text-[var(--background)]"
+                    : "text-[var(--ink-muted)] hover:text-[var(--ink)]"
                 }`}
               >
-                <Sparkles size={14} aria-hidden="true" />
-                {t.pricing.tabPortfolio}
+                {tab.label}
               </button>
-
-              <button
-                type="button"
-                role="tab"
-                id="tab-business"
-                aria-selected={activeTab === "business"}
-                aria-controls="pricing-panel"
-                onClick={() => setActiveTab("business")}
-                className={`flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all duration-200 whitespace-nowrap ${
-                  activeTab === "business"
-                    ? "bg-white dark:bg-neutral-900 text-indigo-600 dark:text-indigo-400 shadow-sm"
-                    : "text-neutral-600 dark:text-neutral-400 hover:text-neutral-950 dark:hover:text-white"
-                }`}
-              >
-                {t.pricing.tabBusiness}
-              </button>
-            </div>
+            ))}
           </div>
-        </AnimateOnScroll>
+        </InView>
 
-        {/* Pricing Cards Grid / Mobile Horizontal Scroll Carousel */}
-        <div
-          id="pricing-panel"
-          role="tabpanel"
-          aria-labelledby={`tab-${activeTab}`}
-          className={`flex sm:grid overflow-x-auto sm:overflow-x-visible snap-x snap-mandatory scroll-smooth pb-4 sm:pb-0 pt-4 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:mx-0 lg:px-0 no-scrollbar sm:grid-cols-2 ${
-            activeTab === "entry"
-              ? "lg:grid-cols-4 max-w-7xl mx-auto"
-              : activeTab === "portfolio"
-              ? "md:grid-cols-3 max-w-6xl mx-auto"
-              : "xl:grid-cols-4"
-          } gap-5 sm:gap-6 items-stretch`}
-        >
-          {currentPlans.map((plan, index) => {
-            const isPopular = plan.popular;
-
-            return (
-              <AnimateOnScroll
+        {/* Plans grid */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeTab}
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -16 }}
+            transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+            className="grid sm:grid-cols-2 lg:grid-cols-4 gap-0 border border-[var(--border)]"
+            role="tabpanel"
+          >
+            {plans[activeTab].map((plan, i) => (
+              <div
                 key={plan.id}
-                delay={index * 0.06}
-                className="w-[82vw] sm:w-auto min-w-[280px] max-w-[340px] sm:min-w-0 sm:max-w-none shrink-0 sm:shrink snap-start flex flex-col h-auto sm:h-full"
+                className={`relative flex flex-col p-7 sm:p-8 ${
+                  i < plans[activeTab].length - 1 ? "border-r border-[var(--border)]" : ""
+                } ${plan.popular ? "bg-[var(--ink)]" : "bg-[var(--surface)]"}`}
               >
-                <div
-                  className={`relative flex flex-col h-full rounded-2xl border transition-all duration-200 ${
-                    isPopular
-                      ? "border-indigo-500/80 bg-white dark:bg-neutral-900 shadow-xl shadow-indigo-500/10 dark:shadow-indigo-950/40 ring-2 ring-indigo-500/30"
-                      : "border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:border-neutral-300 dark:hover:border-neutral-700 hover:shadow-md"
+                {/* Popular badge */}
+                {plan.popular && (
+                  <span className="editorial-label text-[var(--accent)] mb-4 block">
+                    Top Pick
+                  </span>
+                )}
+
+                {/* Name */}
+                <h3
+                  className={`font-display text-lg font-semibold mb-1 ${
+                    plan.popular ? "text-[var(--background)] dark:text-white" : "text-[var(--ink)]"
                   }`}
-                  aria-label={`${plan.name} ${t.pricing.planAria}`}
+                  style={{ fontFamily: "var(--font-playfair)" }}
                 >
-                  {/* Badge */}
-                  {isPopular && (
-                    <div
-                      className="absolute -top-3 left-1/2 -translate-x-1/2 flex items-center gap-1 px-3 py-0.5 bg-indigo-500 text-white text-[11px] font-bold rounded-full shadow-xs whitespace-nowrap"
-                      aria-label={t.pricing.recommended}
-                    >
-                      <Sparkles size={11} aria-hidden="true" />
-                      {t.pricing.recommended}
-                    </div>
-                  )}
-
-                  <div className="p-5 sm:p-6 flex flex-col flex-1">
-                    {/* Header: Name and Category label */}
-                    <div className="mb-3">
-                      <div className="inline-block px-2.5 py-0.5 rounded-md text-[11px] font-semibold bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 mb-2">
-                        {plan.label}
-                      </div>
-                      <h3 className="text-lg font-black text-neutral-950 dark:text-white leading-tight">
-                        {plan.name}
-                      </h3>
-                      {plan.target && (
-                        <p className="text-[11px] text-neutral-500 dark:text-neutral-400 mt-1 leading-relaxed line-clamp-2">
-                          {plan.target}
-                        </p>
-                      )}
-                    </div>
-
-                    {/* Price and duration */}
-                    <div className="mb-4 pb-4 border-b border-neutral-100 dark:border-neutral-800">
-                      {plan.priceNote && (
-                        <span className="text-[11px] text-neutral-400 block mb-0.5">
-                          {plan.priceNote}
-                        </span>
-                      )}
-                      <div className="text-2xl sm:text-3xl font-black text-neutral-950 dark:text-white">
-                        {plan.price}
-                      </div>
-                      <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-[11px] text-neutral-500 dark:text-neutral-400 mt-1.5">
-                        <span>⏱️ {plan.duration}</span>
-                        {plan.revisions && <span>• 🔄 {plan.revisions}</span>}
-                      </div>
-                    </div>
-
-                    {/* Hosting or Delivery Info */}
-                    {plan.hostingInfo && (
-                      <div className="mb-4 p-2.5 rounded-xl bg-neutral-50 dark:bg-neutral-800/60 border border-neutral-100 dark:border-neutral-800 text-[11px] text-neutral-600 dark:text-neutral-300 flex items-start gap-1.5">
-                        <Info size={13} className="text-indigo-500 flex-shrink-0 mt-0.5" />
-                        <span className="leading-tight">{plan.hostingInfo}</span>
-                      </div>
-                    )}
-
-                    {/* Features list */}
-                    <ul
-                      className="flex flex-col gap-2 flex-1 mb-5"
-                      aria-label={`${t.pricing.featuresAria}: ${plan.name}`}
-                    >
-                      {plan.features.map((feature) => (
-                        <li key={feature} className="flex items-start gap-2 text-xs text-neutral-600 dark:text-neutral-300">
-                          <Check
-                            size={14}
-                            aria-hidden="true"
-                            className="flex-shrink-0 mt-0.5 text-indigo-500"
-                          />
-                          <span className="leading-snug">{feature}</span>
-                        </li>
-                      ))}
-                    </ul>
-
-                    {/* CTA Button */}
-                    <div className="pt-3 border-t border-neutral-100 dark:border-neutral-800">
-                      <a
-                        href="#contact"
-                        onClick={() => handleSelectPlan(plan)}
-                        className={`flex items-center justify-center gap-1.5 w-full py-3 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-150 shadow-xs ${
-                          isPopular
-                            ? "bg-indigo-500 text-white hover:bg-indigo-600"
-                            : "bg-neutral-950 dark:bg-white text-white dark:text-neutral-950 hover:bg-neutral-800 dark:hover:bg-neutral-100"
-                        }`}
-                        aria-label={`${plan.cta} — ${plan.name}`}
-                      >
-                        {plan.cta}
-                        <ArrowRight size={13} aria-hidden="true" />
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </AnimateOnScroll>
-            );
-          })}
-          {/* Mobile trailing spacer for comfortable end padding */}
-          <div className="shrink-0 w-2 sm:hidden" aria-hidden="true" />
-        </div>
-
-        {/* Mobile Swipe Cue */}
-        <div className="flex sm:hidden items-center justify-center gap-1.5 mt-3 text-xs text-neutral-400 dark:text-neutral-500">
-          <span className="w-1.5 h-1.5 rounded-full bg-indigo-500/70 animate-pulse" />
-          <span>{lang === "en" ? "Swipe horizontally to compare packages" : "Geser ke samping untuk membandingkan paket"}</span>
-        </div>
-
-        {/* Pricing Terms & Scope Notice */}
-        <AnimateOnScroll delay={0.15}>
-          <div className="mt-10 p-5 rounded-2xl bg-indigo-50/50 dark:bg-indigo-950/20 border border-indigo-100 dark:border-indigo-900/60 text-xs text-neutral-600 dark:text-neutral-400 max-w-4xl mx-auto flex flex-col sm:flex-row gap-3 items-start">
-            <ShieldCheck size={18} className="text-indigo-500 flex-shrink-0 mt-0.5" />
-            <div className="space-y-1.5 leading-relaxed">
-              <span className="font-bold text-neutral-900 dark:text-white block">
-                {t.pricing.termsTitle}
-              </span>
-              <div className="space-y-1">
-                {t.pricing.terms.map((term, i) => (
-                  <p key={term.label}>
-                    {i + 1}. <strong>{term.label}</strong> {term.text}
-                  </p>
-                ))}
-              </div>
-            </div>
-          </div>
-        </AnimateOnScroll>
-
-        {/* Add-ons List */}
-        <AnimateOnScroll delay={0.2}>
-          <div className="mt-12 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 md:p-8">
-            <div className="mb-5 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-              <div>
-                <h3 className="text-xl font-bold text-neutral-950 dark:text-white">
-                  {t.pricing.addonsTitle}
+                  {plan.name}
                 </h3>
-                <p className="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400 mt-0.5">
-                  {t.pricing.addonsSubtitle}
+
+                {/* Price */}
+                <div className="mt-4 mb-6">
+                  <span
+                    className={`font-display text-3xl font-bold ${
+                      plan.popular ? "text-[var(--background)] dark:text-white" : "text-[var(--ink)]"
+                    }`}
+                    style={{ fontFamily: "var(--font-playfair)" }}
+                  >
+                    {plan.price}
+                  </span>
+                  {plan.priceNote && (
+                    <p
+                      className={`text-xs mt-1 ${
+                        plan.popular ? "text-[var(--background)]/60" : "text-[var(--ink-muted)]"
+                      }`}
+                    >
+                      {plan.priceNote}
+                    </p>
+                  )}
+                </div>
+
+                {/* Meta */}
+                <div
+                  className={`flex flex-col gap-1 mb-6 text-xs ${
+                    plan.popular ? "text-[var(--background)]/70" : "text-[var(--ink-muted)]"
+                  }`}
+                >
+                  <span>⏱ {plan.duration}</span>
+                  {plan.revisions && <span>✎ {plan.revisions} revisions</span>}
+                  {plan.hostingInfo && <span>☁ {plan.hostingInfo}</span>}
+                </div>
+
+                {/* Divider */}
+                <div
+                  className={`h-px mb-6 ${
+                    plan.popular ? "bg-white/20" : "bg-[var(--border)]"
+                  }`}
+                />
+
+                {/* Features */}
+                <ul className="flex flex-col gap-2.5 flex-1">
+                  {plan.features.map((f) => (
+                    <li key={f} className="flex items-start gap-2.5">
+                      <Check
+                        size={13}
+                        strokeWidth={2.5}
+                        className={`mt-0.5 shrink-0 ${
+                          plan.popular ? "text-[var(--accent)]" : "text-[var(--accent-dark)]"
+                        }`}
+                        aria-hidden="true"
+                      />
+                      <span
+                        className={`text-xs leading-relaxed ${
+                          plan.popular
+                            ? "text-[var(--background)]/80"
+                            : "text-[var(--ink-soft)]"
+                        }`}
+                      >
+                        {f}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+
+                {/* CTA */}
+                <a
+                  href="#contact"
+                  onClick={() => dispatchPlan(plan.id)}
+                  className={`mt-8 inline-flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium transition-opacity hover:opacity-80 ${
+                    plan.popular
+                      ? "bg-[var(--background)] text-[var(--ink)]"
+                      : "bg-[var(--ink)] text-[var(--background)]"
+                  }`}
+                >
+                  {plan.cta}
+                  <ArrowUpRight size={13} aria-hidden="true" />
+                </a>
+              </div>
+            ))}
+          </motion.div>
+        </AnimatePresence>
+
+        {/* Add-ons */}
+        <InView delay={0.1}>
+          <div className="mt-16 md:mt-20">
+            <div className="h-px bg-[var(--border)] mb-10" />
+            <div className="grid lg:grid-cols-12 gap-8">
+              <div className="lg:col-span-3">
+                <p className="editorial-label mb-3">Add-ons</p>
+                <p className="text-sm text-[var(--ink-muted)] leading-relaxed">
+                  Extend any package with modular extras — priced transparently.
                 </p>
               </div>
-              <a
-                href={whatsappUrl(t.pricing.askWhatsappMsg)}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 text-xs font-semibold text-indigo-500 hover:text-indigo-600"
-              >
-                <MessageCircle size={14} />
-                {t.pricing.addonsAskCustom}
-              </a>
-            </div>
-
-            <div
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5"
-              role="list"
-              aria-label={t.pricing.addonsTitle}
-            >
-              {t.pricing.addons.map((addon) => (
-                <div
-                  key={addon.name}
-                  role="listitem"
-                  className="flex items-center justify-between py-2.5 px-3.5 bg-neutral-50 dark:bg-neutral-800/70 border border-neutral-100 dark:border-neutral-800 rounded-xl"
-                >
-                  <span className="text-xs font-medium text-neutral-700 dark:text-neutral-300">
-                    {addon.name}
-                  </span>
-                  <span className="text-xs font-bold text-indigo-500 ml-2 whitespace-nowrap">
-                    {addon.startingPrice}
-                  </span>
+              <div className="lg:col-span-9">
+                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-0 border border-[var(--border)]">
+                  {addons.map((addon, i) => (
+                    <div
+                      key={addon.name}
+                      className={`flex items-center justify-between px-5 py-4 text-sm ${
+                        i % 3 !== 2 ? "border-r border-[var(--border)]" : ""
+                      } border-b border-[var(--border)]`}
+                    >
+                      <span className="text-[var(--ink-soft)]">{addon.name}</span>
+                      <span className="text-[var(--ink)] font-medium ml-4 shrink-0 text-xs">
+                        {addon.price}
+                      </span>
+                    </div>
+                  ))}
                 </div>
-              ))}
+              </div>
             </div>
-
-            <p className="mt-4 text-xs text-neutral-400 dark:text-neutral-500">
-              {t.pricing.addonsNote}
-            </p>
           </div>
-        </AnimateOnScroll>
+        </InView>
       </div>
     </section>
   );

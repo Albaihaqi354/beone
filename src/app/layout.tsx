@@ -1,35 +1,38 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import { siteConfig } from "@/lib/config";
 import { ThemeProvider } from "@/lib/theme";
 import { LanguageProvider } from "@/lib/language";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
   display: "swap",
+  weight: ["300", "400", "500", "600", "700"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const playfairDisplay = Playfair_Display({
+  variable: "--font-playfair",
   subsets: ["latin"],
   display: "swap",
+  weight: ["400", "500", "600", "700", "800", "900"],
+  style: ["normal", "italic"],
 });
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
-    { media: "(prefers-color-scheme: dark)", color: "#0c0c0e" },
+    { media: "(prefers-color-scheme: light)", color: "#f8f5f0" },
+    { media: "(prefers-color-scheme: dark)", color: "#0f0e0c" },
   ],
 };
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
   title: {
-    default: `${siteConfig.name} — Personal Portfolio & Web Solutions | Jasa Pembuatan Website Portofolio`,
+    default: `${siteConfig.name} — Digital Development Studio | Jasa Pembuatan Website`,
     template: `%s | ${siteConfig.name}`,
   },
   description: siteConfig.description,
@@ -63,7 +66,7 @@ export const metadata: Metadata = {
     type: "website",
     locale: "id_ID",
     url: siteConfig.url,
-    title: `${siteConfig.name} — Personal Portfolio & Web Solutions`,
+    title: `${siteConfig.name} — Digital Development Studio`,
     description: siteConfig.description,
     siteName: siteConfig.name,
     images: [
@@ -77,7 +80,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: `${siteConfig.name} — Personal Portfolio & Web Solutions`,
+    title: `${siteConfig.name} — Digital Development Studio`,
     description: siteConfig.description,
     images: ["/og-image.png"],
   },
@@ -102,10 +105,10 @@ export default function RootLayout({
   return (
     <html
       lang="id"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${inter.variable} ${playfairDisplay.variable} h-full antialiased`}
       suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col bg-white dark:bg-[#0c0c0e] text-neutral-900 dark:text-neutral-100 transition-colors duration-200">
+      <body className="min-h-full flex flex-col bg-background text-foreground transition-colors duration-200">
         <ThemeProvider>
           <LanguageProvider>{children}</LanguageProvider>
         </ThemeProvider>

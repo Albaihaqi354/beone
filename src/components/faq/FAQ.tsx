@@ -1,102 +1,191 @@
 "use client";
 
-import { useState } from "react";
-import { ChevronDown } from "lucide-react";
-import SectionHeader from "@/components/ui/SectionHeader";
-import AnimateOnScroll from "@/components/ui/AnimateOnScroll";
-import { motion, AnimatePresence } from "framer-motion";
-import { useLanguage } from "@/lib/language";
+import { useRef, useState } from "react";
+import { motion, useInView, AnimatePresence } from "framer-motion";
+import { Plus, Minus } from "lucide-react";
+
+function InView({
+  children,
+  className,
+  delay = 0,
+}: {
+  children: React.ReactNode;
+  className?: string;
+  delay?: number;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { once: true, margin: "-80px" });
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 28 }}
+      animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 28 }}
+      transition={{ duration: 0.75, delay, ease: [0.22, 1, 0.36, 1] }}
+      className={className}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+const faqs = [
+  {
+    id: "entry-services",
+    q: "What entry-level services does BeOne offer?",
+    a: "BeOne offers four affordable entry-level services to get you online fast: Promotional Content Design (Rp75,000–100,000 for a pack of 5), Small Business Digital Catalog (from Rp150,000), Personal Portfolio Starter (from Rp150,000), and Business Landing Page (Rp350,000–500,000). Timeline estimates run 1–3 business days after all materials are received.",
+  },
+  {
+    id: "promo-design",
+    q: "How does the Promotional Content Design pack work?",
+    a: "The Rp75,000–100,000 price covers a complete pack of 5 promotional content designs — not a single design. You choose one format size (Feed 1:1 or Story 9:16), provide your text and product photos, and we produce professional ready-to-post visuals with 1–2 minor revision rounds.",
+  },
+  {
+    id: "catalog-vs-ecommerce",
+    q: "What is the difference between the Digital Catalog and a full E-Commerce store?",
+    a: "The Digital Catalog (from Rp150,000) displays photos, prices, and descriptions with a WhatsApp order button per item — zero monthly hosting cost. It has no payment gateway, admin dashboard, or database. If you need automatic checkout, payment processing, and inventory management, the full E-Commerce package (from Rp6,000,000) is the right fit.",
+  },
+  {
+    id: "portfolio-tiers",
+    q: "What is the difference between Starter, Professional, and Premium portfolio packages?",
+    a: "Starter (Rp150,000) is a single-page site with up to 3 projects and 1 minor revision — ideal for students or early-career professionals. Professional (Rp349,000) adds a more curated design, up to 6 project showcases, smooth animations, 2 revisions, and domain connection guidance. Premium (from Rp599,000) is for those needing in-depth case studies, custom architecture, additional sections, or filters — finalized after a consultation.",
+  },
+  {
+    id: "timeline",
+    q: "When does the project timeline officially start?",
+    a: "Business-day counts begin once all materials (text, photos, logo), brief, and agreed scope are fully delivered. Mid-project scope additions or delayed material delivery will adjust the schedule — we communicate this transparently.",
+  },
+  {
+    id: "bug-guarantee",
+    q: "What does the 30-day bug guarantee cover?",
+    a: "It covers free fixes for functional code errors, broken layouts, or technical issues inherent to what BeOne built — within the originally agreed scope. It does not cover new feature requests, major redesigns, or modifications made by third parties after handover.",
+  },
+  {
+    id: "free-hosting",
+    q: "How does the free hosting work?",
+    a: "Sites are deployed on modern cloud platforms (Vercel, Netlify, or GitHub Pages) with active SSL — no monthly server fees. For paid custom domains (.com, .id, .dev), those are purchased separately and we provide clear setup guidance or hands-on assistance.",
+  },
+  {
+    id: "custom-app",
+    q: "Can BeOne build a custom internal system or SaaS product?",
+    a: "Yes. BeOne is fully capable of building bespoke web applications — inventory management, POS, booking systems, HR dashboards, or custom SaaS products. These projects are scoped individually; contact us to discuss your requirements.",
+  },
+];
+
+function FAQItem({ faq, isOpen, onToggle }: { faq: typeof faqs[0]; isOpen: boolean; onToggle: () => void }) {
+  return (
+    <div className="border-b border-[var(--border)]">
+      <button
+        type="button"
+        className="w-full flex items-center justify-between gap-4 py-6 text-left group"
+        onClick={onToggle}
+        aria-expanded={isOpen}
+        aria-controls={`faq-${faq.id}`}
+      >
+        <span
+          className={`font-display text-base sm:text-lg font-medium leading-snug transition-opacity ${
+            isOpen ? "text-[var(--ink)]" : "text-[var(--ink)] group-hover:opacity-70"
+          }`}
+          style={{ fontFamily: "var(--font-playfair)" }}
+        >
+          {faq.q}
+        </span>
+        <span
+          className={`w-7 h-7 flex items-center justify-center border shrink-0 transition-all duration-200 ${
+            isOpen
+              ? "border-[var(--ink)] bg-[var(--ink)] text-[var(--background)]"
+              : "border-[var(--border)] text-[var(--ink-muted)]"
+          }`}
+        >
+          {isOpen ? <Minus size={13} aria-hidden="true" /> : <Plus size={13} aria-hidden="true" />}
+        </span>
+      </button>
+
+      <AnimatePresence initial={false}>
+        {isOpen && (
+          <motion.div
+            id={`faq-${faq.id}`}
+            role="region"
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+            className="overflow-hidden"
+          >
+            <p className="pb-7 text-sm text-[var(--ink-soft)] leading-relaxed max-w-3xl">
+              {faq.a}
+            </p>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
 
 export default function FAQ() {
-  const { t } = useLanguage();
-  const [openId, setOpenId] = useState<string | null>(null);
+  const [openId, setOpenId] = useState<string | null>("entry-services");
 
-  const toggle = (id: string) => setOpenId((prev) => (prev === id ? null : id));
+  const toggle = (id: string) => {
+    setOpenId((prev) => (prev === id ? null : id));
+  };
 
   return (
     <section
       id="faq"
       aria-labelledby="faq-heading"
-      className="section-padding bg-white dark:bg-neutral-950"
+      className="section-padding bg-[var(--surface)]"
     >
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-        <AnimateOnScroll>
-          <SectionHeader
-            label={t.faq.label}
-            title={t.faq.title}
-            subtitle={t.faq.subtitle}
-          />
-        </AnimateOnScroll>
+      <div className="max-w-[1400px] mx-auto px-6 sm:px-8 lg:px-12">
 
-        <dl className="flex flex-col gap-3" aria-label={t.faq.aria}>
-          {t.faq.items.map((item, index) => {
-            const isOpen = openId === item.id;
+        {/* Top divider */}
+        <div className="h-px bg-[var(--border)] mb-16 md:mb-24" />
 
-            return (
-              <AnimateOnScroll key={item.id} delay={index * 0.05}>
-                <div className="border border-neutral-200 dark:border-neutral-700 rounded-2xl overflow-hidden hover:border-neutral-300 dark:hover:border-neutral-600 transition-colors">
-                  <dt>
-                    <button
-                      type="button"
-                      onClick={() => toggle(item.id)}
-                      aria-expanded={isOpen}
-                      aria-controls={`faq-answer-${item.id}`}
-                      id={`faq-question-${item.id}`}
-                      className="w-full flex items-center justify-between gap-4 px-6 py-4 text-left bg-white dark:bg-neutral-900 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
-                    >
-                      <span className="text-base font-semibold text-neutral-950 dark:text-white pr-2">
-                        {item.question}
-                      </span>
-                      <ChevronDown
-                        size={18}
-                        aria-hidden="true"
-                        className={`flex-shrink-0 text-neutral-400 transition-transform duration-200 ${
-                          isOpen ? "rotate-180" : ""
-                        }`}
-                      />
-                    </button>
-                  </dt>
+        {/* Header + accordion — two column on desktop */}
+        <div className="grid lg:grid-cols-12 gap-10 lg:gap-20">
 
-                  <AnimatePresence initial={false}>
-                    {isOpen && (
-                      <motion.dd
-                        id={`faq-answer-${item.id}`}
-                        role="region"
-                        aria-labelledby={`faq-question-${item.id}`}
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.22, ease: "easeInOut" }}
-                        className="overflow-hidden"
-                      >
-                        <div className="px-6 pb-5 pt-0 border-t border-neutral-100 dark:border-neutral-800">
-                          <p className="text-sm text-neutral-500 dark:text-neutral-400 leading-relaxed pt-4">
-                            {item.answer}
-                          </p>
-                        </div>
-                      </motion.dd>
-                    )}
-                  </AnimatePresence>
-                </div>
-              </AnimateOnScroll>
-            );
-          })}
-        </dl>
-
-        {/* Still have questions */}
-        <AnimateOnScroll delay={0.15}>
-          <div className="mt-10 text-center">
-            <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-4">
-              {t.faq.stillHaveQuestions}
-            </p>
-            <a
-              href="#contact"
-              className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800 rounded-xl hover:bg-indigo-50 dark:hover:bg-indigo-950/40 transition-colors"
-            >
-              {t.faq.askUs}
-            </a>
+          {/* Left sticky header */}
+          <div className="lg:col-span-4">
+            <InView>
+              <p className="editorial-label mb-6">FAQ</p>
+              <h2
+                id="faq-heading"
+                className="font-display text-4xl sm:text-5xl font-bold leading-[1.08] tracking-tight text-[var(--ink)]"
+                style={{ fontFamily: "var(--font-playfair)" }}
+              >
+                Common
+                <br />
+                <span className="italic font-medium">questions,</span>
+                <br />
+                answered.
+              </h2>
+              <p className="mt-6 text-sm text-[var(--ink-muted)] leading-relaxed">
+                Still have questions? Reach us directly on WhatsApp — we
+                typically respond within a few hours.
+              </p>
+              <a
+                href="#contact"
+                className="inline-flex items-center gap-2 mt-6 text-sm font-medium text-[var(--ink)] border-b border-[var(--ink)] pb-0.5 hover:opacity-60 transition-opacity"
+              >
+                Ask a question
+              </a>
+            </InView>
           </div>
-        </AnimateOnScroll>
+
+          {/* Right accordion */}
+          <div className="lg:col-span-7 lg:col-start-6">
+            <InView delay={0.1}>
+              <div className="border-t border-[var(--border)]">
+                {faqs.map((faq) => (
+                  <FAQItem
+                    key={faq.id}
+                    faq={faq}
+                    isOpen={openId === faq.id}
+                    onToggle={() => toggle(faq.id)}
+                  />
+                ))}
+              </div>
+            </InView>
+          </div>
+        </div>
       </div>
     </section>
   );
