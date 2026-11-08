@@ -1,118 +1,102 @@
 "use client";
 
-import { Check, Shield } from "lucide-react";
-import SectionHeader from "@/components/ui/SectionHeader";
+import { Check, X } from "lucide-react";
 import AnimateOnScroll from "@/components/ui/AnimateOnScroll";
 import { useLanguage } from "@/lib/language";
-import type { MaintenancePlanTranslation } from "@/lib/i18n/types";
 
 export default function Maintenance() {
   const { t } = useLanguage();
-
-  const handleSelectPlan = (plan: MaintenancePlanTranslation) => {
-    if (typeof window !== "undefined") {
-      const planKey = `maintenance-${plan.id.toLowerCase()}`;
-      window.dispatchEvent(
-        new CustomEvent("beone-select-plan", {
-          detail: {
-            planId: planKey,
-            serviceId: "maintenance",
-            service: "Website Maintenance",
-            plan: `${plan.name} (${plan.price}/${plan.period})`,
-          },
-        })
-      );
-    }
-  };
 
   return (
     <section
       id="maintenance"
       aria-labelledby="maintenance-heading"
-      className="section-padding bg-neutral-50 dark:bg-neutral-900/50"
+      className="section-padding bg-[var(--background)]"
     >
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-[1400px] mx-auto px-6 sm:px-8 lg:px-12">
+        <div className="h-px bg-[var(--border)] mb-16 md:mb-24" />
+
+        {/* Header — single row */}
         <AnimateOnScroll>
-          <SectionHeader
-            label={t.maintenance.label}
-            title={t.maintenance.title}
-            subtitle={t.maintenance.subtitle}
-          />
+          <p className="editorial-label mb-6">{t.maintenance.label}</p>
+          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-14 md:mb-18">
+            <h2
+              id="maintenance-heading"
+              className="font-display text-4xl sm:text-5xl font-bold leading-[1.05] tracking-tight text-[var(--ink)]"
+            >
+              {t.maintenance.heading}
+            </h2>
+            <p className="text-base text-[var(--ink-soft)] leading-relaxed max-w-md lg:text-right">
+              {t.maintenance.subheading}
+            </p>
+          </div>
         </AnimateOnScroll>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-          {t.maintenance.plans.map((plan, index) => (
-            <AnimateOnScroll key={plan.id} delay={index * 0.08}>
+        {/* Plans grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-0 border border-[var(--border)]">
+          {t.maintenance.plans.map((plan, i) => (
+            <AnimateOnScroll key={plan.id} delay={0.08 * i}>
               <div
-                className={`flex flex-col h-full rounded-2xl border p-6 transition-all duration-200 hover:shadow-md ${
-                  index === 2
-                    ? "border-indigo-200 dark:border-indigo-800 bg-white dark:bg-neutral-900"
-                    : "border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900"
-                }`}
-                aria-label={`${plan.name} ${t.maintenance.planAria}`}
+                className={`flex flex-col p-7 sm:p-8 h-full ${i < t.maintenance.plans.length - 1 ? "border-b sm:border-b-0 sm:border-r border-[var(--border)]" : ""}`}
+                style={{ backgroundColor: "var(--surface)" }}
               >
-                {/* Icon */}
-                <div
-                  className="w-10 h-10 bg-indigo-50 dark:bg-indigo-950/60 text-indigo-500 dark:text-indigo-400 rounded-xl flex items-center justify-center mb-4"
-                  aria-hidden="true"
-                >
-                  <Shield size={20} />
+                <div className="mb-6">
+                  <p className="editorial-label text-[var(--accent)] mb-3">{`0${i + 1}`}</p>
+                  <h3 className="font-display text-2xl font-bold text-[var(--ink)] mb-1">{plan.name}</h3>
+                  <div className="flex items-baseline gap-1.5">
+                    <span className="font-display text-3xl font-bold text-[var(--ink)]">{plan.price}</span>
+                    <span className="text-sm text-[var(--ink-muted)]">/ {plan.period}</span>
+                  </div>
                 </div>
 
-                {/* Header */}
-                <h3 className="text-lg font-bold text-neutral-950 dark:text-white">
-                  {plan.name}
-                </h3>
+                <div className="h-px bg-[var(--border)] mb-6" />
 
-                {/* Price */}
-                <div className="mt-2 mb-5">
-                  <span className="text-2xl font-black text-neutral-950 dark:text-white">
-                    {plan.price}
-                  </span>
-                  <span className="text-sm text-neutral-400 dark:text-neutral-500 ml-1">
-                    / {plan.period}
-                  </span>
-                </div>
-
-                {/* Features */}
-                <ul
-                  className="flex flex-col gap-2.5 flex-1"
-                  aria-label={`${t.maintenance.featuresAria}: ${plan.name}`}
-                >
-                  {plan.features.map((feature) => (
-                    <li key={feature} className="flex items-start gap-2.5">
-                      <Check
-                        size={14}
-                        aria-hidden="true"
-                        className="flex-shrink-0 mt-0.5 text-indigo-500"
-                      />
-                      <span className="text-sm text-neutral-600 dark:text-neutral-400">{feature}</span>
+                {/* Inclusions */}
+                <ul className="space-y-2.5 mb-6 flex-1">
+                  {plan.features.map((f) => (
+                    <li key={f} className="flex items-start gap-2.5 text-sm text-[var(--ink-soft)]">
+                      <Check size={13} strokeWidth={2.5} className="mt-0.5 shrink-0" style={{ color: "var(--accent)" }} aria-hidden="true" />
+                      {f}
                     </li>
                   ))}
                 </ul>
 
-                {/* CTA */}
+                {/* Exclusions */}
+                {plan.exclusions && plan.exclusions.length > 0 && (
+                  <ul className="space-y-2 mb-6">
+                    {plan.exclusions.map((ex) => (
+                      <li key={ex} className="flex items-start gap-2.5 text-xs text-[var(--ink-muted)]">
+                        <X size={11} className="mt-0.5 shrink-0 text-[var(--ink-muted)]" aria-hidden="true" />
+                        {ex}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+
                 <a
                   href="#contact"
-                  onClick={() => handleSelectPlan(plan)}
-                  className="mt-5 flex items-center justify-center py-2.5 rounded-xl text-sm font-semibold border border-neutral-200 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800 hover:border-neutral-300 dark:hover:border-neutral-600 transition-colors"
-                  aria-label={`${t.maintenance.selectPlan} ${plan.name}`}
+                  className="mt-auto inline-flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium text-[var(--on-dark)] bg-[var(--surface-dark)] hover:opacity-80 transition-opacity"
+                  onClick={() => {
+                    if (typeof window !== "undefined") {
+                      window.dispatchEvent(
+                        new CustomEvent("beone-select-plan", {
+                          detail: { planId: `maintenance-${plan.id}`, serviceId: "maintenance" },
+                        })
+                      );
+                    }
+                  }}
                 >
-                  {t.maintenance.selectPlan} {plan.name}
+                  Pilih Paket
                 </a>
               </div>
             </AnimateOnScroll>
           ))}
         </div>
 
-        <AnimateOnScroll delay={0.15}>
-          <div className="mt-8 p-4 rounded-xl bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-xs text-neutral-500 dark:text-neutral-400 text-center max-w-3xl mx-auto space-y-1">
-            <p className="font-semibold text-neutral-800 dark:text-neutral-200">
-              {t.maintenance.transparencyTitle}
-            </p>
-            <p>
-              {t.maintenance.transparencyText}
-            </p>
+        {/* Note */}
+        <AnimateOnScroll delay={0.1}>
+          <div className="mt-8 p-6 border border-[var(--border)] bg-[var(--surface-2)]">
+            <p className="text-sm text-[var(--ink-muted)] leading-relaxed">{t.maintenance.note}</p>
           </div>
         </AnimateOnScroll>
       </div>

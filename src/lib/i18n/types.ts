@@ -6,7 +6,7 @@ export interface MetaTranslations {
 
 export interface NavTranslations {
   home: string;
-  portfolio: string;
+  solutions: string;
   services: string;
   pricing: string;
   process: string;
@@ -23,144 +23,99 @@ export interface NavTranslations {
 }
 
 export interface HeroTranslations {
-  eyebrow: string;
+  label: string;
   headline1: string;
   headline2: string;
+  tagline: string;
   subheadline: string;
-  microcopy: string;
   ctaPrimary: string;
   ctaSecondary: string;
-  ctaPrimaryLabel: string;
-  ctaSecondaryLabel: string;
-  highlights: readonly string[];
-  floatingHostingFree: string;
-  floatingPriceFrom: string;
-  floatingTransparent: string;
-  portfolioLive: string;
-  mockupTitle: string;
-  mockupRole: string;
-  mockupQuote: string;
-  mockupViewProjects: string;
-  mockupContact: string;
-  mockupShowcase: string;
+  stat1Value: string;
+  stat1Label: string;
+  stat2Value: string;
+  stat2Label: string;
+  stat3Value: string;
+  stat3Label: string;
+  scrollLabel: string;
 }
 
-export interface TrustTranslations {
-  label: string;
-  items: readonly {
-    title: string;
-    subtitle: string;
-  }[];
-}
-
-export interface ProjectTranslation {
+export interface SolutionItemTranslation {
+  id: string;
   title: string;
-  category: string;
-  badge: string;
   description: string;
-  note: string;
-  highlights: readonly string[];
+  examples: readonly string[];
+  cta: string;
 }
 
-export interface PortfolioTranslations {
+export interface SolutionsTranslations {
   label: string;
   title: string;
   subtitle: string;
-  liveApp: string;
-  viewDemo: string;
-  conceptual: string;
-  techStack: string;
-  highlights: string;
-  interested: string;
-  close: string;
-  buildMine: string;
-  filterAll: string;
-  filterLive: string;
-  filterConcept: string;
-  projects: {
-    finvera: ProjectTranslation;
-    tickitz: ProjectTranslation;
-    designerPortfolio: ProjectTranslation;
-  };
+  items: readonly SolutionItemTranslation[];
 }
 
 export interface ServiceItemTranslation {
   id: string;
+  num: string;
   title: string;
-  category: "personal" | "business" | "advanced";
-  categoryLabel: string;
+  category: string;
   description: string;
   startingPrice: string;
-  priceNote?: string;
-  badge?: string;
-  scopeSummary?: string;
-  useCases?: readonly string[];
-  exclusions?: readonly string[];
+  tags: readonly string[];
 }
 
 export interface ServicesTranslations {
   label: string;
-  title: string;
-  subtitle: string;
-  filterAll: string;
-  filterEntry: string;
-  filterPersonal: string;
-  filterBusiness: string;
-  filterAdvanced: string;
-  useCases: string;
-  exclusions: string;
-  consult: string;
-  selectService: string;
+  heading: string;
+  subheading: string;
+  categoryPersonal: string;
+  categoryBusiness: string;
+  categoryAdvanced: string;
+  footerNote: string;
   items: readonly ServiceItemTranslation[];
 }
 
 export interface PricingPlanTranslation {
   id: string;
   name: string;
-  label: string;
   price: string;
   priceNote?: string;
-  target?: string;
   duration: string;
   revisions?: string;
   hostingInfo?: string;
   cta: string;
   popular?: boolean;
   isCustom?: boolean;
-  category: "entry" | "portfolio" | "business";
   features: readonly string[];
 }
 
 export interface AddonTranslation {
   name: string;
-  startingPrice: string;
+  price: string;
+}
+
+export interface PaymentTermTranslation {
+  condition: string;
+  steps: readonly string[];
 }
 
 export interface PricingTranslations {
   label: string;
-  title: string;
-  subtitle: string;
+  heading: string;
+  subheading: string;
   tabEntry: string;
-  tabPortfolio: string;
   tabBusiness: string;
-  recommended: string;
-  termsTitle: string;
-  terms: readonly {
-    label: string;
-    text: string;
-  }[];
-  addonsTitle: string;
-  addonsSubtitle: string;
-  addonsAskCustom: string;
-  addonsNote: string;
-  askWhatsappMsg: string;
-  planAria: string;
-  featuresAria: string;
-  categoryAria: string;
+  tabAdvanced: string;
+  popularLabel: string;
   entryPlans: readonly PricingPlanTranslation[];
-  portfolioPlans: readonly PricingPlanTranslation[];
   businessPlans: readonly PricingPlanTranslation[];
+  advancedPlans: readonly PricingPlanTranslation[];
+  addonsTitle: string;
+  addonsNote: string;
   addons: readonly AddonTranslation[];
+  paymentTitle: string;
+  paymentNote: string;
+  paymentTerms: readonly PaymentTermTranslation[];
 }
 
 export interface MaintenancePlanTranslation {
@@ -169,51 +124,31 @@ export interface MaintenancePlanTranslation {
   price: string;
   period: string;
   features: readonly string[];
+  exclusions: readonly string[];
 }
 
 export interface MaintenanceTranslations {
   label: string;
-  title: string;
-  subtitle: string;
-  selectPlan: string;
+  heading: string;
+  subheading: string;
   period: string;
-  transparencyTitle: string;
-  transparencyText: string;
-  featuresAria: string;
-  planAria: string;
+  note: string;
   plans: readonly MaintenancePlanTranslation[];
 }
 
 export interface ProcessStepTranslation {
-  id: string;
-  number: string;
+  num: string;
   title: string;
   description: string;
+  duration: string;
 }
 
 export interface ProcessTranslations {
   label: string;
-  title: string;
-  subtitle: string;
-  bottomNote: string;
-  guarantee: string;
-  guaranteeDetail: string;
-  stepsAria: string;
-  stepLabel: string;
+  heading: string;
+  subheading: string;
+  note: string;
   steps: readonly ProcessStepTranslation[];
-}
-
-export interface BenefitTranslation {
-  id: string;
-  title: string;
-  description: string;
-}
-
-export interface WhyTranslations {
-  label: string;
-  title: string;
-  subtitle: string;
-  benefits: readonly BenefitTranslation[];
 }
 
 export interface FAQItemTranslation {
@@ -224,56 +159,34 @@ export interface FAQItemTranslation {
 
 export interface FAQTranslations {
   label: string;
-  title: string;
-  subtitle: string;
-  stillHaveQuestions: string;
-  askUs: string;
-  aria: string;
+  heading: string;
+  supportText: string;
+  askLabel: string;
   items: readonly FAQItemTranslation[];
 }
 
-export interface CTATranslations {
-  eyebrow: string;
+export interface ContactTranslations {
+  /* Section heading */
+  sectionLabel: string;
   headline1: string;
   headline2: string;
-  subtext: string;
-  ctaPrimary: string;
-  ctaSecondary: string;
-  ctaPrimaryLabel: string;
-  ctaSecondaryLabel: string;
-}
-
-export interface ContactTranslations {
-  label: string;
-  title: string;
-  subtitle: string;
-  whatsappBadge: string;
-  whatsappTitle: string;
-  whatsappDesc: string;
-  whatsappCta: string;
-  privacyTitle: string;
-  privacyText: string;
-  emailLabel: string;
-  readyTitle: string;
-  readyDesc: string;
-  openChat: string;
-  copyMessage: string;
-  messageCopied: string;
-  backToForm: string;
-  formAria: string;
+  /* Info column */
+  directContactLabel: string;
+  expectLabel: string;
+  expectItems: readonly string[];
+  /* Form labels */
   nameLabel: string;
   namePlaceholder: string;
-  contactLabel: string;
-  contactPlaceholder: string;
-  emailLabel2: string;
+  whatsappLabel: string;
+  whatsappPlaceholder: string;
+  emailLabel: string;
   emailOptional: string;
   emailPlaceholder: string;
-  professionLabel: string;
-  professionPlaceholder: string;
+  businessLabel: string;
+  businessOptional: string;
+  businessPlaceholder: string;
   serviceLabel: string;
   servicePlaceholder: string;
-  packageLabel: string;
-  packagePlaceholder: string;
   budgetLabel: string;
   budgetOptional: string;
   budgetPlaceholder: string;
@@ -281,11 +194,17 @@ export interface ContactTranslations {
   descPlaceholder: string;
   submitBtn: string;
   submitHint: string;
-  submitAriaLabel: string;
-  professions: readonly { id: string; label: string }[];
-  budgets: readonly { id: string; label: string }[];
+  /* Ready state */
+  readyTitle: string;
+  readyDesc: string;
+  openWhatsapp: string;
+  copyMessage: string;
+  messageCopied: string;
+  backToForm: string;
+  /* Options */
   services: readonly { id: string; label: string }[];
-  packages: readonly { id: string; label: string; serviceId: string }[];
+  budgets: readonly { id: string; label: string }[];
+  /* Validation errors */
   errors: {
     name: string;
     contact: string;
@@ -294,55 +213,39 @@ export interface ContactTranslations {
     service: string;
     description: string;
   };
+  /* WhatsApp message keys */
   msgGreeting: string;
   msgName: string;
-  msgContact: string;
+  msgWhatsapp: string;
   msgEmail: string;
-  msgProfession: string;
+  msgBusiness: string;
   msgService: string;
-  msgPackage: string;
   msgBudget: string;
   msgDesc: string;
 }
 
 export interface FooterTranslations {
-  navTitle: string;
-  ctaTitle: string;
-  ctaDesc: string;
-  ctaButton: string;
-  ctaButtonLabel: string;
+  tagline: string;
+  navLabel: string;
+  contactLabel: string;
   copyright: string;
   builtWith: string;
-  tagline: string;
-  supportingText: string;
-  links: {
-    portfolio: string;
-    services: string;
-    pricing: string;
-    process: string;
-    faq: string;
-    contact: string;
-  };
 }
 
 export interface SharedTranslations {
   whatsappDefaultMsg: string;
-  whatsappAddOnMsg: string;
 }
 
 export interface Translations {
   meta: MetaTranslations;
   nav: NavTranslations;
   hero: HeroTranslations;
-  trust: TrustTranslations;
-  portfolio: PortfolioTranslations;
+  solutions: SolutionsTranslations;
   services: ServicesTranslations;
   pricing: PricingTranslations;
   maintenance: MaintenanceTranslations;
   process: ProcessTranslations;
-  why: WhyTranslations;
   faq: FAQTranslations;
-  cta: CTATranslations;
   contact: ContactTranslations;
   footer: FooterTranslations;
   shared: SharedTranslations;

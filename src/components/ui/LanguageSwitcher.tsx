@@ -1,6 +1,7 @@
 "use client";
 
 import { useLanguage, type Lang } from "@/lib/language";
+import { usePathname } from "next/navigation";
 
 const options: { value: Lang; label: string }[] = [
   { value: "id", label: "ID" },
@@ -13,12 +14,13 @@ interface Props {
 
 export default function LanguageSwitcher({ className = "" }: Props) {
   const { lang, setLang, t } = useLanguage();
+  const pathname = usePathname();
 
   return (
     <div
       role="group"
       aria-label={t.nav.langToggle}
-      className={`inline-flex items-center rounded-xl border border-neutral-200 dark:border-neutral-700 overflow-hidden text-xs font-bold ${className}`}
+      className={`inline-flex items-center border border-[var(--border)] overflow-hidden text-xs font-bold ${className}`}
     >
       {options.map(({ value, label }, i) => {
         const isActive = lang === value;
@@ -37,11 +39,11 @@ export default function LanguageSwitcher({ className = "" }: Props) {
                 ? "English (Active)"
                 : "Switch to English"
             }
-            className={`px-2.5 py-1.5 transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-inset ${
+            className={`px-2.5 py-1.5 transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-inset ${
               isActive
-                ? "bg-indigo-500 text-white"
-                : "text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white bg-transparent"
-            } ${i < options.length - 1 ? "border-r border-neutral-200 dark:border-neutral-700" : ""}`}
+                ? "bg-[var(--surface-dark)] text-[var(--on-dark)]"
+                : "text-[var(--ink-muted)] hover:text-[var(--ink)] bg-transparent"
+            } ${i < options.length - 1 ? "border-r border-[var(--border)]" : ""}`}
           >
             {label}
           </button>

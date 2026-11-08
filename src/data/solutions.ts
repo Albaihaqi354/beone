@@ -1,100 +1,87 @@
 export interface Solution {
   id: string;
   icon: string; // lucide icon name
-  category: string;
   title: string;
   description: string;
-  useCases: string[];
+  examples: string[];
 }
 
 export const solutions: Solution[] = [
   {
     id: "landing-page",
     icon: "Layout",
-    category: "Web Presence",
     title: "Landing Page",
     description:
-      "Simple websites that turn visitors into customers.",
-    useCases: [
+      "Website satu halaman untuk memperkenalkan produk, layanan, atau campaign dan membantu bisnis mendapatkan pelanggan.",
+    examples: [
       "Product landing page",
       "Service landing page",
-      "Personal brand",
-      "Event & campaign",
-      "Coming soon page",
+      "Event website",
+      "Campaign website",
     ],
   },
   {
     id: "company-profile",
     icon: "Building2",
-    category: "Web Presence",
     title: "Company Profile",
     description:
-      "Professional websites that help businesses build credibility online.",
-    useCases: [
+      "Website profesional untuk memperkenalkan perusahaan, membangun kredibilitas, dan memberikan informasi kepada calon pelanggan.",
+    examples: [
       "Company profile",
-      "Agency & studio",
       "Corporate website",
-      "Professional services",
-      "Organization",
+      "Organization website",
+      "Professional services website",
     ],
   },
   {
     id: "ecommerce",
     icon: "ShoppingCart",
-    category: "E-Commerce",
     title: "E-Commerce",
     description:
-      "Online stores designed to help businesses sell products digitally.",
-    useCases: [
-      "Product catalog",
+      "Solusi toko online untuk membantu bisnis memasarkan dan menjual produk secara digital.",
+    examples: [
+      "Katalog produk",
       "Shopping cart & checkout",
-      "Order management",
-      "Payment integration",
-      "Admin product management",
+      "Manajemen pesanan",
+      "Integrasi payment gateway",
     ],
   },
   {
-    id: "dashboard",
+    id: "business-dashboard",
     icon: "LayoutDashboard",
-    category: "Business Intelligence",
     title: "Business Dashboard",
     description:
-      "Centralized dashboards to monitor and manage your business data.",
-    useCases: [
+      "Dashboard untuk membantu bisnis mengelola dan memantau informasi serta performa operasional.",
+    examples: [
       "Sales dashboard",
+      "Financial dashboard",
       "Analytics & reporting",
-      "Financial overview",
       "Performance monitoring",
-      "Business intelligence",
     ],
   },
   {
     id: "management-system",
     icon: "Settings2",
-    category: "Business System",
     title: "Management System",
     description:
-      "Custom systems designed around your business workflow.",
-    useCases: [
+      "Sistem digital untuk membantu perusahaan mengelola aktivitas operasional secara lebih terstruktur.",
+    examples: [
       "Inventory management",
-      "HR & attendance",
+      "Employee management",
       "Booking system",
-      "Administration tools",
-      "Internal operations",
+      "Administration system",
     ],
   },
   {
     id: "custom-web-app",
     icon: "Code2",
-    category: "Custom Solution",
     title: "Custom Web Application",
     description:
-      "Tailored web applications built specifically for your unique requirements.",
-    useCases: [
-      "SaaS product",
+      "Aplikasi berbasis web yang dirancang berdasarkan kebutuhan dan alur kerja spesifik setiap bisnis.",
+    examples: [
+      "SaaS application",
+      "CRM & ERP",
       "Marketplace",
-      "Finance & CRM system",
-      "ERP solution",
       "Custom business application",
     ],
   },

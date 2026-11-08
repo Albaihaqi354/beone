@@ -4,15 +4,14 @@
  */
 export const siteConfig = {
   name: "BeOne",
-  tagline: "Solusi Digital untuk Personal Brand dan Bisnis",
-  supportingText: "Website Portofolio, Katalog UMKM & Solusi Web Modern",
+  tagline: "Build Digital. Be One Step Ahead.",
   description:
-    "BeOne membantu individu, kreator, dan UMKM membangun kehadiran digital profesional melalui website portofolio, katalog digital, landing page, dan aplikasi web modern.",
+    "BeOne adalah independent digital development studio yang membantu individu dan bisnis membangun website serta solusi digital yang dirancang sesuai kebutuhan mereka.",
   url: "https://beone-here.vercel.app",
 
   /** WhatsApp number in international format without '+' */
   whatsappNumber: "6287727726316",
-  whatsappMessage: "Halo BeOne, saya ingin konsultasi mengenai pembuatan website portofolio.",
+  whatsappMessage: "Halo BeOne, saya ingin konsultasi mengenai kebutuhan digital saya.",
 
   email: "bianalbaihaqi190@gmail.com",
 

@@ -2,10 +2,13 @@
 
 import { motion } from "framer-motion";
 import { ArrowDownRight } from "lucide-react";
+import { useLanguage } from "@/lib/language";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
 export default function Hero() {
+  const { t } = useLanguage();
+
   return (
     <section
       id="home"
@@ -33,7 +36,7 @@ export default function Hero() {
             transition={{ duration: 0.7, delay: 0.1, ease: "easeOut" }}
             className="editorial-label"
           >
-            Digital Development Studio
+            {t.hero.label}
           </motion.p>
           <motion.p
             initial={{ opacity: 0 }}
@@ -45,18 +48,16 @@ export default function Hero() {
           </motion.p>
         </div>
 
-        {/* Headline — font-display class only, no inline style */}
+        {/* Headline */}
         <motion.h1
           initial={{ opacity: 0, y: 28 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.85, delay: 0.3, ease }}
           className="font-display text-5xl sm:text-7xl md:text-8xl lg:text-[6.5rem] xl:text-[7.5rem] font-bold leading-[0.95] tracking-tight text-[var(--ink)] max-w-5xl"
         >
-          We build
+          {t.hero.headline1}
           <br />
-          <span className="italic font-medium">digital</span>
-          <br />
-          experiences.
+          <span className="italic font-medium">{t.hero.headline2}</span>
         </motion.h1>
 
         {/* Sub-row */}
@@ -67,9 +68,7 @@ export default function Hero() {
             transition={{ duration: 0.8, delay: 0.5, ease }}
             className="max-w-sm text-base md:text-lg text-[var(--ink-soft)] leading-relaxed font-light"
           >
-            BeOne is an independent digital development studio creating
-            thoughtful websites and digital solutions for ambitious
-            businesses, creators, and individuals.
+            {t.hero.subheadline}
           </motion.p>
 
           <motion.div
@@ -82,7 +81,7 @@ export default function Hero() {
               href="#contact"
               className="inline-flex items-center gap-2 px-7 py-4 text-sm font-medium text-[var(--on-dark)] bg-[var(--surface-dark)] hover:opacity-80 transition-opacity duration-200 group"
             >
-              Start a Project
+              {t.hero.ctaPrimary}
               <ArrowDownRight
                 size={15}
                 aria-hidden="true"
@@ -90,10 +89,10 @@ export default function Hero() {
               />
             </a>
             <a
-              href="#portfolio"
+              href="#services"
               className="inline-flex items-center gap-2 px-7 py-4 text-sm font-medium text-[var(--ink)] border border-[var(--border)] hover:border-[var(--border-strong)] transition-colors duration-200"
             >
-              View Our Work
+              {t.hero.ctaSecondary}
             </a>
           </motion.div>
         </div>
@@ -110,14 +109,12 @@ export default function Hero() {
             className="flex items-center gap-10"
           >
             {[
-              { value: "100%", label: "Custom Built" },
-              { value: "< 14d", label: "Avg. Time to Launch" },
-              { value: "30d", label: "Bug Guarantee" },
+              { value: t.hero.stat1Value, label: t.hero.stat1Label },
+              { value: t.hero.stat2Value, label: t.hero.stat2Label },
+              { value: t.hero.stat3Value, label: t.hero.stat3Label },
             ].map(({ value, label }) => (
               <div key={label} className="flex flex-col gap-0.5">
-                <span className="font-display text-2xl font-bold text-[var(--ink)]">
-                  {value}
-                </span>
+                <span className="font-display text-2xl font-bold text-[var(--ink)]">{value}</span>
                 <span className="editorial-label">{label}</span>
               </div>
             ))}
@@ -128,10 +125,10 @@ export default function Hero() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.7, delay: 0.9, ease: "easeOut" }}
-            className="flex items-center gap-2 text-xs text-[var(--ink-muted)] hover:text-[var(--ink)] transition-colors group"
-            aria-label="Scroll down"
+            className="flex items-center gap-2 text-xs text-[var(--ink-muted)] hover:text-[var(--ink)] transition-colors"
+            aria-label={t.hero.scrollLabel}
           >
-            <span className="editorial-label">Scroll</span>
+            <span className="editorial-label">{t.hero.scrollLabel}</span>
             <motion.span
               animate={{ y: [0, 5, 0] }}
               transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}

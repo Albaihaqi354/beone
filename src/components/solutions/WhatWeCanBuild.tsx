@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Layout,
   Building2,
@@ -5,190 +7,120 @@ import {
   LayoutDashboard,
   Settings2,
   Code2,
-  ArrowRight,
-  MessageCircle,
-  type LucideIcon,
+  ArrowUpRight,
 } from "lucide-react";
-import { solutions } from "@/data/solutions";
-import SectionHeader from "@/components/ui/SectionHeader";
 import AnimateOnScroll from "@/components/ui/AnimateOnScroll";
-import { whatsappUrl } from "@/lib/config";
+import { useLanguage } from "@/lib/language";
 
-const iconMap: Record<string, LucideIcon> = {
-  Layout,
-  Building2,
-  ShoppingCart,
-  LayoutDashboard,
-  Settings2,
-  Code2,
+const iconMap: Record<string, React.ComponentType<{ size?: number; className?: string; "aria-hidden"?: boolean }>> = {
+  "landing-page": Layout,
+  "company-profile": Building2,
+  ecommerce: ShoppingCart,
+  "business-dashboard": LayoutDashboard,
+  "management-system": Settings2,
+  "custom-web-app": Code2,
 };
 
-const cardAccents = [
-  {
-    icon: "bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400",
-    badge: "bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400",
-    dot: "bg-indigo-400",
-    link: "text-indigo-500 hover:text-indigo-700 dark:hover:text-indigo-300",
-  },
-  {
-    icon: "bg-violet-50 dark:bg-violet-950/60 text-violet-600 dark:text-violet-400",
-    badge: "bg-violet-50 dark:bg-violet-950/60 text-violet-600 dark:text-violet-400",
-    dot: "bg-violet-400",
-    link: "text-violet-500 hover:text-violet-700 dark:hover:text-violet-300",
-  },
-  {
-    icon: "bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400",
-    badge: "bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400",
-    dot: "bg-emerald-400",
-    link: "text-emerald-600 hover:text-emerald-800 dark:hover:text-emerald-300",
-  },
-  {
-    icon: "bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400",
-    badge: "bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400",
-    dot: "bg-blue-400",
-    link: "text-blue-500 hover:text-blue-700 dark:hover:text-blue-300",
-  },
-  {
-    icon: "bg-orange-50 dark:bg-orange-950/60 text-orange-600 dark:text-orange-400",
-    badge: "bg-orange-50 dark:bg-orange-950/60 text-orange-600 dark:text-orange-400",
-    dot: "bg-orange-400",
-    link: "text-orange-500 hover:text-orange-700 dark:hover:text-orange-300",
-  },
-  {
-    icon: "bg-pink-50 dark:bg-pink-950/60 text-pink-600 dark:text-pink-400",
-    badge: "bg-pink-50 dark:bg-pink-950/60 text-pink-600 dark:text-pink-400",
-    dot: "bg-pink-400",
-    link: "text-pink-500 hover:text-pink-700 dark:hover:text-pink-300",
-  },
-];
-
 export default function WhatWeCanBuild() {
+  const { t } = useLanguage();
+
   return (
     <section
       id="solutions"
       aria-labelledby="solutions-heading"
-      className="section-padding bg-white dark:bg-neutral-950"
+      className="section-padding bg-[var(--surface)]"
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-[1400px] mx-auto px-6 sm:px-8 lg:px-12">
+        <div className="h-px bg-[var(--border)] mb-16 md:mb-24" />
+
+        {/* Header */}
         <AnimateOnScroll>
-          <SectionHeader
-            label="Solutions"
-            title="What We Can Build"
-            subtitle="Dari website sederhana hingga sistem bisnis custom, kami membangun solusi digital sesuai kebutuhan bisnis Anda."
-          />
+          <p className="editorial-label mb-6">{t.solutions.label}</p>
         </AnimateOnScroll>
+        <div className="grid lg:grid-cols-12 gap-8 lg:gap-20 mb-16 md:mb-20">
+          <AnimateOnScroll delay={0.1} className="lg:col-span-6">
+            <h2
+              id="solutions-heading"
+              className="font-display text-4xl sm:text-5xl font-bold leading-[1.05] tracking-tight text-[var(--ink)]"
+            >
+              {t.solutions.title}
+            </h2>
+          </AnimateOnScroll>
+          <AnimateOnScroll delay={0.2} className="lg:col-span-5 lg:col-start-8 lg:pt-10">
+            <p className="text-base text-[var(--ink-soft)] leading-relaxed">
+              {t.solutions.subtitle}
+            </p>
+          </AnimateOnScroll>
+        </div>
 
-        <div
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6"
-          role="list"
-          aria-label="Solutions list"
-        >
-          {solutions.map((solution, index) => {
-            const Icon = iconMap[solution.icon] ?? Code2;
-            const accent = cardAccents[index % cardAccents.length];
-
+        {/* 3-col grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-0 border border-[var(--border)]">
+          {t.solutions.items.map((item, i) => {
+            const Icon = iconMap[item.id] ?? Code2;
+            const isLastRow = i >= t.solutions.items.length - (t.solutions.items.length % 3 || 3);
+            const isLastInRow = (i + 1) % 3 === 0;
             return (
-              <AnimateOnScroll key={solution.id} delay={index * 0.08}>
-                <article
-                  role="listitem"
-                  className="group flex flex-col bg-white dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800 rounded-2xl p-6 card-hover h-full hover:border-neutral-200 dark:hover:border-neutral-700"
-                  aria-label={`Solution: ${solution.title}`}
+              <AnimateOnScroll key={item.id} delay={0.05 * i}>
+                <div
+                  className={[
+                    "flex flex-col p-7 sm:p-8 h-full group",
+                    !isLastInRow ? "border-r-0 lg:border-r border-[var(--border)]" : "",
+                    !isLastRow ? "border-b border-[var(--border)]" : "",
+                    // always add border-b on sm (2-col) and mobile
+                    i < t.solutions.items.length - 1 ? "border-b lg:border-b-0" : "",
+                    i < t.solutions.items.length - 1 && !isLastRow ? "lg:border-b border-[var(--border)]" : "",
+                  ]
+                    .filter(Boolean)
+                    .join(" ")}
+                  style={{
+                    borderRight: !isLastInRow ? `1px solid var(--border)` : undefined,
+                    borderBottom:
+                      i < t.solutions.items.length - (t.solutions.items.length % 3 === 0 ? 3 : t.solutions.items.length % 3)
+                        ? `1px solid var(--border)`
+                        : undefined,
+                  }}
                 >
-                  <div className="flex items-start justify-between mb-4">
-                    <div
-                      className={`inline-flex items-center justify-center w-11 h-11 rounded-xl ${accent.icon}`}
-                      aria-hidden="true"
-                    >
-                      <Icon size={22} />
+                  {/* Icon */}
+                  <div className="mb-5">
+                    <div className="w-10 h-10 flex items-center justify-center border border-[var(--border)] text-[var(--ink-muted)] group-hover:border-[var(--border-strong)] group-hover:text-[var(--ink)] transition-all duration-200">
+                      <Icon size={18} aria-hidden={true} />
                     </div>
-                    <span className={`px-2.5 py-1 text-xs font-semibold rounded-full ${accent.badge}`}>
-                      {solution.category}
-                    </span>
                   </div>
 
-                  <h3 className="text-lg font-bold text-neutral-950 dark:text-white mb-2">
-                    {solution.title}
+                  {/* Title */}
+                  <h3 className="font-display text-xl font-semibold text-[var(--ink)] mb-3 group-hover:opacity-75 transition-opacity">
+                    {item.title}
                   </h3>
-                  <p className="text-sm text-neutral-500 dark:text-neutral-400 leading-relaxed mb-5">
-                    {solution.description}
+
+                  {/* Description */}
+                  <p className="text-sm text-[var(--ink-muted)] leading-relaxed mb-5 flex-1">
+                    {item.description}
                   </p>
 
-                  <ul
-                    className="flex flex-col gap-2 flex-1"
-                    aria-label={`${solution.title} use cases`}
-                  >
-                    {solution.useCases.map((useCase) => (
-                      <li
-                        key={useCase}
-                        className="flex items-center gap-2.5 text-sm text-neutral-600 dark:text-neutral-400"
-                      >
-                        <span
-                          className={`flex-shrink-0 w-1.5 h-1.5 rounded-full ${accent.dot}`}
-                          aria-hidden="true"
-                        />
-                        {useCase}
+                  {/* Examples */}
+                  <ul className="space-y-1 mb-6">
+                    {item.examples.map((ex) => (
+                      <li key={ex} className="flex items-center gap-2 text-xs text-[var(--ink-muted)]">
+                        <span className="w-1 h-1 rounded-full bg-[var(--accent)] shrink-0" />
+                        {ex}
                       </li>
                     ))}
                   </ul>
 
-                  <div className="mt-5 pt-5 border-t border-neutral-100 dark:border-neutral-800">
-                    <a
-                      href="#contact"
-                      className={`inline-flex items-center gap-1.5 text-xs font-semibold transition-colors group/link ${accent.link}`}
-                      aria-label={`Explore ${solution.title} solution`}
-                    >
-                      Explore Solution
-                      <ArrowRight
-                        size={13}
-                        aria-hidden="true"
-                        className="group-hover/link:translate-x-0.5 transition-transform"
-                      />
-                    </a>
-                  </div>
-                </article>
+                  {/* CTA */}
+                  <a
+                    href="#contact"
+                    className="inline-flex items-center gap-1.5 text-sm font-medium text-[var(--ink)] border-b border-[var(--border)] pb-0.5 hover:border-[var(--ink)] hover:opacity-70 transition-all duration-200 self-start"
+                    aria-label={`${item.cta} — ${item.title}`}
+                  >
+                    {item.cta}
+                    <ArrowUpRight size={13} aria-hidden="true" />
+                  </a>
+                </div>
               </AnimateOnScroll>
             );
           })}
         </div>
-
-        {/* Bottom CTA — always dark regardless of mode */}
-        <AnimateOnScroll delay={0.1}>
-          <div className="mt-14 rounded-2xl bg-neutral-950 dark:bg-neutral-900 dark:border dark:border-neutral-800 px-6 py-10 md:px-12 md:py-12 text-center relative overflow-hidden">
-            <div aria-hidden="true" className="absolute inset-0 pointer-events-none">
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[300px] bg-indigo-600/10 rounded-full blur-[80px]" />
-            </div>
-
-            <div className="relative">
-              <h3 className="text-xl sm:text-2xl font-black text-white mb-3">
-                Don&apos;t See What You Need?
-              </h3>
-              <p className="text-sm sm:text-base text-neutral-400 max-w-xl mx-auto leading-relaxed mb-7">
-                Every business is different. Tell us what you&apos;re trying to
-                build, and we&apos;ll help you find the right digital solution.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                <a
-                  href="#contact"
-                  className="inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-semibold text-white bg-indigo-500 hover:bg-indigo-400 rounded-xl transition-colors shadow-lg shadow-indigo-900/20 group"
-                  aria-label="Discuss your project — go to contact section"
-                >
-                  Discuss Your Project
-                  <ArrowRight size={15} aria-hidden="true" className="group-hover:translate-x-0.5 transition-transform" />
-                </a>
-                <a
-                  href={whatsappUrl("Halo BeOne, saya ingin diskusi mengenai project saya.")}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-semibold text-white bg-white/10 hover:bg-white/15 border border-white/20 rounded-xl transition-colors"
-                  aria-label="Chat on WhatsApp about your project"
-                >
-                  <MessageCircle size={15} aria-hidden="true" />
-                  Chat on WhatsApp
-                </a>
-              </div>
-            </div>
-          </div>
-        </AnimateOnScroll>
       </div>
     </section>
   );

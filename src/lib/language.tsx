@@ -7,6 +7,7 @@ import {
   useCallback,
   useSyncExternalStore,
 } from "react";
+import { usePathname } from "next/navigation";
 import { id } from "./i18n/id";
 import { en } from "./i18n/en";
 import type { Translations } from "./i18n/types";
@@ -29,8 +30,17 @@ const LanguageContext = createContext<LanguageContextValue>({
 
 const STORAGE_KEY = "beone-lang";
 
+/** Determine language from URL path (server + client) */
+function getLangFromPath(pathname: string | null): Lang {
+  if (!pathname) return "id";
+  return pathname.startsWith("/en") ? "en" : "id";
+}
+
 function getStoredLang(): Lang {
   if (typeof window === "undefined") return "id";
+  // Path takes priority over stored preference
+  const pathLang = getLangFromPath(window.location.pathname);
+  if (pathLang !== "id") return pathLang;
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved === "en" || saved === "id") return saved;
@@ -51,10 +61,11 @@ function subscribe(callback: () => void) {
 }
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
   const currentLang = useSyncExternalStore<Lang>(
     subscribe,
-    getStoredLang,
-    () => "id"
+    () => getStoredLang(),
+    () => getLangFromPath(pathname) // SSR snapshot from path
   );
 
   const setLang = useCallback((next: Lang) => {
@@ -63,7 +74,15 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     } catch {
       // ignore
     }
-    window.dispatchEvent(new Event("beone-lang-change"));
+    // Navigate to correct URL for SEO
+    if (typeof window !== "undefined") {
+      const newPath = next === "en" ? "/en" : "/";
+      if (window.location.pathname !== newPath) {
+        window.location.href = newPath;
+      } else {
+        window.dispatchEvent(new Event("beone-lang-change"));
+      }
+    }
   }, []);
 
   useEffect(() => {

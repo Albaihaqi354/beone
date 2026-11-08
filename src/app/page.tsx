@@ -1,10 +1,11 @@
 import Navbar from "@/components/navbar/Navbar";
 import Hero from "@/components/hero/Hero";
 import About from "@/components/about/About";
+import WhatWeCanBuild from "@/components/solutions/WhatWeCanBuild";
 import Services from "@/components/services/Services";
-import PortfolioShowcase from "@/components/portfolio/PortfolioShowcase";
 import Process from "@/components/process/Process";
 import Pricing from "@/components/pricing/Pricing";
+import Maintenance from "@/components/maintenance/Maintenance";
 import FAQ from "@/components/faq/FAQ";
 import Contact from "@/components/contact/Contact";
 import Footer from "@/components/footer/Footer";
@@ -19,17 +20,19 @@ export default function Home() {
         <Hero />
         {/* bg: --surface (white) */}
         <About />
+        {/* bg: --surface (white) — continues */}
+        <WhatWeCanBuild />
         {/* bg: --background (ivory) */}
         <Services />
-        {/* bg: --background (ivory) — same as services intentional: portfolio continues the content */}
-        <PortfolioShowcase />
-        {/* bg: --surface-2 (warm off-white) — breaks the run */}
+        {/* bg: --surface-2 (warm off-white) */}
         <Process />
         {/* bg: --surface (white) */}
         <Pricing />
         {/* bg: --background (ivory) */}
+        <Maintenance />
+        {/* bg: --surface (white) */}
         <FAQ />
-        {/* bg: --surface-dark top (editorial CTA) → --background bottom (form) */}
+        {/* bg: --surface-dark top + --background bottom */}
         <Contact />
       </main>
       <Footer />
