@@ -1,32 +1,9 @@
 "use client";
 
-import { useRef, useState } from "react";
-import { motion, useInView, AnimatePresence } from "framer-motion";
-import { ArrowUpRight, Check } from "lucide-react";
-
-function InView({
-  children,
-  className,
-  delay = 0,
-}: {
-  children: React.ReactNode;
-  className?: string;
-  delay?: number;
-}) {
-  const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true, margin: "-80px" });
-  return (
-    <motion.div
-      ref={ref}
-      initial={{ opacity: 0, y: 28 }}
-      animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 28 }}
-      transition={{ duration: 0.75, delay, ease: [0.22, 1, 0.36, 1] }}
-      className={className}
-    >
-      {children}
-    </motion.div>
-  );
-}
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Check, ArrowUpRight, Clock, RefreshCw, Server } from "lucide-react";
+import AnimateOnScroll from "@/components/ui/AnimateOnScroll";
 
 type Tab = "entry" | "portfolio" | "business";
 
@@ -56,7 +33,7 @@ const plans: Record<Tab, Plan[]> = {
       id: "promo-design",
       name: "Promotional Content Design",
       price: "Rp75,000–100,000",
-      priceNote: "Package of 5 designs",
+      priceNote: "Pack of 5 designs",
       duration: "1–2 business days",
       revisions: "1–2x minor",
       hostingInfo: "High-res PNG/JPG files delivered",
@@ -67,7 +44,7 @@ const plans: Record<Tab, Plan[]> = {
         "High-resolution final files (PNG / JPG)",
         "1–2 rounds of minor revisions",
       ],
-      cta: "Order Design Package",
+      cta: "Order Design Pack",
     },
     {
       id: "umkm-catalog",
@@ -81,7 +58,7 @@ const plans: Record<Tab, Plan[]> = {
         "Photos, names, prices, descriptions",
         "WhatsApp order button per item",
         "Smartphone-optimized responsive layout",
-        "Free cloud hosting (no monthly fees)",
+        "Free cloud hosting — no monthly fees",
       ],
       cta: "Choose Catalog",
     },
@@ -101,7 +78,7 @@ const plans: Record<Tab, Plan[]> = {
         "Responsive design (mobile & desktop)",
         "Published on free cloud hosting",
       ],
-      cta: "Choose Portfolio Starter",
+      cta: "Choose Starter",
     },
     {
       id: "business-landing-page",
@@ -115,9 +92,9 @@ const plans: Record<Tab, Plan[]> = {
         "Single-page conversion-focused site",
         "Hero with clear value proposition",
         "Service/product overview section",
-        "Business strengths & highlights",
         "WhatsApp / contact CTA buttons",
         "Mobile-first responsive design",
+        "Free cloud hosting",
       ],
       cta: "Choose Landing Page",
     },
@@ -138,7 +115,6 @@ const plans: Record<Tab, Plan[]> = {
         "Up to 3 selected projects",
         "Contact & social links",
         "Responsive design",
-        "Self-setup domain guide",
       ],
       cta: "Choose Starter",
     },
@@ -149,7 +125,7 @@ const plans: Record<Tab, Plan[]> = {
       priceNote: "Most popular & curated",
       duration: "3–5 business days",
       revisions: "2x",
-      hostingInfo: "Free hosting + custom domain connection help",
+      hostingInfo: "Free hosting + custom domain help",
       popular: true,
       features: [
         "1 page with distinct personal branding",
@@ -158,7 +134,7 @@ const plans: Record<Tab, Plan[]> = {
         "Smooth animations & transitions",
         "Mobile-first responsive design",
         "WhatsApp CTA & direct contact form",
-        "Domain connection guidance & assistance",
+        "Domain connection guidance",
       ],
       cta: "Choose Professional",
     },
@@ -177,7 +153,7 @@ const plans: Record<Tab, Plan[]> = {
         "Project filters, blog, or custom forms",
         "Cross-browser testing",
         "Custom animations & micro-interactions",
-        "Final price after consultation",
+        "Final price confirmed after consultation",
       ],
       cta: "Consult Premium",
     },
@@ -213,7 +189,7 @@ const plans: Record<Tab, Plan[]> = {
         "Up to 10 structured pages",
         "Custom UI/UX & design system",
         "Dynamic product/service catalog",
-        "Content search & category filtering",
+        "Content search & filtering",
         "Company blog/news system",
         "Lightweight CMS for content management",
         "Database & backend API",
@@ -273,57 +249,153 @@ const addons = [
   { name: "Advanced SEO Optimization", price: "Rp750,000" },
 ];
 
+/* Popular card uses fixed --surface-dark / --on-dark tokens — no dark: overrides needed */
+function PlanCard({ plan, onSelect }: { plan: Plan; onSelect: () => void }) {
+  const isPopular = !!plan.popular;
+
+  return (
+    <div
+      className="relative flex flex-col p-7 sm:p-8"
+      style={{
+        backgroundColor: isPopular ? "var(--surface-dark)" : "var(--surface)",
+      }}
+    >
+      {isPopular && (
+        <span className="editorial-label mb-4 block" style={{ color: "var(--accent)" }}>
+          Top Pick
+        </span>
+      )}
+
+      <h3
+        className="font-display text-lg font-semibold mb-1"
+        style={{ color: isPopular ? "var(--on-dark)" : "var(--ink)" }}
+      >
+        {plan.name}
+      </h3>
+
+      <div className="mt-4 mb-6">
+        <span
+          className="font-display text-3xl font-bold"
+          style={{ color: isPopular ? "var(--on-dark)" : "var(--ink)" }}
+        >
+          {plan.price}
+        </span>
+        {plan.priceNote && (
+          <p
+            className="text-xs mt-1"
+            style={{ color: isPopular ? "rgba(248,245,240,0.55)" : "var(--ink-muted)" }}
+          >
+            {plan.priceNote}
+          </p>
+        )}
+      </div>
+
+      {/* Meta — lucide icons replace emojis */}
+      <div
+        className="flex flex-col gap-1.5 mb-6 text-xs"
+        style={{ color: isPopular ? "rgba(248,245,240,0.6)" : "var(--ink-muted)" }}
+      >
+        <span className="flex items-center gap-1.5">
+          <Clock size={11} aria-hidden="true" />
+          {plan.duration}
+        </span>
+        {plan.revisions && (
+          <span className="flex items-center gap-1.5">
+            <RefreshCw size={11} aria-hidden="true" />
+            {plan.revisions} revisions
+          </span>
+        )}
+        {plan.hostingInfo && (
+          <span className="flex items-center gap-1.5">
+            <Server size={11} aria-hidden="true" />
+            {plan.hostingInfo}
+          </span>
+        )}
+      </div>
+
+      <div
+        className="h-px mb-6"
+        style={{ backgroundColor: isPopular ? "rgba(248,245,240,0.15)" : "var(--border)" }}
+      />
+
+      <ul className="flex flex-col gap-2.5 flex-1">
+        {plan.features.map((f) => (
+          <li key={f} className="flex items-start gap-2.5">
+            <Check
+              size={13}
+              strokeWidth={2.5}
+              className="mt-0.5 shrink-0"
+              style={{ color: "var(--accent)" }}
+              aria-hidden="true"
+            />
+            <span
+              className="text-xs leading-relaxed"
+              style={{ color: isPopular ? "rgba(248,245,240,0.75)" : "var(--ink-soft)" }}
+            >
+              {f}
+            </span>
+          </li>
+        ))}
+      </ul>
+
+      <a
+        href="#contact"
+        onClick={onSelect}
+        className="mt-8 inline-flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium transition-opacity hover:opacity-80"
+        style={
+          isPopular
+            ? { backgroundColor: "var(--on-dark)", color: "var(--surface-dark)" }
+            : { backgroundColor: "var(--surface-dark)", color: "var(--on-dark)" }
+        }
+      >
+        {plan.cta}
+        <ArrowUpRight size={13} aria-hidden="true" />
+      </a>
+    </div>
+  );
+}
+
 export default function Pricing() {
   const [activeTab, setActiveTab] = useState<Tab>("entry");
 
   const dispatchPlan = (id: string) => {
     if (typeof window !== "undefined") {
-      window.dispatchEvent(
-        new CustomEvent("beone-select-plan", { detail: { planId: id } })
-      );
+      window.dispatchEvent(new CustomEvent("beone-select-plan", { detail: { planId: id } }));
     }
   };
+
+  const currentPlans = plans[activeTab];
 
   return (
     <section
       id="pricing"
       aria-labelledby="pricing-heading"
-      className="section-padding bg-[var(--background)]"
+      className="section-padding bg-[var(--surface)]"
     >
       <div className="max-w-[1400px] mx-auto px-6 sm:px-8 lg:px-12">
-
-        {/* Top divider */}
         <div className="h-px bg-[var(--border)] mb-16 md:mb-24" />
 
-        {/* Header */}
-        <div className="grid lg:grid-cols-12 gap-8 lg:gap-20 mb-14 md:mb-18">
-          <InView className="lg:col-span-5">
-            <p className="editorial-label mb-6">Packages & Investment</p>
-            <h2
-              id="pricing-heading"
-              className="font-display text-4xl sm:text-5xl font-bold leading-[1.08] tracking-tight text-[var(--ink)]"
-              style={{ fontFamily: "var(--font-playfair)" }}
-            >
-              Transparent
-              <br />
-              pricing for
-              <br />
-              <span className="italic font-medium">every budget.</span>
-            </h2>
-          </InView>
-          <InView delay={0.1} className="lg:col-span-6 lg:col-start-7 lg:pt-14">
-            <p className="text-base text-[var(--ink-soft)] leading-relaxed">
-              Every package has a defined scope, honest timeline, and no
-              hidden costs. Prices are fixed — what you see is what you
-              pay.
-            </p>
-          </InView>
-        </div>
+        {/* Header — inline label+heading on single row, no right column */}
+        <AnimateOnScroll>
+          <p className="editorial-label mb-6">Packages &amp; Investment</p>
+          <h2
+            id="pricing-heading"
+            className="font-display text-4xl sm:text-5xl md:text-[3.5rem] font-bold leading-[1.05] tracking-tight text-[var(--ink)] max-w-3xl mb-5"
+          >
+            Transparent pricing
+            <br />
+            for <span className="italic font-medium">every budget.</span>
+          </h2>
+          <p className="text-base text-[var(--ink-soft)] leading-relaxed max-w-lg mb-14 md:mb-16">
+            Every package has a defined scope, honest timeline, and no hidden costs.
+            Prices are fixed — what you see is what you pay.
+          </p>
+        </AnimateOnScroll>
 
         {/* Tab switcher */}
-        <InView>
+        <AnimateOnScroll delay={0.1}>
           <div
-            className="flex gap-0 border border-[var(--border)] w-fit mb-12 md:mb-16"
+            className="flex gap-0 border border-[var(--border)] w-fit mb-10 md:mb-12"
             role="tablist"
             aria-label="Pricing category"
           >
@@ -333,19 +405,19 @@ export default function Pricing() {
                 role="tab"
                 aria-selected={activeTab === tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`px-5 py-3 text-sm font-medium transition-colors duration-150 ${
-                  activeTab === tab.id
-                    ? "bg-[var(--ink)] text-[var(--background)]"
-                    : "text-[var(--ink-muted)] hover:text-[var(--ink)]"
-                }`}
+                className="px-5 py-3 text-sm font-medium transition-colors duration-150"
+                style={{
+                  backgroundColor: activeTab === tab.id ? "var(--surface-dark)" : "transparent",
+                  color: activeTab === tab.id ? "var(--on-dark)" : "var(--ink-muted)",
+                }}
               >
                 {tab.label}
               </button>
             ))}
           </div>
-        </InView>
+        </AnimateOnScroll>
 
-        {/* Plans grid */}
+        {/* Plans */}
         <AnimatePresence mode="wait">
           <motion.div
             key={activeTab}
@@ -353,117 +425,26 @@ export default function Pricing() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -16 }}
             transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-            className="grid sm:grid-cols-2 lg:grid-cols-4 gap-0 border border-[var(--border)]"
+            className="border border-[var(--border)]"
+            style={{
+              display: "grid",
+              gridTemplateColumns: `repeat(${currentPlans.length}, minmax(0, 1fr))`,
+            }}
             role="tabpanel"
           >
-            {plans[activeTab].map((plan, i) => (
+            {currentPlans.map((plan, i) => (
               <div
                 key={plan.id}
-                className={`relative flex flex-col p-7 sm:p-8 ${
-                  i < plans[activeTab].length - 1 ? "border-r border-[var(--border)]" : ""
-                } ${plan.popular ? "bg-[var(--ink)]" : "bg-[var(--surface)]"}`}
+                className={i < currentPlans.length - 1 ? "border-r border-[var(--border)]" : ""}
               >
-                {/* Popular badge */}
-                {plan.popular && (
-                  <span className="editorial-label text-[var(--accent)] mb-4 block">
-                    Top Pick
-                  </span>
-                )}
-
-                {/* Name */}
-                <h3
-                  className={`font-display text-lg font-semibold mb-1 ${
-                    plan.popular ? "text-[var(--background)] dark:text-white" : "text-[var(--ink)]"
-                  }`}
-                  style={{ fontFamily: "var(--font-playfair)" }}
-                >
-                  {plan.name}
-                </h3>
-
-                {/* Price */}
-                <div className="mt-4 mb-6">
-                  <span
-                    className={`font-display text-3xl font-bold ${
-                      plan.popular ? "text-[var(--background)] dark:text-white" : "text-[var(--ink)]"
-                    }`}
-                    style={{ fontFamily: "var(--font-playfair)" }}
-                  >
-                    {plan.price}
-                  </span>
-                  {plan.priceNote && (
-                    <p
-                      className={`text-xs mt-1 ${
-                        plan.popular ? "text-[var(--background)]/60" : "text-[var(--ink-muted)]"
-                      }`}
-                    >
-                      {plan.priceNote}
-                    </p>
-                  )}
-                </div>
-
-                {/* Meta */}
-                <div
-                  className={`flex flex-col gap-1 mb-6 text-xs ${
-                    plan.popular ? "text-[var(--background)]/70" : "text-[var(--ink-muted)]"
-                  }`}
-                >
-                  <span>⏱ {plan.duration}</span>
-                  {plan.revisions && <span>✎ {plan.revisions} revisions</span>}
-                  {plan.hostingInfo && <span>☁ {plan.hostingInfo}</span>}
-                </div>
-
-                {/* Divider */}
-                <div
-                  className={`h-px mb-6 ${
-                    plan.popular ? "bg-white/20" : "bg-[var(--border)]"
-                  }`}
-                />
-
-                {/* Features */}
-                <ul className="flex flex-col gap-2.5 flex-1">
-                  {plan.features.map((f) => (
-                    <li key={f} className="flex items-start gap-2.5">
-                      <Check
-                        size={13}
-                        strokeWidth={2.5}
-                        className={`mt-0.5 shrink-0 ${
-                          plan.popular ? "text-[var(--accent)]" : "text-[var(--accent-dark)]"
-                        }`}
-                        aria-hidden="true"
-                      />
-                      <span
-                        className={`text-xs leading-relaxed ${
-                          plan.popular
-                            ? "text-[var(--background)]/80"
-                            : "text-[var(--ink-soft)]"
-                        }`}
-                      >
-                        {f}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-
-                {/* CTA */}
-                <a
-                  href="#contact"
-                  onClick={() => dispatchPlan(plan.id)}
-                  className={`mt-8 inline-flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium transition-opacity hover:opacity-80 ${
-                    plan.popular
-                      ? "bg-[var(--background)] text-[var(--ink)]"
-                      : "bg-[var(--ink)] text-[var(--background)]"
-                  }`}
-                >
-                  {plan.cta}
-                  <ArrowUpRight size={13} aria-hidden="true" />
-                </a>
+                <PlanCard plan={plan} onSelect={() => dispatchPlan(plan.id)} />
               </div>
             ))}
           </motion.div>
         </AnimatePresence>
 
         {/* Add-ons */}
-        <InView delay={0.1}>
+        <AnimateOnScroll delay={0.1}>
           <div className="mt-16 md:mt-20">
             <div className="h-px bg-[var(--border)] mb-10" />
             <div className="grid lg:grid-cols-12 gap-8">
@@ -474,13 +455,13 @@ export default function Pricing() {
                 </p>
               </div>
               <div className="lg:col-span-9">
-                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-0 border border-[var(--border)]">
+                <div className="border border-[var(--border)]">
                   {addons.map((addon, i) => (
                     <div
                       key={addon.name}
-                      className={`flex items-center justify-between px-5 py-4 text-sm ${
-                        i % 3 !== 2 ? "border-r border-[var(--border)]" : ""
-                      } border-b border-[var(--border)]`}
+                      className={`flex items-center justify-between px-5 py-4 text-sm border-b border-[var(--border)] ${
+                        i === addons.length - 1 ? "border-b-0" : ""
+                      }`}
                     >
                       <span className="text-[var(--ink-soft)]">{addon.name}</span>
                       <span className="text-[var(--ink)] font-medium ml-4 shrink-0 text-xs">
@@ -492,7 +473,7 @@ export default function Pricing() {
               </div>
             </div>
           </div>
-        </InView>
+        </AnimateOnScroll>
       </div>
     </section>
   );

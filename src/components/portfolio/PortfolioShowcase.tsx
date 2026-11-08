@@ -1,37 +1,16 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { motion, useInView, AnimatePresence } from "framer-motion";
-import { ArrowUpRight, X, ExternalLink } from "lucide-react";
-
-function InView({
-  children,
-  className,
-  delay = 0,
-}: {
-  children: React.ReactNode;
-  className?: string;
-  delay?: number;
-}) {
-  const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true, margin: "-80px" });
-  return (
-    <motion.div
-      ref={ref}
-      initial={{ opacity: 0, y: 32 }}
-      animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 32 }}
-      transition={{ duration: 0.75, delay, ease: [0.22, 1, 0.36, 1] }}
-      className={className}
-    >
-      {children}
-    </motion.div>
-  );
-}
+import { useRef } from "react";
+import { ArrowUpRight, ExternalLink, X } from "lucide-react";
+import AnimateOnScroll from "@/components/ui/AnimateOnScroll";
 
 interface Project {
   id: string;
   index: string;
   title: string;
+  subtitle: string;
   category: string;
   description: string;
   techStack: string[];
@@ -39,8 +18,8 @@ interface Project {
   isConceptual: boolean;
   note: string;
   highlights: string[];
-  accentColor: string;
-  mockLabel: string;
+  /* CSS color token name or hsl — stays within warm palette */
+  hue: string; // used for the tinted preview band
 }
 
 const projects: Project[] = [
@@ -48,9 +27,10 @@ const projects: Project[] = [
     id: "finvera",
     index: "01",
     title: "Finvera",
+    subtitle: "Finance Tracker",
     category: "Financial & Expense Tracker App",
     description:
-      "A modern personal finance management app to track income and expenses in a structured way, with automatic balance calculation and transaction summary visualization.",
+      "A modern personal finance management app to track income and expenses with automatic balance calculation and transaction summary visualization.",
     techStack: ["Next.js", "React", "TypeScript", "Tailwind CSS"],
     demoUrl: "https://finvera-app.vercel.app/",
     isConceptual: false,
@@ -60,16 +40,16 @@ const projects: Project[] = [
       "Dynamic balance calculation with no lag",
       "Responsive interface across smartphones and laptops",
     ],
-    accentColor: "#2D7D6E",
-    mockLabel: "Finance App",
+    hue: "160",
   },
   {
     id: "tickitz",
     index: "02",
     title: "Tickitz",
+    subtitle: "Cinema Booking",
     category: "Cinema Ticket Booking Platform",
     description:
-      "An online cinema ticket booking platform featuring currently showing movies, structured showtime schedules, an interactive seat selection flow, and order checkout simulation.",
+      "An online cinema ticket booking platform with structured showtime schedules, an interactive seat-selection flow, and order checkout simulation.",
     techStack: ["Next.js", "React", "Tailwind CSS", "REST API"],
     demoUrl: "https://tickitz-liard.vercel.app/",
     isConceptual: false,
@@ -79,33 +59,34 @@ const projects: Project[] = [
       "Interactive theater seat selection grid",
       "Intuitive booking flow from seat selection to invoice",
     ],
-    accentColor: "#7C3AED",
-    mockLabel: "Booking Platform",
+    hue: "250",
   },
   {
     id: "designer-portfolio-concept",
     index: "03",
     title: "Arga Wicaksono",
-    category: "Personal Portfolio Website (Conceptual)",
+    subtitle: "UI/UX Designer Portfolio",
+    category: "Personal Portfolio Website — Conceptual",
     description:
-      "An interactive portfolio website concept for graphic and UI/UX designers: visual project showcase gallery, design skill highlights, experience history, and direct contact buttons.",
+      "An interactive portfolio website concept for graphic and UI/UX designers: visual project showcase, skill highlights, experience history, and direct contact.",
     techStack: ["Modern Layout", "Framer Motion", "Tailwind CSS", "Responsive"],
     demoUrl: undefined,
     isConceptual: true,
     note: "A ready-to-adapt portfolio concept template for designers, creators, and professionals.",
     highlights: [
-      "Hero section focusing on personal statement & design specialties",
+      "Hero focused on personal statement & design specialties",
       "Curated visual project grid with case study breakdowns",
       "About, Experience, Tools sections & Direct WhatsApp CTA",
     ],
-    accentColor: "#C8A96E",
-    mockLabel: "Portfolio Concept",
+    hue: "36",
   },
 ];
 
+/* Editorial project card — typography-led, no generic colored bars */
 function ProjectCard({ project, onClick }: { project: Project; onClick: () => void }) {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, margin: "-60px" });
+  const [hovered, setHovered] = useState(false);
 
   return (
     <motion.article
@@ -113,23 +94,29 @@ function ProjectCard({ project, onClick }: { project: Project; onClick: () => vo
       initial={{ opacity: 0, y: 40 }}
       animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
       transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-      className="group border border-[var(--border)] hover:border-[var(--border-strong)] transition-colors duration-300 cursor-pointer"
+      className="group border border-[var(--border)] cursor-pointer flex flex-col h-full"
+      style={{
+        borderColor: hovered ? "var(--border-strong)" : undefined,
+        transition: "border-color 0.25s ease",
+      }}
       onClick={onClick}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
       role="button"
       tabIndex={0}
       onKeyDown={(e) => e.key === "Enter" && onClick()}
       aria-label={`View project: ${project.title}`}
     >
-      {/* Visual area */}
+      {/* Preview band — typographic, not decorative bars */}
       <div
-        className="relative h-64 sm:h-72 overflow-hidden flex items-center justify-center"
-        style={{ backgroundColor: `${project.accentColor}12` }}
+        className="relative overflow-hidden flex flex-col justify-between p-8 h-56 sm:h-64"
+        style={{ backgroundColor: `hsl(${project.hue} 30% 94%)` }}
       >
-        {/* Index number — large background */}
+        {/* Oversized index number as texture */}
         <span
-          className="absolute top-4 right-5 font-display text-[7rem] font-bold leading-none select-none pointer-events-none opacity-[0.06]"
+          className="absolute -bottom-4 -right-3 font-display text-[9rem] font-bold leading-none select-none pointer-events-none"
           style={{
-            color: project.accentColor,
+            color: `hsl(${project.hue} 25% 75%)`,
             fontFamily: "var(--font-playfair)",
           }}
           aria-hidden="true"
@@ -137,79 +124,61 @@ function ProjectCard({ project, onClick }: { project: Project; onClick: () => vo
           {project.index}
         </span>
 
-        {/* Mock visual */}
-        <div className="relative z-10 flex flex-col gap-3 w-48">
-          <div
-            className="h-2 rounded-sm"
-            style={{ backgroundColor: `${project.accentColor}40` }}
-          />
-          <div
-            className="h-2 rounded-sm w-3/4"
-            style={{ backgroundColor: `${project.accentColor}30` }}
-          />
-          <div className="mt-2 flex gap-2">
-            <div
-              className="h-16 w-1/2 rounded-sm"
-              style={{ backgroundColor: `${project.accentColor}20` }}
-            />
-            <div
-              className="h-16 w-1/2 rounded-sm"
-              style={{ backgroundColor: `${project.accentColor}15` }}
-            />
-          </div>
-          <div
-            className="h-1.5 rounded-sm w-2/3"
-            style={{ backgroundColor: `${project.accentColor}25` }}
-          />
-        </div>
-
-        {/* Tag */}
-        <div className="absolute top-4 left-4 flex items-center gap-2">
+        {/* Status pill */}
+        <div className="flex items-center gap-2">
           <span
-            className="inline-block w-2 h-2 rounded-full"
-            style={{ backgroundColor: project.isConceptual ? "#C8A96E" : "#2D7D6E" }}
+            className="inline-block w-1.5 h-1.5 rounded-full"
+            style={{
+              backgroundColor: project.isConceptual
+                ? "var(--accent)"
+                : "var(--status-live)",
+            }}
           />
-          <span className="editorial-label text-[var(--ink-muted)]">
+          <span className="editorial-label" style={{ color: `hsl(${project.hue} 20% 42%)` }}>
             {project.isConceptual ? "Concept" : "Live"}
           </span>
         </div>
 
-        {/* Arrow indicator on hover */}
-        <div className="absolute bottom-4 right-4 w-9 h-9 border border-[var(--border)] flex items-center justify-center bg-[var(--surface)] opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-          <ArrowUpRight size={14} className="text-[var(--ink)]" aria-hidden="true" />
+        {/* Title + subtitle in the preview itself */}
+        <div>
+          <p
+            className="editorial-label mb-1"
+            style={{ color: `hsl(${project.hue} 20% 50%)` }}
+          >
+            {project.subtitle}
+          </p>
+          <p
+            className="font-display text-3xl font-bold leading-tight"
+            style={{
+              color: `hsl(${project.hue} 30% 22%)`,
+              fontFamily: "var(--font-playfair)",
+            }}
+          >
+            {project.title}
+          </p>
         </div>
+
+        {/* Hover arrow */}
+        <motion.div
+          className="absolute bottom-4 right-4 w-9 h-9 border flex items-center justify-center"
+          style={{ borderColor: `hsl(${project.hue} 20% 70%)` }}
+          animate={{ opacity: hovered ? 1 : 0 }}
+          transition={{ duration: 0.2 }}
+          aria-hidden="true"
+        >
+          <ArrowUpRight size={14} style={{ color: `hsl(${project.hue} 20% 35%)` }} />
+        </motion.div>
       </div>
 
       {/* Content */}
-      <div className="p-6 sm:p-8">
-        <div className="flex items-start justify-between gap-4 mb-3">
-          <div>
-            <p className="editorial-label text-[var(--ink-muted)] mb-2">
-              {project.category}
-            </p>
-            <h3
-              className="font-display text-2xl font-bold text-[var(--ink)] group-hover:opacity-70 transition-opacity"
-              style={{ fontFamily: "var(--font-playfair)" }}
-            >
-              {project.title}
-            </h3>
-          </div>
-          <span className="editorial-label text-[var(--border-strong)] mt-1 shrink-0">
-            {project.index}
-          </span>
-        </div>
-
-        <p className="text-sm text-[var(--ink-muted)] leading-relaxed mb-5">
+      <div className="flex flex-col flex-1 p-6 sm:p-8">
+        <p className="editorial-label text-[var(--ink-muted)] mb-2">{project.category}</p>
+        <p className="text-sm text-[var(--ink-muted)] leading-relaxed mb-5 flex-1">
           {project.description}
         </p>
-
-        {/* Tech stack */}
         <div className="flex flex-wrap gap-2">
           {project.techStack.map((tech) => (
-            <span
-              key={tech}
-              className="px-2 py-0.5 text-[11px] font-medium border border-[var(--border)] text-[var(--ink-muted)]"
-            >
+            <span key={tech} className="px-2 py-0.5 text-[11px] font-medium border border-[var(--border)] text-[var(--ink-muted)]">
               {tech}
             </span>
           ))}
@@ -222,9 +191,8 @@ function ProjectCard({ project, onClick }: { project: Project; onClick: () => vo
 export default function PortfolioShowcase() {
   const [activeProject, setActiveProject] = useState<Project | null>(null);
 
-  // Lock scroll when modal open
-  const openModal = (project: Project) => {
-    setActiveProject(project);
+  const openModal = (p: Project) => {
+    setActiveProject(p);
     document.body.style.overflow = "hidden";
   };
   const closeModal = () => {
@@ -236,73 +204,62 @@ export default function PortfolioShowcase() {
     <section
       id="portfolio"
       aria-labelledby="portfolio-heading"
-      className="section-padding bg-[var(--surface)]"
+      className="section-padding bg-[var(--background)]"
     >
       <div className="max-w-[1400px] mx-auto px-6 sm:px-8 lg:px-12">
-
-        {/* Top divider */}
         <div className="h-px bg-[var(--border)] mb-16 md:mb-24" />
 
-        {/* Header */}
+        {/* Header — full-width centered rule style */}
+        <AnimateOnScroll>
+          <p className="editorial-label mb-6">Selected Works</p>
+        </AnimateOnScroll>
         <div className="grid lg:grid-cols-12 gap-8 lg:gap-20 mb-16 md:mb-20">
-          <InView className="lg:col-span-5">
-            <p className="editorial-label mb-6">Selected Works</p>
+          <AnimateOnScroll delay={0.1} className="lg:col-span-6">
             <h2
               id="portfolio-heading"
               className="font-display text-4xl sm:text-5xl font-bold leading-[1.08] tracking-tight text-[var(--ink)]"
-              style={{ fontFamily: "var(--font-playfair)" }}
             >
               Real projects,
               <br />
               <span className="italic font-medium">real results.</span>
             </h2>
-          </InView>
-          <InView delay={0.1} className="lg:col-span-6 lg:col-start-7 lg:pt-14">
+          </AnimateOnScroll>
+          <AnimateOnScroll delay={0.2} className="lg:col-span-5 lg:col-start-8 lg:pt-10">
             <p className="text-base text-[var(--ink-soft)] leading-relaxed">
               A selection of live applications and portfolio concepts we have
-              built. Every project is documented honestly — no invented
-              clients, no fabricated screenshots.
+              built — documented honestly, with no invented clients or
+              fabricated screenshots.
             </p>
-          </InView>
+          </AnimateOnScroll>
         </div>
 
-        {/* Project grid — asymmetric: first card full-width on large, then 2-col */}
+        {/* Asymmetric grid */}
         <div className="grid lg:grid-cols-12 gap-6">
-          {/* Card 1 — spans 7 cols */}
           <div className="lg:col-span-7">
             <ProjectCard project={projects[0]} onClick={() => openModal(projects[0])} />
           </div>
-          {/* Card 2 — spans 5 cols */}
           <div className="lg:col-span-5">
             <ProjectCard project={projects[1]} onClick={() => openModal(projects[1])} />
           </div>
-          {/* Card 3 — spans full then 6 */}
-          <div className="lg:col-span-6">
+          <div className="lg:col-span-5">
             <ProjectCard project={projects[2]} onClick={() => openModal(projects[2])} />
           </div>
-          {/* CTA panel — spans 6 */}
-          <InView className="lg:col-span-6" delay={0.2}>
-            <div className="h-full border border-[var(--border)] bg-[var(--surface-2)] flex flex-col justify-between p-8 sm:p-10 min-h-[300px]">
+
+          {/* CTA panel */}
+          <AnimateOnScroll className="lg:col-span-7" delay={0.15}>
+            <div className="h-full border border-[var(--border)] bg-[var(--surface-2)] flex flex-col justify-between p-8 sm:p-10 min-h-[280px]">
               <div>
-                <p className="editorial-label text-[var(--accent)] mb-6">
-                  Your project, next.
-                </p>
-                <h3
-                  className="font-display text-3xl sm:text-4xl font-bold leading-[1.1] text-[var(--ink)]"
-                  style={{ fontFamily: "var(--font-playfair)" }}
-                >
-                  Want a portfolio
+                <p className="editorial-label text-[var(--accent)] mb-6">Your project, next.</p>
+                <h3 className="font-display text-3xl sm:text-4xl font-bold leading-[1.1] text-[var(--ink)]">
+                  Want a site that truly
                   <br />
-                  that truly{" "}
-                  <span className="italic font-medium">represents</span>
-                  <br />
-                  you?
+                  <span className="italic font-medium">represents you?</span>
                 </h3>
               </div>
               <div className="flex flex-col sm:flex-row gap-3 mt-10">
                 <a
                   href="#contact"
-                  className="inline-flex items-center justify-center gap-2 px-6 py-4 text-sm font-medium text-[var(--background)] bg-[var(--ink)] hover:opacity-80 transition-opacity"
+                  className="inline-flex items-center justify-center gap-2 px-6 py-4 text-sm font-medium text-[var(--on-dark)] bg-[var(--surface-dark)] hover:opacity-80 transition-opacity"
                 >
                   Start a Consultation
                   <ArrowUpRight size={14} aria-hidden="true" />
@@ -315,7 +272,7 @@ export default function PortfolioShowcase() {
                 </a>
               </div>
             </div>
-          </InView>
+          </AnimateOnScroll>
         </div>
       </div>
 
@@ -330,7 +287,8 @@ export default function PortfolioShowcase() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-6 bg-black/50 backdrop-blur-sm"
+            className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-6"
+            style={{ backgroundColor: "var(--overlay)" }}
             onClick={(e) => e.target === e.currentTarget && closeModal()}
           >
             <motion.div
@@ -346,13 +304,12 @@ export default function PortfolioShowcase() {
                   <span
                     className="w-2 h-2 rounded-full"
                     style={{
-                      backgroundColor: activeProject.isConceptual ? "#C8A96E" : "#2D7D6E",
+                      backgroundColor: activeProject.isConceptual
+                        ? "var(--accent)"
+                        : "var(--status-live)",
                     }}
                   />
-                  <h3
-                    className="font-display text-lg font-bold text-[var(--ink)]"
-                    style={{ fontFamily: "var(--font-playfair)" }}
-                  >
+                  <h3 className="font-display text-lg font-bold text-[var(--ink)]">
                     {activeProject.title}
                   </h3>
                 </div>
@@ -360,75 +317,52 @@ export default function PortfolioShowcase() {
                   type="button"
                   onClick={closeModal}
                   className="p-2 text-[var(--ink-muted)] hover:text-[var(--ink)] transition-colors"
-                  aria-label="Close modal"
+                  aria-label="Close"
                 >
                   <X size={18} />
                 </button>
               </div>
 
-              {/* Modal body */}
+              {/* Body */}
               <div className="px-7 py-7 flex-1 space-y-7">
-                {/* Category + label */}
                 <div>
-                  <p className="editorial-label text-[var(--ink-muted)] mb-1">
-                    {activeProject.category}
-                  </p>
-                  <p className="text-sm text-[var(--ink-soft)] leading-relaxed">
-                    {activeProject.description}
-                  </p>
+                  <p className="editorial-label text-[var(--ink-muted)] mb-1">{activeProject.category}</p>
+                  <p className="text-sm text-[var(--ink-soft)] leading-relaxed">{activeProject.description}</p>
                 </div>
-
-                {/* Highlights */}
                 <div>
-                  <p className="editorial-label text-[var(--accent)] mb-4">
-                    Highlights
-                  </p>
+                  <p className="editorial-label text-[var(--accent)] mb-4">Highlights</p>
                   <ul className="space-y-2.5">
                     {activeProject.highlights.map((h) => (
                       <li key={h} className="flex items-start gap-3 text-sm text-[var(--ink-soft)]">
-                        <span
-                          className="w-1 h-1 rounded-full mt-2 shrink-0"
-                          style={{ backgroundColor: activeProject.accentColor }}
-                        />
+                        <span className="w-1 h-1 rounded-full mt-2 shrink-0 bg-[var(--accent)]" />
                         {h}
                       </li>
                     ))}
                   </ul>
                 </div>
-
-                {/* Tech stack */}
                 <div>
-                  <p className="editorial-label text-[var(--accent)] mb-4">
-                    Tech Stack
-                  </p>
+                  <p className="editorial-label text-[var(--accent)] mb-4">Tech Stack</p>
                   <div className="flex flex-wrap gap-2">
                     {activeProject.techStack.map((tech) => (
-                      <span
-                        key={tech}
-                        className="px-3 py-1 text-xs font-medium border border-[var(--border)] text-[var(--ink-muted)]"
-                      >
+                      <span key={tech} className="px-3 py-1 text-xs font-medium border border-[var(--border)] text-[var(--ink-muted)]">
                         {tech}
                       </span>
                     ))}
                   </div>
                 </div>
-
-                {/* Note */}
                 <div className="border-t border-[var(--border)] pt-5">
-                  <p className="text-xs text-[var(--ink-muted)] italic">
-                    {activeProject.note}
-                  </p>
+                  <p className="text-xs text-[var(--ink-muted)] italic">{activeProject.note}</p>
                 </div>
               </div>
 
-              {/* Modal footer */}
-              <div className="px-7 py-5 border-t border-[var(--border)] flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+              {/* Footer */}
+              <div className="px-7 py-5 border-t border-[var(--border)] flex flex-col sm:flex-row gap-3">
                 {activeProject.demoUrl ? (
                   <a
                     href={activeProject.demoUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex-1 inline-flex items-center justify-center gap-2 px-5 py-3 text-sm font-medium text-[var(--background)] bg-[var(--ink)] hover:opacity-80 transition-opacity"
+                    className="flex-1 inline-flex items-center justify-center gap-2 px-5 py-3 text-sm font-medium text-[var(--on-dark)] bg-[var(--surface-dark)] hover:opacity-80 transition-opacity"
                   >
                     <ExternalLink size={14} aria-hidden="true" />
                     View Live Project

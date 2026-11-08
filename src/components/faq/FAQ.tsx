@@ -1,32 +1,9 @@
 "use client";
 
-import { useRef, useState } from "react";
-import { motion, useInView, AnimatePresence } from "framer-motion";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Minus } from "lucide-react";
-
-function InView({
-  children,
-  className,
-  delay = 0,
-}: {
-  children: React.ReactNode;
-  className?: string;
-  delay?: number;
-}) {
-  const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true, margin: "-80px" });
-  return (
-    <motion.div
-      ref={ref}
-      initial={{ opacity: 0, y: 28 }}
-      animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 28 }}
-      transition={{ duration: 0.75, delay, ease: [0.22, 1, 0.36, 1] }}
-      className={className}
-    >
-      {children}
-    </motion.div>
-  );
-}
+import AnimateOnScroll from "@/components/ui/AnimateOnScroll";
 
 const faqs = [
   {
@@ -62,7 +39,7 @@ const faqs = [
   {
     id: "free-hosting",
     q: "How does the free hosting work?",
-    a: "Sites are deployed on modern cloud platforms (Vercel, Netlify, or GitHub Pages) with active SSL — no monthly server fees. For paid custom domains (.com, .id, .dev), those are purchased separately and we provide clear setup guidance or hands-on assistance.",
+    a: "Sites are deployed on modern cloud platforms (Vercel, Netlify, or GitHub Pages) with active SSL — no monthly server fees. Custom domains (.com, .id, .dev) are purchased separately and we provide clear setup guidance or hands-on assistance.",
   },
   {
     id: "custom-app",
@@ -71,7 +48,15 @@ const faqs = [
   },
 ];
 
-function FAQItem({ faq, isOpen, onToggle }: { faq: typeof faqs[0]; isOpen: boolean; onToggle: () => void }) {
+function FAQItem({
+  faq,
+  isOpen,
+  onToggle,
+}: {
+  faq: (typeof faqs)[0];
+  isOpen: boolean;
+  onToggle: () => void;
+}) {
   return (
     <div className="border-b border-[var(--border)]">
       <button
@@ -81,20 +66,28 @@ function FAQItem({ faq, isOpen, onToggle }: { faq: typeof faqs[0]; isOpen: boole
         aria-expanded={isOpen}
         aria-controls={`faq-${faq.id}`}
       >
+        {/* Question text — Inter medium, not Playfair */}
         <span
-          className={`font-display text-base sm:text-lg font-medium leading-snug transition-opacity ${
-            isOpen ? "text-[var(--ink)]" : "text-[var(--ink)] group-hover:opacity-70"
+          className={`text-base sm:text-[1.05rem] font-medium leading-snug transition-opacity ${
+            isOpen ? "text-[var(--ink)]" : "text-[var(--ink)] group-hover:opacity-65"
           }`}
-          style={{ fontFamily: "var(--font-playfair)" }}
         >
           {faq.q}
         </span>
         <span
-          className={`w-7 h-7 flex items-center justify-center border shrink-0 transition-all duration-200 ${
+          className="w-7 h-7 flex items-center justify-center border shrink-0 transition-all duration-200"
+          style={
             isOpen
-              ? "border-[var(--ink)] bg-[var(--ink)] text-[var(--background)]"
-              : "border-[var(--border)] text-[var(--ink-muted)]"
-          }`}
+              ? {
+                  borderColor: "var(--surface-dark)",
+                  backgroundColor: "var(--surface-dark)",
+                  color: "var(--on-dark)",
+                }
+              : {
+                  borderColor: "var(--border)",
+                  color: "var(--ink-muted)",
+                }
+          }
         >
           {isOpen ? <Minus size={13} aria-hidden="true" /> : <Plus size={13} aria-hidden="true" />}
         </span>
@@ -124,32 +117,23 @@ function FAQItem({ faq, isOpen, onToggle }: { faq: typeof faqs[0]; isOpen: boole
 export default function FAQ() {
   const [openId, setOpenId] = useState<string | null>("entry-services");
 
-  const toggle = (id: string) => {
-    setOpenId((prev) => (prev === id ? null : id));
-  };
-
   return (
     <section
       id="faq"
       aria-labelledby="faq-heading"
-      className="section-padding bg-[var(--surface)]"
+      className="section-padding bg-[var(--background)]"
     >
       <div className="max-w-[1400px] mx-auto px-6 sm:px-8 lg:px-12">
-
-        {/* Top divider */}
         <div className="h-px bg-[var(--border)] mb-16 md:mb-24" />
 
-        {/* Header + accordion — two column on desktop */}
         <div className="grid lg:grid-cols-12 gap-10 lg:gap-20">
-
-          {/* Left sticky header */}
+          {/* Sticky header column */}
           <div className="lg:col-span-4">
-            <InView>
+            <AnimateOnScroll>
               <p className="editorial-label mb-6">FAQ</p>
               <h2
                 id="faq-heading"
                 className="font-display text-4xl sm:text-5xl font-bold leading-[1.08] tracking-tight text-[var(--ink)]"
-                style={{ fontFamily: "var(--font-playfair)" }}
               >
                 Common
                 <br />
@@ -167,23 +151,23 @@ export default function FAQ() {
               >
                 Ask a question
               </a>
-            </InView>
+            </AnimateOnScroll>
           </div>
 
-          {/* Right accordion */}
+          {/* Accordion */}
           <div className="lg:col-span-7 lg:col-start-6">
-            <InView delay={0.1}>
+            <AnimateOnScroll delay={0.1}>
               <div className="border-t border-[var(--border)]">
                 {faqs.map((faq) => (
                   <FAQItem
                     key={faq.id}
                     faq={faq}
                     isOpen={openId === faq.id}
-                    onToggle={() => toggle(faq.id)}
+                    onToggle={() => setOpenId((p) => (p === faq.id ? null : faq.id))}
                   />
                 ))}
               </div>
-            </InView>
+            </AnimateOnScroll>
           </div>
         </div>
       </div>
